@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
-import { SimplePool, nip19 } from 'nostr-tools';
+import { SimplePool, nip19, parseReferences } from 'nostr-tools';
 import WebSocket from 'isomorphic-ws';
 import { NextSeo } from 'next-seo';
+import { Note } from '@/components/Note';
 
 global.WebSocket = WebSocket;
 
@@ -50,6 +51,10 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
+	const references = parseReferences(event);
+
+	console.dir({ event, references }, { depth: null });
+
 	return (
 		<>
 			<NextSeo
@@ -59,7 +64,12 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 					title: event.pubkey,
 				}}
 			/>
-			{JSON.stringify(event, null, 2)}
+
+			<Note
+				pubkey={event.pubkey}
+				content={event.content}
+				references={references}
+			/>
 		</>
 	);
 }
