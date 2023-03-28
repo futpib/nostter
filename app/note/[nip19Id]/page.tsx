@@ -98,13 +98,15 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 
 	console.dir({ noteEvent, references, pubkeyMetadatas }, { depth: null });
 
+	const notePubkeyName = pubkeyMetadatas.get(noteEvent.pubkey)?.name;
+
 	return (
 		<>
 			<NextSeo
 				useAppDir
 				description={contentText}
 				openGraph={{
-					title: noteEvent.pubkey,
+					title: notePubkeyName ? `@${notePubkeyName}` : nip19.npubEncode(noteEvent.pubkey),
 				}}
 			/>
 
