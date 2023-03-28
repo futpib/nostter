@@ -55,6 +55,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 			<NextSeo
 				useAppDir
 				description={event.content}
+				openGraph={{
+					title: event.pubkey,
+				}}
 			/>
 			{JSON.stringify(event, null, 2)}
 		</>
