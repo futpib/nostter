@@ -14,6 +14,7 @@
     "@types/react-dom": "18.0.11",
     "bufferutil": "^4.0.7",
     "isomorphic-ws": "^5.0.0",
+    "luxon": "^3.3.0",
     "next": "13.2.4",
     "next-seo": "^5.15.0",
     "nostr-tools": "^1.8.1",
@@ -23,5 +24,8 @@
     "utf-8-validate": "^6.0.3",
     "ws": "^8.13.0"
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "devDependencies": {
+    "@types/luxon": "^3.2.0"
+  }
 }

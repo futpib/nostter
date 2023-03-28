@@ -3,6 +3,9 @@ import { SimplePool, nip19, parseReferences } from 'nostr-tools';
 import WebSocket from 'isomorphic-ws';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
+import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
+import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
+import { useMemo } from 'react';
 
 global.WebSocket = WebSocket;
 
@@ -43,32 +46,74 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
-	const event = await pool.get(relays, {
+	const noteEvent = await pool.get(relays, {
 		ids: [ nip19Id.data ],
 	});
 
-	if (event?.id !== nip19Id.data) {
+	if (noteEvent?.id !== nip19Id.data) {
 		notFound();
 	}
 
-	const references = parseReferences(event);
+	const references = parseReferences(noteEvent);
 
-	console.dir({ event, references }, { depth: null });
+	const referencedPubkeys = [
+		noteEvent.pubkey,
+		...references.flatMap((reference) => reference.profile ? [ reference.profile.pubkey ] : []),
+	];
+
+	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(pubkey => pool.get(relays, {
+		kinds: [ EVENT_KIND_METADATA ],
+		authors: [ pubkey ],
+	})));
+
+	const pubkeyMetadatas = pubkeyMetadataEvents.reduce((map, event) => {
+		if (event?.kind !== EVENT_KIND_METADATA) {
+			return map;
+		}
+
+		let pubkeyMetadata: PubkeyMetadata = {};
+
+		try {
+			pubkeyMetadata = JSON.parse(event.content);
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				console.error('Failed to parse metadata', event);
+			} else {
+				throw error;
+			}
+		}
+
+		map.set(event.pubkey, pubkeyMetadata);
+
+		return map;
+	}, new Map<string, PubkeyMetadata>());
+
+	const contentText = renderNoteContent({
+		content: noteEvent.content,
+		references,
+		pubkeyMetadatas,
+	}, {
+		renderProfileReference: ({ metadata }) => `@${metadata.name}`,
+	}).join('');
+
+	console.dir({ noteEvent, references, pubkeyMetadatas }, { depth: null });
 
 	return (
 		<>
 			<NextSeo
 				useAppDir
-				description={event.content}
+				description={contentText}
 				openGraph={{
-					title: event.pubkey,
+					title: noteEvent.pubkey,
 				}}
 			/>
 
 			<Note
-				pubkey={event.pubkey}
-				content={event.content}
+				pubkey={noteEvent.pubkey}
+				content={noteEvent.content}
+				createdAt={noteEvent.created_at}
 				references={references}
+				pubkeyMetadatas={pubkeyMetadatas}
 			/>
 		</>
 	);

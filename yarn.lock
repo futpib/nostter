@@ -204,6 +204,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@types/luxon@npm:3.2.0"
+  checksum: 051bfbf841c6ce98728df6538342ce4aaddfcf0ec6e8b473e0195dcfc3ba6b1fe4b3ce17f2ba6d25344f41cb70032c1debe96da9e384e5f6e639665c1e6d368c
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:18.15.10":
   version: 18.15.10
   resolution: "@types/node@npm:18.15.10"
@@ -710,6 +717,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "luxon@npm:3.3.0"
+  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
+  languageName: node
+  linkType: hard
+
 "make-fetch-happen@npm:^10.0.3":
   version: 10.2.1
   resolution: "make-fetch-happen@npm:10.2.1"
@@ -1010,11 +1024,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nostter@workspace:."
   dependencies:
+    "@types/luxon": ^3.2.0
     "@types/node": 18.15.10
     "@types/react": 18.0.30
     "@types/react-dom": 18.0.11
     bufferutil: ^4.0.7
     isomorphic-ws: ^5.0.0
+    luxon: ^3.3.0
     next: 13.2.4
     next-seo: ^5.15.0
     nostr-tools: ^1.8.1

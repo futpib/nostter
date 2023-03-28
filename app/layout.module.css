@@ -29,6 +29,13 @@
 	padding: 0 16px;
 }
 
+.content {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 1;
+	min-width: 0;
+}
+
 .aside {
 	display: none;
 	flex-direction: column;
