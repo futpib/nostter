@@ -1,39 +1,12 @@
 import { notFound } from 'next/navigation';
-import { SimplePool, nip19, parseReferences } from 'nostr-tools';
-import WebSocket from 'isomorphic-ws';
+import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
 import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
-import { useMemo } from 'react';
-
-global.WebSocket = WebSocket;
-
-const pool = new SimplePool();
-
-const relays = [
-	"wss://nostr.bitcoiner.social",
-	"wss://relay.nostr.bg",
-	"wss://relay.snort.social",
-	"wss://relay.damus.io",
-	"wss://nostr.oxtr.dev",
-	"wss://nostr-pub.wellorder.net",
-	"wss://nostr.mom",
-	"wss://no.str.cr",
-	"wss://nos.lol",
-
-	"wss://relay.nostr.com.au",
-	"wss://eden.nostr.land",
-	"wss://nostr.milou.lol",
-	"wss://puravida.nostr.land",
-	"wss://nostr.wine",
-	"wss://nostr.inosta.cc",
-	"wss://atlas.nostr.land",
-	"wss://relay.orangepill.dev",
-	"wss://relay.nostrati.com",
-
-	"wss://relay.nostr.band",
-];
+import { simplePool } from '@/utils/simplePool';
+import { relays } from '@/constants/relays';
+import { publicUrl } from '@/environment/publicUrl';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -46,9 +19,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
-	const noteEvent = await pool.get(relays, {
-		ids: [ nip19Id.data ],
-	});
+	console.log(`${publicUrl}/api/event/${nip19Id.data}`);
+
+	const { event: noteEvent }: { event: Event } = await fetch(`${publicUrl}/api/event/${nip19Id.data}`).then((response) => response.json());
 
 	if (noteEvent?.id !== nip19Id.data) {
 		notFound();
@@ -61,7 +34,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		...references.flatMap((reference) => reference.profile ? [ reference.profile.pubkey ] : []),
 	];
 
-	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(pubkey => pool.get(relays, {
+	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(pubkey => simplePool.get(relays, {
 		kinds: [ EVENT_KIND_METADATA ],
 		authors: [ pubkey ],
 	})));
