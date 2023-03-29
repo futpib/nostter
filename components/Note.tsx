@@ -21,7 +21,7 @@ export function Note({
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
-	const contentChildren = useMemo(() => {
+	const { contentChildren } = useMemo(() => {
 		return renderNoteContent({
 			content,
 			references,
@@ -35,6 +35,17 @@ export function Note({
 					target="_blank"
 				>
 					@{metadata.name}
+				</Link>
+			),
+			renderLink: ({ key, link }) => (
+				<Link
+					key={key}
+					className={styles.link}
+					href={link.href}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{link.value}
 				</Link>
 			),
 		});

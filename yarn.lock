@@ -204,6 +204,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/invariant@npm:^2.2.35":
+  version: 2.2.35
+  resolution: "@types/invariant@npm:2.2.35"
+  checksum: af1b624057c89789ed0917838fea3d42bb0c101cc22b829a24d8777c678be3bc79d6ae05992a13bdf607b94731262467a2e62a809602ea1f7eea5e8c2242660d
+  languageName: node
+  linkType: hard
+
 "@types/luxon@npm:^3.2.0":
   version: 3.2.0
   resolution: "@types/luxon@npm:3.2.0"
@@ -646,6 +653,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"invariant@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "invariant@npm:2.2.4"
+  dependencies:
+    loose-envify: ^1.0.0
+  checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
+  languageName: node
+  linkType: hard
+
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -690,7 +706,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.1.0":
+"linkifyjs@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "linkifyjs@npm:4.1.1"
+  checksum: 312b75ec9bc6e7107f2b70e50682e8baccd7b94a64bf7b88cecd352032126b0d6fa7ea41394c417a178c718caa79b70e6ab3570eee7b96a12399689d666e68fb
+  languageName: node
+  linkType: hard
+
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -1024,12 +1047,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nostter@workspace:."
   dependencies:
+    "@types/invariant": ^2.2.35
     "@types/luxon": ^3.2.0
     "@types/node": 18.15.10
     "@types/react": 18.0.30
     "@types/react-dom": 18.0.11
     bufferutil: ^4.0.7
+    invariant: ^2.2.4
     isomorphic-ws: ^5.0.0
+    linkifyjs: ^4.1.1
     luxon: ^3.3.0
     next: 13.2.4
     next-seo: ^5.15.0

@@ -88,13 +88,16 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		return map;
 	}, new Map<string, PubkeyMetadata>());
 
-	const contentText = renderNoteContent({
+	const { contentChildren } = renderNoteContent({
 		content: noteEvent.content,
 		references,
 		pubkeyMetadatas,
 	}, {
 		renderProfileReference: ({ metadata }) => `@${metadata.name}`,
-	}).join('');
+		renderLink: ({ link }) => link.value,
+	});
+
+	const contentText = contentChildren.join('');
 
 	console.dir({ noteEvent, references, pubkeyMetadatas }, { depth: null });
 
