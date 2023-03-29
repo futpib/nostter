@@ -5,6 +5,13 @@ export type PubkeyMetadata = {
 	name?: string;
 	about?: string;
 	picture?: string;
+	banner?: string;
+	display_name?: string;
+	website?: string;
+	lud06?: string;
+	lud16?: string;
+	nip05?: string;
+	nip05valid?: boolean;
 };
 
 export type Reference = {
@@ -45,7 +52,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 		if (reference.profile) {
 			const metadata = pubkeyMetadatas.get(reference.profile.pubkey);
 
-			if (metadata?.name) {
+			if (metadata?.name || metadata?.display_name) {
 				contentChildren.push(renderProfileReference({
 					key: reference.text,
 					profilePointer: reference.profile,

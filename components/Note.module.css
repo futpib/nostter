@@ -15,6 +15,14 @@
 	gap: 12px;
 }
 
+.displayName {
+	font-weight: 700;
+}
+
+.name {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
 .avatar {
 	width: 48px;
 	height: 48px;
@@ -31,6 +39,10 @@
 	margin: 16px 0;
 }
 
+.createdAt {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
 .link {
-	color: rgb(var(--link-rgb));
+	color: rgb(var(--foreground-link-rgb));
 }

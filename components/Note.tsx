@@ -53,17 +53,29 @@ export function Note({
 				/>
 
 				<div
-					className={styles.name}
+					className={styles.names}
 				>
-					{pubkeyMetadata?.name ? (
-						<>
-							@{pubkeyMetadata.name}
-						</>
-					) : (
-						<>
-							{nip19.npubEncode(pubkey)}
-						</>
+					{pubkeyMetadata?.display_name && (
+						<div
+							className={styles.displayName}
+						>
+							{pubkeyMetadata?.display_name}
+						</div>
 					)}
+
+					<div
+						className={styles.name}
+					>
+						{pubkeyMetadata?.name ? (
+							<>
+								@{pubkeyMetadata.name}
+							</>
+						) : (
+							<>
+								{nip19.npubEncode(pubkey)}
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 
@@ -76,7 +88,11 @@ export function Note({
 			<div
 				className={styles.metadata}
 			>
-				{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
+				<span
+					className={styles.createdAt}
+				>
+					{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
+				</span>
 			</div>
 		</article>
 	);
