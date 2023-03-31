@@ -12,7 +12,7 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 		ids: [ id ],
 	});
 
-	if (!event) {
+	if (!event || event.id !== id) {
 		return new Response('Event not found', { status: 404 });
 	}
 

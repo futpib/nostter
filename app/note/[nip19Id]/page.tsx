@@ -4,8 +4,6 @@ import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
 import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
-import { simplePool } from '@/utils/simplePool';
-import { relays } from '@/constants/relays';
 import { publicUrl } from '@/environment/publicUrl';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
@@ -19,11 +17,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
-	console.log(`${publicUrl}/api/event/${nip19Id.data}`);
-
 	const { event: noteEvent }: { event: Event } = await fetch(`${publicUrl}/api/event/${nip19Id.data}`).then((response) => response.json());
 
-	if (noteEvent?.id !== nip19Id.data) {
+	if (!noteEvent) {
 		notFound();
 	}
 
@@ -34,12 +30,17 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		...references.flatMap((reference) => reference.profile ? [ reference.profile.pubkey ] : []),
 	];
 
-	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(pubkey => simplePool.get(relays, {
-		kinds: [ EVENT_KIND_METADATA ],
-		authors: [ pubkey ],
-	})));
+	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(async (pubkey): Promise<{ event?: Event }> => {
+		const response = await fetch(`${publicUrl}/api/pubkey/${pubkey}/metadata`);
 
-	const pubkeyMetadatas = pubkeyMetadataEvents.reduce((map, event) => {
+		if (response.status === 404) {
+			return {};
+		}
+
+		return response.json();
+	}));
+
+	const pubkeyMetadatas = pubkeyMetadataEvents.reduce((map, { event }) => {
 		if (event?.kind !== EVENT_KIND_METADATA) {
 			return map;
 		}
