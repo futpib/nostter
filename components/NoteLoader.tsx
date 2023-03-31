@@ -14,25 +14,27 @@ import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
 import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
+import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
 
 const components = {
 	Note,
 	EmbeddedNote,
+	EmbeddedNoteLink,
 };
 
-const NoteSkeleton = () => null;
+const Stub = () => null;
 
 const skeletonComponents = {
-	Note: NoteSkeleton,
+	Note: Stub,
 	EmbeddedNote: EmbeddedNoteSkeleton,
+	EmbeddedNoteLink: EmbeddedNoteSkeleton,
 };
 
-const NoteNotFound = () => null;
-const EmbeddedNoteNotFound = () => null;
-
 const notFoundComponents = {
-	Note: NoteNotFound,
-	EmbeddedNote: EmbeddedNoteNotFound,
+	// TODO
+	Note: Stub,
+	EmbeddedNote: Stub,
+	EmbeddedNoteLink: Stub,
 };
 
 export function NoteLoader({
@@ -115,6 +117,7 @@ export function NoteLoader({
 	) : (
 		(noteEvent && references) ? (
 			<Component
+				id={noteEvent.id}
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
 				contentImageLinks={contentImageLinks}

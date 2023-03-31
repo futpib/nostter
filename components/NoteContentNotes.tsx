@@ -11,7 +11,7 @@ export function NoteContentNotes({
 			{contentReferencedEvents.map((eventPointer) => (
 				<NoteLoader
 					key={eventPointer.id}
-					componentKey="EmbeddedNote"
+					componentKey="EmbeddedNoteLink"
 					eventPointer={eventPointer}
 				/>
 			))}

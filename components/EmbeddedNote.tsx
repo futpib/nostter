@@ -15,6 +15,7 @@ export function EmbeddedNote({
 	contentImageLinks,
 	contentVideoLinks,
 }: {
+	id: string;
 	pubkey: string;
 	content: string;
 	references: Reference[];
