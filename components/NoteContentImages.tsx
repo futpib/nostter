@@ -1,5 +1,5 @@
 import { ImageLink } from '@/utils/getContentImageLinks';
-import styles from './Note.module.css';
+import styles from './NoteContentImages.module.css';
 
 export function NoteContentImages({
 	contentImageLinks,
