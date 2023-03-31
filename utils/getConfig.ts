@@ -1,11 +1,6 @@
 import getConfigBase from "next/config";
 
-let {
-	VERCEL_URL,
-	NEXT_PUBLIC_VERCEL_URL,
-} = process.env;
-
-VERCEL_URL = VERCEL_URL || NEXT_PUBLIC_VERCEL_URL;
+const VERCEL_URL = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL;
 
 export type Config = {
 	publicRuntimeConfig: {
