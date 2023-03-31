@@ -37,7 +37,3 @@
 .createdAt {
 	color: rgb(var(--foreground-secondary-rgb));
 }
-
-.link {
-	color: rgb(var(--foreground-link-rgb));
-}

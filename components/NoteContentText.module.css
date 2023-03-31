@@ -2,3 +2,7 @@
 	white-space: pre-wrap;
 	word-break: break-word;
 }
+
+.link {
+	color: rgb(var(--foreground-link-rgb));
+}
