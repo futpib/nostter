@@ -1,6 +1,7 @@
 import { AddressPointer, EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ReactNode } from "react";
 import * as linkify from 'linkifyjs';
+import * as mimeTypes from 'mime-types';
 import invariant from "invariant";
 
 export type PubkeyMetadata = {
@@ -43,6 +44,7 @@ type Token = {
 	type: 'link';
 	string: string;
 	link: Link;
+	mimeType?: | string;
 };
 
 function defaultRender<T extends string | ReactNode>({ token }: {
@@ -113,10 +115,13 @@ export function renderNoteContent<T extends string | ReactNode>({
 				string: beforeLink,
 			});
 
+			const mimeType = mimeTypes.lookup(link.href);
+
 			tokens.push({
 				type: 'link',
 				string: link.value,
 				link,
+				mimeType: mimeType || undefined,
 			});
 
 			unparsedBeforeReference = afterLink.join(link.value);

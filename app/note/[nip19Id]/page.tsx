@@ -5,7 +5,6 @@ import { Note } from '@/components/Note';
 import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
 import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
 import { publicUrl } from '@/environment/publicUrl';
-import * as mimeTypes from 'mime-types';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -84,13 +83,11 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 			return [];
 		}
 
-		const mimeType = mimeTypes.lookup(token.link.href);
-
-		if (!mimeType) {
+		if (!token.mimeType) {
 			return [];
 		}
 
-		const [ type ] = mimeType.split('/');
+		const [ type ] = token.mimeType.split('/');
 
 		if (type !== 'image') {
 			return [];
