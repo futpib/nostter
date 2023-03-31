@@ -1,4 +1,5 @@
 import { relays } from "@/constants/relays";
+import { maxCacheTime, setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,7 +18,10 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 
 	const response = NextResponse.json({ event });
 
-	response.headers.set('Cache-Control', 's-maxage=216000, stale-while-revalidate');
+	setCacheControlHeader(response, {
+		immutable: true,
+		maxAge: maxCacheTime,
+	});
 
 	return response;
 }
