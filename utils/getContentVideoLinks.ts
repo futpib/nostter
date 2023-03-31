@@ -1,13 +1,8 @@
+import { ImageLink } from "./getContentImageLinks";
 import { ContentToken } from "./renderNoteContent";
 
-export type ImageLink = {
-	url: string;
-	secureUrl?: string;
-	type: string;
-};
-
-export function getContentImageLinks(contentTokens: ContentToken[]): ImageLink[] {
-	const contentImageLinks = contentTokens.flatMap(token => {
+export function getContentVideoLinks(contentTokens: ContentToken[]): ImageLink[] {
+	const contentVideoLinks = contentTokens.flatMap(token => {
 		if (token.type !== 'link') {
 			return [];
 		}
@@ -18,7 +13,7 @@ export function getContentImageLinks(contentTokens: ContentToken[]): ImageLink[]
 
 		const [ type ] = token.mimeType.split('/');
 
-		if (type !== 'image') {
+		if (type !== 'video') {
 			return [];
 		}
 
@@ -29,5 +24,5 @@ export function getContentImageLinks(contentTokens: ContentToken[]): ImageLink[]
 		} ];
 	});
 
-	return contentImageLinks;
+	return contentVideoLinks;
 }

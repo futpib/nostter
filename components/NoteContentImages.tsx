@@ -1,9 +1,10 @@
+import { ImageLink } from '@/utils/getContentImageLinks';
 import styles from './Note.module.css';
 
 export function NoteContentImages({
 	contentImageLinks,
 }: {
-	contentImageLinks: string[];
+	contentImageLinks: ImageLink[];
 }) {
 	return (
 		<>
@@ -13,7 +14,7 @@ export function NoteContentImages({
 						<img
 							key={index}
 							className={styles.contentImage}
-							src={contentImageLink}
+							src={contentImageLink.url}
 						/>
 					))}
 				</div>

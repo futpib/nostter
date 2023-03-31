@@ -9,6 +9,7 @@ import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
 import { getContentImageLinks } from '@/utils/getContentImageLinks';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
+import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -58,6 +59,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 	});
 
 	const contentImageLinks = getContentImageLinks(contentTokens);
+	const contentVideoLinks = getContentVideoLinks(contentTokens);
 
 	const contentReferencedEvents = getContentReferencedEvents(contentTokens);
 
@@ -88,7 +90,14 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				openGraph={{
 					title: pubkeyText,
 					images: contentImageLinks.map((imageLink) => ({
-						url: imageLink,
+						url: imageLink.url,
+						secureUrl: imageLink.secureUrl,
+						type: imageLink.type,
+					})),
+					videos: contentVideoLinks.map((videoLink) => ({
+						url: videoLink.url,
+						secureUrl: videoLink.secureUrl,
+						type: videoLink.type,
 					})),
 				}}
 				twitter={{
@@ -100,6 +109,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 				contentReferencedEvents={contentReferencedEvents}
 				createdAt={noteEvent.created_at}
 				references={references}

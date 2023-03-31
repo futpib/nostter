@@ -4,6 +4,7 @@ import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
+import { ImageLink } from '@/utils/getContentImageLinks';
 
 export function EmbeddedNote({
 	pubkey,
@@ -12,13 +13,15 @@ export function EmbeddedNote({
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
+	contentVideoLinks,
 }: {
 	pubkey: string;
 	content: string;
 	references: Reference[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
-	contentImageLinks: string[];
+	contentImageLinks: ImageLink[];
+	contentVideoLinks: ImageLink[];
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
@@ -68,6 +71,7 @@ export function EmbeddedNote({
 				references={references}
 				pubkeyMetadatas={pubkeyMetadatas}
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 			/>
 
 			<NoteContentImages

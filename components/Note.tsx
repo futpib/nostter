@@ -6,6 +6,7 @@ import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
+import { ImageLink } from '@/utils/getContentImageLinks';
 
 export function Note({
 	pubkey,
@@ -14,6 +15,7 @@ export function Note({
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
+	contentVideoLinks,
 	contentReferencedEvents,
 }: {
 	pubkey: string;
@@ -21,7 +23,8 @@ export function Note({
 	references: Reference[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
-	contentImageLinks: string[];
+	contentImageLinks: ImageLink[];
+	contentVideoLinks: ImageLink[];
 	contentReferencedEvents: EventPointer[];
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
@@ -70,6 +73,7 @@ export function Note({
 				references={references}
 				pubkeyMetadatas={pubkeyMetadatas}
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 			/>
 
 			<NoteContentImages

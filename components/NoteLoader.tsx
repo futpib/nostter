@@ -13,6 +13,7 @@ import { renderNoteContent } from "@/utils/renderNoteContent";
 import { getContentImageLinks } from "@/utils/getContentImageLinks";
 import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
+import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 
 const components = {
 	Note,
@@ -94,6 +95,12 @@ export function NoteLoader({
 		contentTokens,
 	]);
 
+	const contentVideoLinks = useMemo(() => {
+		return getContentVideoLinks(contentTokens);
+	}, [
+		contentTokens,
+	]);
+
 	const contentReferencedEvents = useMemo(() => {
 		return getContentReferencedEvents(contentTokens);
 	}, [
@@ -110,6 +117,7 @@ export function NoteLoader({
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 				contentReferencedEvents={contentReferencedEvents}
 				createdAt={noteEvent.created_at}
 				references={references}

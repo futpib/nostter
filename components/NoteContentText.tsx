@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
+import { ImageLink } from '@/utils/getContentImageLinks';
 
 export function NoteContentText({
 	content,
@@ -13,7 +14,8 @@ export function NoteContentText({
 	content: string;
 	references: Reference[];
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
-	contentImageLinks: string[];
+	contentImageLinks: ImageLink[];
+	contentVideoLinks: ImageLink[];
 }) {
 	const { contentChildren } = useMemo(() => {
 		return renderNoteContent<ReactNode>({
@@ -32,7 +34,7 @@ export function NoteContentText({
 					@{metadata.name}
 				</Link>
 			),
-			renderLink: ({ key, link }) => contentImageLinks.includes(link.href) ? null : (
+			renderLink: ({ key, link }) => contentImageLinks.some(imageLink => imageLink.url === link.href) ? null : (
 				<Link
 					key={key}
 					className={styles.link}
