@@ -129,6 +129,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 						url: imageLink,
 					})),
 				}}
+				twitter={{
+					cardType: contentImageLinks.length ? 'summary_large_image' : undefined,
+				}}
 			/>
 
 			<Note
