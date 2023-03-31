@@ -5,6 +5,7 @@ import { Note } from '@/components/Note';
 import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
 import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
 import { publicUrl } from '@/environment/publicUrl';
+import * as mimeTypes from 'mime-types';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -17,7 +18,13 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
-	const { event: noteEvent }: { event: Event } = await fetch(`${publicUrl}/api/event/${nip19Id.data}`).then((response) => response.json());
+	const eventResponse = await fetch(`${publicUrl}/api/event/${nip19Id.data}`);
+
+	if (eventResponse.status === 404) {
+		notFound();
+	}
+
+	const { event: noteEvent }: { event: Event } = await eventResponse.json();
 
 	if (!noteEvent) {
 		notFound();
@@ -62,13 +69,34 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		return map;
 	}, new Map<string, PubkeyMetadata>());
 
-	const { contentChildren } = renderNoteContent({
+	const { contentChildren, contentTokens } = renderNoteContent({
 		content: noteEvent.content,
 		references,
 		pubkeyMetadatas,
 	}, {
+		renderEventReference: () => '',
 		renderProfileReference: ({ metadata }) => `@${metadata.name}`,
 		renderLink: ({ link }) => link.value,
+	});
+
+	const contentImageLinks = contentTokens.flatMap(token => {
+		if (token.type !== 'link') {
+			return [];
+		}
+
+		const mimeType = mimeTypes.lookup(token.link.href);
+
+		if (!mimeType) {
+			return [];
+		}
+
+		const [ type ] = mimeType.split('/');
+
+		if (type !== 'image') {
+			return [];
+		}
+
+		return [ token.link.href ];
 	});
 
 	const contentText = contentChildren.join('');
@@ -97,6 +125,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				description={contentText}
 				openGraph={{
 					title: pubkeyText,
+					images: contentImageLinks.map((imageLink) => ({
+						url: imageLink,
+					})),
 				}}
 			/>
 

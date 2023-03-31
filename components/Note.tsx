@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon';
-import { AddressPointer, EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import styles from './Note.module.css';
 import { ReactNode, useMemo } from 'react';
 import { nip19 } from 'nostr-tools';
@@ -22,11 +21,12 @@ export function Note({
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
 	const { contentChildren } = useMemo(() => {
-		return renderNoteContent({
+		return renderNoteContent<ReactNode>({
 			content,
 			references,
 			pubkeyMetadatas,
 		}, {
+			renderEventReference: () => '',
 			renderProfileReference: ({ key, profilePointer, metadata }) => (
 				<Link
 					key={key}

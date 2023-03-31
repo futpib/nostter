@@ -17,6 +17,7 @@
     "isomorphic-ws": "^5.0.0",
     "linkifyjs": "^4.1.1",
     "luxon": "^3.3.0",
+    "mime-types": "^2.1.35",
     "next": "13.2.4",
     "next-seo": "^5.15.0",
     "nostr-tools": "^1.8.1",
@@ -29,6 +30,7 @@
   "packageManager": "yarn@3.5.0",
   "devDependencies": {
     "@types/invariant": "^2.2.35",
-    "@types/luxon": "^3.2.0"
+    "@types/luxon": "^3.2.0",
+    "@types/mime-types": "^2.1.1"
   }
 }

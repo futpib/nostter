@@ -37,11 +37,19 @@ type Token = {
 	string: string;
 } | {
 	type: 'reference';
+	string: string;
 	reference: Reference;
 } | {
 	type: 'link';
+	string: string;
 	link: Link;
 };
+
+function defaultRender<T extends string | ReactNode>({ token }: {
+	token: Token;
+}): T {
+	return token.string as T;
+}
 
 export function renderNoteContent<T extends string | ReactNode>({
 	content,
@@ -52,16 +60,26 @@ export function renderNoteContent<T extends string | ReactNode>({
 	references: Reference[];
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }, {
-	renderProfileReference,
-	renderLink,
+	renderEventReference = defaultRender,
+	renderProfileReference = defaultRender,
+	renderLink = defaultRender,
 }: {
-	renderProfileReference: (props: {
+	renderEventReference?: (props: {
 		key: number | string;
+		token: Token;
+		eventPointer: EventPointer;
+	}) => T;
+
+	renderProfileReference?: (props: {
+		key: number | string;
+		token: Token;
 		profilePointer: ProfilePointer;
 		metadata: PubkeyMetadata;
 	}) => T;
-	renderLink: (props: {
+
+	renderLink?: (props: {
 		key: number | string;
+		token: Token;
 		link: Link;
 	}) => T;
 }): {
@@ -97,6 +115,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 
 			tokens.push({
 				type: 'link',
+				string: link.value,
 				link,
 			});
 
@@ -111,6 +130,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 
 		tokens.push({
 			type: 'reference',
+			string: reference.text,
 			reference,
 		});
 
@@ -129,6 +149,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 
 			contentChildren.push(renderLink({
 				key: link.start,
+				token,
 				link,
 			}));
 		} else if (token.type === 'reference') {
@@ -144,12 +165,19 @@ export function renderNoteContent<T extends string | ReactNode>({
 				if (metadata?.name || metadata?.display_name) {
 					contentChildren.push(renderProfileReference({
 						key: reference.text,
+						token,
 						profilePointer: reference.profile,
 						metadata,
 					}));
 				} else {
 					contentChildren.push(reference.text as T);
 				}
+			} else if (reference.event) {
+				contentChildren.push(renderEventReference({
+					key: reference.text,
+					token,
+					eventPointer: reference.event,
+				}));
 			} else {
 				contentChildren.push(reference.text as T);
 			}

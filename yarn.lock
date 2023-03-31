@@ -218,6 +218,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mime-types@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@types/mime-types@npm:2.1.1"
+  checksum: 106b5d556add46446a579ad25ff15d6b421851790d887edcad558c90c1e64b1defc72bfbaf4b08f208916e21d9cc45cdb951d77be51268b18221544cfe054a3c
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:18.15.10":
   version: 18.15.10
   resolution: "@types/node@npm:18.15.10"
@@ -771,6 +778,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mime-db@npm:1.52.0":
+  version: 1.52.0
+  resolution: "mime-db@npm:1.52.0"
+  checksum: 0d99a03585f8b39d68182803b12ac601d9c01abfa28ec56204fa330bc9f3d1c5e14beb049bafadb3dbdf646dfb94b87e24d4ec7b31b7279ef906a8ea9b6a513f
+  languageName: node
+  linkType: hard
+
+"mime-types@npm:^2.1.35":
+  version: 2.1.35
+  resolution: "mime-types@npm:2.1.35"
+  dependencies:
+    mime-db: 1.52.0
+  checksum: 89a5b7f1def9f3af5dad6496c5ed50191ae4331cc5389d7c521c8ad28d5fdad2d06fd81baf38fed813dc4e46bb55c8145bb0ff406330818c9cf712fb2e9b3836
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^3.1.1":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
@@ -1049,6 +1072,7 @@ __metadata:
   dependencies:
     "@types/invariant": ^2.2.35
     "@types/luxon": ^3.2.0
+    "@types/mime-types": ^2.1.1
     "@types/node": 18.15.10
     "@types/react": 18.0.30
     "@types/react-dom": 18.0.11
@@ -1057,6 +1081,7 @@ __metadata:
     isomorphic-ws: ^5.0.0
     linkifyjs: ^4.1.1
     luxon: ^3.3.0
+    mime-types: ^2.1.35
     next: 13.2.4
     next-seo: ^5.15.0
     nostr-tools: ^1.8.1
