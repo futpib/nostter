@@ -19,6 +19,7 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 	const response = NextResponse.json({ event });
 
 	setCacheControlHeader(response, {
+		public: true,
 		immutable: true,
 		maxAge: maxCacheTime,
 	});
