@@ -3,13 +3,13 @@ import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { renderNoteContent } from '@/utils/renderNoteContent';
-import { publicUrl } from '@/environment/publicUrl';
 import { getPubkeyMetadataRequests } from '@/utils/getPubkeyMetadataRequests';
 import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
 import { getContentImageLinks } from '@/utils/getContentImageLinks';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
 import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
+import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -21,6 +21,8 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 	if (!nip19Id) {
 		notFound();
 	}
+
+	const { publicUrl } = getPublicRuntimeConfig();
 
 	const eventResponse = await fetch(`${publicUrl}/api/event/${nip19Id.data}`);
 

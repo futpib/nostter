@@ -8,10 +8,11 @@
 	padding: 12px;
 	overflow: hidden;
 	cursor: pointer;
+	transition: background 0.2s ease;
 }
 
 .embeddedNote:hover {
-	background: rgb(var(--background-hover-rgb));
+	background: rgba(var(--background-hover-rgba));
 }
 
 .header {

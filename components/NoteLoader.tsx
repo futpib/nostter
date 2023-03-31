@@ -3,10 +3,9 @@
 import { Note } from "./Note";
 import { EventPointer } from "nostr-tools/lib/nip19";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { publicUrl } from "@/environment/publicUrl";
 import { EmbeddedNote } from "./EmbeddedNote";
 import { getPubkeyMetadataRequests } from "@/utils/getPubkeyMetadataRequests";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Event, parseReferences } from "nostr-tools";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { renderNoteContent } from "@/utils/renderNoteContent";
@@ -14,6 +13,7 @@ import { getContentImageLinks } from "@/utils/getContentImageLinks";
 import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
 import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
+import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 
 const components = {
 	Note,
@@ -42,6 +42,7 @@ export function NoteLoader({
 	componentKey: keyof typeof components;
 	eventPointer: EventPointer;
 }) {
+	const { publicUrl } = getPublicRuntimeConfig();
 	const eventUrl = `${publicUrl}/api/event/${eventPointer.id}`;
 	const eventQuery = useQuery([ eventUrl ], async (): Promise<{ event?: Event }> => {
 		const response = await fetch(eventUrl);
