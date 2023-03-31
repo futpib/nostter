@@ -8,15 +8,16 @@ import { getPubkeyMetadataRequests } from '@/utils/getPubkeyMetadataRequests';
 import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
 import { getContentImageLinks } from '@/utils/getContentImageLinks';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
+import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
 		notFound();
 	}
 
-	const nip19Id = nip19.decode(nip19IdParam);
+	const nip19Id = nip19DecodeNote(nip19.decode(nip19IdParam));
 
-	if (nip19Id.type !== "note" || typeof nip19Id.data !== 'string') {
+	if (!nip19Id) {
 		notFound();
 	}
 

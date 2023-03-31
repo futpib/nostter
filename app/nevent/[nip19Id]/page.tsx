@@ -1,3 +1,4 @@
+import { nip19DecodeNEventEventReference } from '@/utils/nip19DecodeNEventEventReference';
 import { notFound, redirect } from 'next/navigation';
 import { nip19 } from 'nostr-tools';
 
@@ -6,14 +7,9 @@ export default async function EventPage({ params: { nip19Id: nip19IdParam } }: {
 		notFound();
 	}
 
-	const nip19Id = nip19.decode(nip19IdParam);
+	const nip19Id = nip19DecodeNEventEventReference(nip19.decode(nip19IdParam));
 
-	if (
-		nip19Id.type !== "nevent"
-		|| typeof nip19Id.data !== "object"
-		|| !('id' in nip19Id.data)
-		|| typeof nip19Id.data.id !== "string"
-	) {
+	if (!nip19Id) {
 		notFound();
 	}
 
