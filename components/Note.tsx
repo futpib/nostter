@@ -11,12 +11,14 @@ export function Note({
 	references,
 	createdAt,
 	pubkeyMetadatas,
+	contentImageLinks,
 }: {
 	pubkey: string;
 	content: string;
 	references: Reference[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
+	contentImageLinks: string[];
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
@@ -37,7 +39,7 @@ export function Note({
 					@{metadata.name}
 				</Link>
 			),
-			renderLink: ({ key, link }) => (
+			renderLink: ({ key, link }) => contentImageLinks.includes(link.href) ? null : (
 				<Link
 					key={key}
 					className={styles.link}
@@ -95,6 +97,18 @@ export function Note({
 			>
 				{contentChildren}
 			</div>
+
+			{contentImageLinks.length > 0 && (
+				<div className={styles.contentImages}>
+					{contentImageLinks.map((contentImageLink, index) => (
+						<img
+							key={index}
+							className={styles.contentImage}
+							src={contentImageLink}
+						/>
+					))}
+				</div>
+			)}
 
 			<div
 				className={styles.metadata}

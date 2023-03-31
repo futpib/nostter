@@ -134,6 +134,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 			<Note
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
+				contentImageLinks={contentImageLinks}
 				createdAt={noteEvent.created_at}
 				references={references}
 				pubkeyMetadatas={pubkeyMetadatas}

@@ -35,6 +35,18 @@
 	word-break: break-word;
 }
 
+.contentImages {
+	border: 1px solid rgb(var(--border-rgb));
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.contentImage {
+	display: block;
+	max-width: 100%;
+	object-fit: cover;
+}
+
 .metadata {
 	margin: 16px 0;
 }
