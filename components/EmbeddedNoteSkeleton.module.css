@@ -1,0 +1,6 @@
+
+.embeddedNoteSkeleton {
+	border: 1px solid rgb(var(--border-rgb));
+	border-radius: 16px;
+	overflow: hidden;
+}

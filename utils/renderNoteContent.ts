@@ -33,7 +33,7 @@ type Link = {
 	end: number;
 };
 
-type Token = {
+export type ContentToken = {
 	type: 'string';
 	string: string;
 } | {
@@ -48,7 +48,7 @@ type Token = {
 };
 
 function defaultRender<T extends string | ReactNode>({ token }: {
-	token: Token;
+	token: ContentToken;
 }): T {
 	return token.string as T;
 }
@@ -68,27 +68,27 @@ export function renderNoteContent<T extends string | ReactNode>({
 }: {
 	renderEventReference?: (props: {
 		key: number | string;
-		token: Token;
+		token: ContentToken;
 		eventPointer: EventPointer;
 	}) => T;
 
 	renderProfileReference?: (props: {
 		key: number | string;
-		token: Token;
+		token: ContentToken;
 		profilePointer: ProfilePointer;
 		metadata: PubkeyMetadata;
 	}) => T;
 
 	renderLink?: (props: {
 		key: number | string;
-		token: Token;
+		token: ContentToken;
 		link: Link;
 	}) => T;
-}): {
-	contentTokens: Token[];
+} = {}): {
+	contentTokens: ContentToken[];
 	contentChildren: T[];
 } {
-	const tokens: Token[] = [];
+	const tokens: ContentToken[] = [];
 
 	const fakeFinalReference = {
 		text: Math.random().toString(),

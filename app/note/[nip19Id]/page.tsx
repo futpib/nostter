@@ -2,9 +2,12 @@ import { notFound } from 'next/navigation';
 import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
-import { EVENT_KIND_METADATA } from '@/constants/eventKinds';
-import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
+import { renderNoteContent } from '@/utils/renderNoteContent';
 import { publicUrl } from '@/environment/publicUrl';
+import { getPubkeyMetadataRequests } from '@/utils/getPubkeyMetadataRequests';
+import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
+import { getContentImageLinks } from '@/utils/getContentImageLinks';
+import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -29,15 +32,8 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		notFound();
 	}
 
-	const references = parseReferences(noteEvent);
-
-	const referencedPubkeys = [
-		noteEvent.pubkey,
-		...references.flatMap((reference) => reference.profile ? [ reference.profile.pubkey ] : []),
-	];
-
-	const pubkeyMetadataEvents = await Promise.all(referencedPubkeys.map(async (pubkey): Promise<{ event?: Event }> => {
-		const response = await fetch(`${publicUrl}/api/pubkey/${pubkey}/metadata`);
+	const pubkeyMetadataEventResponses = await Promise.all(getPubkeyMetadataRequests(noteEvent).map(async (request): Promise<{ event?: Event }> => {
+		const response = await fetch(request);
 
 		if (response.status === 404) {
 			return {};
@@ -46,27 +42,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		return response.json();
 	}));
 
-	const pubkeyMetadatas = pubkeyMetadataEvents.reduce((map, { event }) => {
-		if (event?.kind !== EVENT_KIND_METADATA) {
-			return map;
-		}
+	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventResponses.flatMap(r => r.event ? [ r.event ] : []));
 
-		let pubkeyMetadata: PubkeyMetadata = {};
-
-		try {
-			pubkeyMetadata = JSON.parse(event.content);
-		} catch (error) {
-			if (error instanceof SyntaxError) {
-				console.error('Failed to parse metadata', event);
-			} else {
-				throw error;
-			}
-		}
-
-		map.set(event.pubkey, pubkeyMetadata);
-
-		return map;
-	}, new Map<string, PubkeyMetadata>());
+	const references = parseReferences(noteEvent);
 
 	const { contentChildren, contentTokens } = renderNoteContent({
 		content: noteEvent.content,
@@ -78,23 +56,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		renderLink: ({ link }) => link.value,
 	});
 
-	const contentImageLinks = contentTokens.flatMap(token => {
-		if (token.type !== 'link') {
-			return [];
-		}
+	const contentImageLinks = getContentImageLinks(contentTokens);
 
-		if (!token.mimeType) {
-			return [];
-		}
-
-		const [ type ] = token.mimeType.split('/');
-
-		if (type !== 'image') {
-			return [];
-		}
-
-		return [ token.link.href ];
-	});
+	const contentReferencedEvents = getContentReferencedEvents(contentTokens);
 
 	const contentText = contentChildren.join('');
 
@@ -135,6 +99,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
 				contentImageLinks={contentImageLinks}
+				contentReferencedEvents={contentReferencedEvents}
 				createdAt={noteEvent.created_at}
 				references={references}
 				pubkeyMetadatas={pubkeyMetadatas}

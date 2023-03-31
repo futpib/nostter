@@ -1,0 +1,37 @@
+
+.embeddedNote {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	border: 1px solid rgb(var(--border-rgb));
+	border-radius: 16px;
+	padding: 12px;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.embeddedNote:hover {
+	background: rgb(var(--background-hover-rgb));
+}
+
+.header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 4px;
+}
+
+.avatar {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.name {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.createdAt {
+	color: rgb(var(--foreground-secondary-rgb));
+}

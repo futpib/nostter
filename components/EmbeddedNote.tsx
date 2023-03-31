@@ -1,20 +1,17 @@
 import { DateTime } from 'luxon';
-import styles from './Note.module.css';
+import styles from './EmbeddedNote.module.css';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
-import { EventPointer } from 'nostr-tools/lib/nip19';
-import { NoteContentNotes } from './NoteContentNotes';
 
-export function Note({
+export function EmbeddedNote({
 	pubkey,
 	content,
 	references,
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
-	contentReferencedEvents,
 }: {
 	pubkey: string;
 	content: string;
@@ -22,13 +19,12 @@ export function Note({
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: string[];
-	contentReferencedEvents: EventPointer[];
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
 	return (
 		<article
-			className={styles.note}
+			className={styles.embeddedNote}
 		>
 			<div
 				className={styles.header}
@@ -38,31 +34,33 @@ export function Note({
 					src={pubkeyMetadata?.picture}
 				/>
 
-				<div
-					className={styles.names}
-				>
-					{pubkeyMetadata?.display_name && (
-						<div
-							className={styles.displayName}
-						>
-							{pubkeyMetadata?.display_name}
-						</div>
-					)}
-
+				{pubkeyMetadata?.display_name && (
 					<div
-						className={styles.name}
+						className={styles.displayName}
 					>
-						{pubkeyMetadata?.name ? (
-							<>
-								@{pubkeyMetadata.name}
-							</>
-						) : (
-							<>
-								{nip19.npubEncode(pubkey)}
-							</>
-						)}
+						{pubkeyMetadata?.display_name}
 					</div>
+				)}
+
+				<div
+					className={styles.name}
+				>
+					{pubkeyMetadata?.name ? (
+						<>
+							@{pubkeyMetadata.name}
+						</>
+					) : (
+						<>
+							{nip19.npubEncode(pubkey)}
+						</>
+					)}
 				</div>
+
+				<span
+					className={styles.createdAt}
+				>
+					{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
+				</span>
 			</div>
 
 			<NoteContentText
@@ -75,20 +73,6 @@ export function Note({
 			<NoteContentImages
 				contentImageLinks={contentImageLinks}
 			/>
-
-			<NoteContentNotes
-				contentReferencedEvents={contentReferencedEvents}
-			/>
-
-			<div
-				className={styles.metadata}
-			>
-				<span
-					className={styles.createdAt}
-				>
-					{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
-				</span>
-			</div>
 		</article>
 	);
 }

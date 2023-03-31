@@ -5,6 +5,7 @@
 
 	--foreground-rgb: 0, 0, 0;
 	--background-rgb: 255, 255, 255;
+	--background-hover-rgba: 0, 0, 0, 0.03;
 	--foreground-link-rgb: 29, 155, 240;
 	--foreground-secondary-rgb: 83, 100, 113;
 	--border-rgb: 207, 217, 222;
@@ -14,6 +15,7 @@
 	:root {
 		--foreground-rgb: 255, 255, 255;
 		--background-rgb: 0, 0, 0;
+		--background-hover-rgba: 255, 255, 255, 0.03;
 		--foreground-link-rgb: 29, 155, 240;
 		--foreground-secondary-rgb: 113, 118, 123;
 		--border-rgb: 47, 51, 54;
