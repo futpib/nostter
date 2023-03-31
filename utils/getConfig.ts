@@ -1,6 +1,7 @@
-import getConfigBase from "next/config";
+import getConfigBase from 'next/config';
+import { PartialDeep } from 'type-fest';
 
-const VERCEL_URL = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL;
+const { VERCEL_URL } = process.env;
 
 export type Config = {
 	publicRuntimeConfig: {
@@ -9,15 +10,15 @@ export type Config = {
 };
 
 export function getConfig(): Config {
-	const config = getConfigBase();
+	const config: undefined | PartialDeep<Config> = getConfigBase();
 
-	if (config) {
-		return config;
-	}
+	const browserUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
 
 	return {
+		...config,
 		publicRuntimeConfig: {
-			publicUrl: VERCEL_URL ? `https://${VERCEL_URL}` : 'http://localhost:3002',
+			...config?.publicRuntimeConfig,
+			publicUrl: VERCEL_URL ? `https://${VERCEL_URL}` : (browserUrl ?? 'http://localhost:3002'),
 		},
 	};
 }

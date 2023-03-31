@@ -1,4 +1,4 @@
-const VERCEL_URL = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL;
+const { VERCEL_URL } = process.env;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
