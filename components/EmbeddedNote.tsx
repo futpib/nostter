@@ -16,6 +16,7 @@ export function EmbeddedNote({
 	contentImageLinks,
 	contentVideoLinks,
 	onClick,
+	onAuxClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -26,6 +27,7 @@ export function EmbeddedNote({
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
+	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
@@ -33,6 +35,7 @@ export function EmbeddedNote({
 		<article
 			className={styles.embeddedNote}
 			onClick={onClick}
+			onAuxClick={onAuxClick}
 		>
 			<div
 				className={styles.header}

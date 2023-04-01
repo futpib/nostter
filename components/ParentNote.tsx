@@ -20,6 +20,7 @@ export function ParentNote({
 	contentVideoLinks,
 	contentReferencedEvents,
 	onClick,
+	onAuxClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -31,6 +32,7 @@ export function ParentNote({
 	contentVideoLinks: ImageLink[];
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
+	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const { handleReflow } = useScrollKeeper();
 
@@ -41,6 +43,7 @@ export function ParentNote({
 			ref={handleReflow}
 			className={styles.parentNote}
 			onClick={onClick}
+			onAuxClick={onAuxClick}
 		>
 			<div className={styles.avatarColumn}>
 				<img

@@ -19,6 +19,7 @@ export function ChildNote({
 	contentVideoLinks,
 	contentReferencedEvents,
 	onClick,
+	onAuxClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -30,6 +31,7 @@ export function ChildNote({
 	contentVideoLinks: ImageLink[];
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
+	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
@@ -37,6 +39,7 @@ export function ChildNote({
 		<article
 			className={styles.childNote}
 			onClick={onClick}
+			onAuxClick={onAuxClick}
 		>
 			<div className={styles.avatarColumn}>
 				<img

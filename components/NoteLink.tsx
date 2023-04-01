@@ -1,4 +1,4 @@
-import { ComponentProps, useCallback } from "react";
+import { ComponentProps, MouseEvent, useCallback } from "react";
 import { Note } from "./Note";
 import { ParentNote } from "./ParentNote";
 import { EmbeddedNote } from "./EmbeddedNote";
@@ -30,10 +30,19 @@ export function NoteLink<K extends ComponentKey>({
 		router.push(href);
 	}, [ router, href ]);
 
+	const handleAuxClick = useCallback((event: MouseEvent) => {
+		if (event.button !== 1) {
+			return;
+		}
+
+		window.open(href, "_blank");
+	}, [ router, href ]);
+
 	return (
 		<Component
 			{...props}
 			onClick={handleClick}
+			onAuxClick={handleAuxClick}
 		/>
 	);
 }

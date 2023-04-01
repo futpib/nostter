@@ -9,11 +9,6 @@ export function NoteContentImages({
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 }) {
-	console.log({
-		contentImageLinks,
-		contentVideoLinks,
-	});
-
 	return (
 		<>
 			{(contentImageLinks.length > 0 || contentVideoLinks.length > 0) && (
