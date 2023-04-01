@@ -23,7 +23,7 @@ export function NoteChildNotes({
 			{childNotes.flatMap((event) => event ? (
 				<NoteLoader
 					key={event.id}
-					componentKey="ChildNote"
+					componentKey="ChildNoteLink"
 					eventPointer={event}
 				/>
 			) : [])}

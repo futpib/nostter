@@ -7,7 +7,6 @@ import { NoteContentText } from './NoteContentText';
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
-import { useScrollKeeper } from '@/hooks/useScrollKeeper';
 
 export function ChildNote({
 	pubkey,
@@ -85,6 +84,7 @@ export function ChildNote({
 
 				<NoteContentImages
 					contentImageLinks={contentImageLinks}
+					contentVideoLinks={contentVideoLinks}
 				/>
 
 				<NoteContentNotes

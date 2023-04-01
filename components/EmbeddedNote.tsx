@@ -77,6 +77,7 @@ export function EmbeddedNote({
 
 			<NoteContentImages
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 			/>
 		</article>
 	);

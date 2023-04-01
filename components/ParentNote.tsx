@@ -92,6 +92,7 @@ export function ParentNote({
 
 				<NoteContentImages
 					contentImageLinks={contentImageLinks}
+					contentVideoLinks={contentVideoLinks}
 				/>
 
 				<NoteContentNotes

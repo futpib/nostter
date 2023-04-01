@@ -10,6 +10,7 @@ export function NoteContentText({
 	references,
 	pubkeyMetadatas,
 	contentImageLinks,
+	contentVideoLinks,
 }: {
 	content: string;
 	references: Reference[];
@@ -34,7 +35,10 @@ export function NoteContentText({
 					@{metadata.name}
 				</Link>
 			),
-			renderLink: ({ key, link }) => contentImageLinks.some(imageLink => imageLink.url === link.href) ? null : (
+			renderLink: ({ key, link }) => (
+				contentImageLinks.some(imageLink => imageLink.url === link.href)
+				|| contentVideoLinks.some(videoLink => videoLink.url === link.href)
+			)? null : (
 				<Link
 					key={key}
 					className={styles.link}

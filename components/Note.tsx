@@ -79,6 +79,7 @@ export function Note({
 
 			<NoteContentImages
 				contentImageLinks={contentImageLinks}
+				contentVideoLinks={contentVideoLinks}
 			/>
 
 			<NoteContentNotes

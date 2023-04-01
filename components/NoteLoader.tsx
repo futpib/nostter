@@ -18,6 +18,7 @@ import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
 import { ParentNote } from "./ParentNote";
 import { ParentNoteLink } from "./ParentNoteLink";
 import { ChildNote } from "./ChildNote";
+import { ChildNoteLink } from "./ChildNoteLink";
 
 const components = {
 	Note,
@@ -26,6 +27,7 @@ const components = {
 	EmbeddedNote,
 	EmbeddedNoteLink,
 	ChildNote,
+	ChildNoteLink,
 };
 
 const Stub = () => null;
@@ -37,6 +39,7 @@ const skeletonComponents = {
 	EmbeddedNote: EmbeddedNoteSkeleton,
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
 	ChildNote: Stub,
+	ChildNoteLink: Stub,
 };
 
 const notFoundComponents = {
@@ -47,6 +50,7 @@ const notFoundComponents = {
 	EmbeddedNote: Stub,
 	EmbeddedNoteLink: Stub,
 	ChildNote: Stub,
+	ChildNoteLink: Stub,
 };
 
 export function NoteLoader({
