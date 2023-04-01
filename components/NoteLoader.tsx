@@ -17,6 +17,7 @@ import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
 import { ParentNote } from "./ParentNote";
 import { ParentNoteLink } from "./ParentNoteLink";
+import { ChildNote } from "./ChildNote";
 
 const components = {
 	Note,
@@ -24,6 +25,7 @@ const components = {
 	ParentNoteLink,
 	EmbeddedNote,
 	EmbeddedNoteLink,
+	ChildNote,
 };
 
 const Stub = () => null;
@@ -34,6 +36,7 @@ const skeletonComponents = {
 	ParentNoteLink: Stub,
 	EmbeddedNote: EmbeddedNoteSkeleton,
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
+	ChildNote: Stub,
 };
 
 const notFoundComponents = {
@@ -43,6 +46,7 @@ const notFoundComponents = {
 	ParentNoteLink: Stub,
 	EmbeddedNote: Stub,
 	EmbeddedNoteLink: Stub,
+	ChildNote: Stub,
 };
 
 export function NoteLoader({

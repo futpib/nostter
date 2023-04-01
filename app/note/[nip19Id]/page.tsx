@@ -11,6 +11,7 @@ import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
 import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
 import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 import { NoteParentNotes } from '@/components/NoteParentNotes';
+import { NoteChildNotes } from '@/components/NoteChildNotes';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -128,6 +129,10 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 					createdAt={noteEvent.created_at}
 					references={references}
 					pubkeyMetadatas={pubkeyMetadatas}
+				/>
+
+				<NoteChildNotes
+					id={noteEvent.id}
 				/>
 			</div>
 		</>
