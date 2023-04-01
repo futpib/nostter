@@ -46,7 +46,14 @@ export function NoteContentImages({
 
 		const contentMediaLinksLength = contentMediaLinks.length;
 
-		if (contentMediaLinksLength === 2) {
+		if (contentMediaLinksLength === 1) {
+			const contentMediaLink = contentMediaLinks[0];
+			contentMediaLink.size = 'full';
+			contentMediaLink.style.gridColumnStart = 1;
+			contentMediaLink.style.gridColumnEnd = 3;
+			contentMediaLink.style.gridRowStart = 1;
+			contentMediaLink.style.gridRowEnd = 3;
+		} else if (contentMediaLinksLength === 2) {
 			for (let index = 0; index < contentMediaLinksLength; index++) {
 				const contentMediaLink = contentMediaLinks[index];
 				contentMediaLink.size = 'half';
