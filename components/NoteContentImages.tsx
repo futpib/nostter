@@ -1,5 +1,6 @@
 import { ImageLink } from '@/utils/getContentImageLinks';
 import styles from './NoteContentImages.module.css';
+import { NoteContentVideo } from './NoteContentVideo';
 
 export function NoteContentImages({
 	contentImageLinks,
@@ -18,10 +19,8 @@ export function NoteContentImages({
 			{(contentImageLinks.length > 0 || contentVideoLinks.length > 0) && (
 				<div className={styles.contentImages}>
 					{contentVideoLinks.map(contentVideoLink => (
-						<video
-							controls
+						<NoteContentVideo
 							key={contentVideoLink.url}
-							className={styles.contentVideo}
 							src={contentVideoLink.url}
 						/>
 					))}

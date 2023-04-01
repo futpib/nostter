@@ -5,6 +5,7 @@ import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { ImageLink } from '@/utils/getContentImageLinks';
+import { MouseEvent } from 'react';
 
 export function EmbeddedNote({
 	pubkey,
@@ -14,6 +15,7 @@ export function EmbeddedNote({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	onClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -23,12 +25,14 @@ export function EmbeddedNote({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
 	return (
 		<article
 			className={styles.embeddedNote}
+			onClick={onClick}
 		>
 			<div
 				className={styles.header}

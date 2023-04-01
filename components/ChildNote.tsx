@@ -7,6 +7,7 @@ import { NoteContentText } from './NoteContentText';
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
+import { MouseEvent } from 'react';
 
 export function ChildNote({
 	pubkey,
@@ -17,6 +18,7 @@ export function ChildNote({
 	contentImageLinks,
 	contentVideoLinks,
 	contentReferencedEvents,
+	onClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -27,12 +29,14 @@ export function ChildNote({
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	contentReferencedEvents: EventPointer[];
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
 	return (
 		<article
 			className={styles.childNote}
+			onClick={onClick}
 		>
 			<div className={styles.avatarColumn}>
 				<img

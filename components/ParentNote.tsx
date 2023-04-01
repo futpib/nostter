@@ -8,6 +8,7 @@ import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { useScrollKeeper } from '@/hooks/useScrollKeeper';
+import { MouseEvent } from 'react';
 
 export function ParentNote({
 	pubkey,
@@ -18,6 +19,7 @@ export function ParentNote({
 	contentImageLinks,
 	contentVideoLinks,
 	contentReferencedEvents,
+	onClick,
 }: {
 	id: string;
 	pubkey: string;
@@ -28,6 +30,7 @@ export function ParentNote({
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	contentReferencedEvents: EventPointer[];
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
 	const { handleReflow } = useScrollKeeper();
 
@@ -37,6 +40,7 @@ export function ParentNote({
 		<article
 			ref={handleReflow}
 			className={styles.parentNote}
+			onClick={onClick}
 		>
 			<div className={styles.avatarColumn}>
 				<img
