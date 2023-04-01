@@ -83,6 +83,7 @@ export function EmbeddedNote({
 			/>
 
 			<NoteContentImages
+				embedded
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
 			/>

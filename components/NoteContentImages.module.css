@@ -4,13 +4,18 @@
 	overflow: hidden;
 }
 
-.contentImage {
-	display: block;
-	max-width: 100%;
-	object-fit: cover;
+.contentImagesEmbedded {
+	border: none;
+	border-radius: 0;
+	margin-left: -16px;
+	margin-right: -16px;
 }
 
-.contentVideo {
+.contentImagesEmbedded:last-child {
+	margin-bottom: -16px;
+}
+
+.contentImage {
 	display: block;
 	max-width: 100%;
 	object-fit: cover;
