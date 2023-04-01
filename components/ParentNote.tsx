@@ -19,6 +19,7 @@ export function ParentNote({
 	contentVideoLinks,
 	contentReferencedEvents,
 }: {
+	id: string;
 	pubkey: string;
 	content: string;
 	references: Reference[];

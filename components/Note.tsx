@@ -18,6 +18,7 @@ export function Note({
 	contentVideoLinks,
 	contentReferencedEvents,
 }: {
+	id: string;
 	pubkey: string;
 	content: string;
 	references: Reference[];

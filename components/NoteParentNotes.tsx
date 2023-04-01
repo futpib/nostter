@@ -60,7 +60,7 @@ export function NoteParentNotes({
 			{parents.flatMap((eventPointer) => eventPointer ? (
 				<NoteLoader
 					key={eventPointer.id}
-					componentKey="ParentNote"
+					componentKey="ParentNoteLink"
 					eventPointer={eventPointer}
 					onEventQuerySuccess={handleEventQuerySuccess}
 				/>

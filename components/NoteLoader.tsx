@@ -16,10 +16,12 @@ import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
 import { ParentNote } from "./ParentNote";
+import { ParentNoteLink } from "./ParentNoteLink";
 
 const components = {
 	Note,
 	ParentNote,
+	ParentNoteLink,
 	EmbeddedNote,
 	EmbeddedNoteLink,
 };
@@ -29,6 +31,7 @@ const Stub = () => null;
 const skeletonComponents = {
 	Note: Stub,
 	ParentNote: Stub,
+	ParentNoteLink: Stub,
 	EmbeddedNote: EmbeddedNoteSkeleton,
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
 };
@@ -37,6 +40,7 @@ const notFoundComponents = {
 	// TODO
 	Note: Stub,
 	ParentNote: Stub,
+	ParentNoteLink: Stub,
 	EmbeddedNote: Stub,
 	EmbeddedNoteLink: Stub,
 };
