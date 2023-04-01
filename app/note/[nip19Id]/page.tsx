@@ -117,18 +117,19 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				mentions={thread.mentions}
 			/>
 
-			<Note
-				pubkey={noteEvent.pubkey}
-				content={noteEvent.content}
-				contentImageLinks={contentImageLinks}
-				contentVideoLinks={contentVideoLinks}
-				contentReferencedEvents={contentReferencedEvents}
-				createdAt={noteEvent.created_at}
-				references={references}
-				pubkeyMetadatas={pubkeyMetadatas}
-			/>
-
-			<div style={{ height: '100vh' }} />
+			<div style={{ minHeight: '100vh' }}>
+				<Note
+					id={noteEvent.id}
+					pubkey={noteEvent.pubkey}
+					content={noteEvent.content}
+					contentImageLinks={contentImageLinks}
+					contentVideoLinks={contentVideoLinks}
+					contentReferencedEvents={contentReferencedEvents}
+					createdAt={noteEvent.created_at}
+					references={references}
+					pubkeyMetadatas={pubkeyMetadatas}
+				/>
+			</div>
 		</>
 	);
 }

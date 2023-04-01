@@ -47,11 +47,11 @@ export function NoteParentNotes({
 			return;
 		}
 
-		const { reply } = nip10.parse(event);
+		const { reply, root } = nip10.parse(event);
 
 		setTreeLoadedEventEdges((tree) => ({
 			...tree,
-			[event.id]: reply?.id,
+			[event.id]: (reply ?? root)?.id,
 		}));
 	}, []);
 
