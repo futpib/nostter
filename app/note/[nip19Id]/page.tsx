@@ -110,14 +110,12 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				}}
 			/>
 
-			{Math.random() < 0 && (
-				<NoteParentNotes
-					id={noteEvent.id}
-					root={thread.root}
-					reply={thread.reply}
-					mentions={thread.mentions}
-				/>
-			)}
+			<NoteParentNotes
+				id={noteEvent.id}
+				root={thread.root}
+				reply={thread.reply}
+				mentions={thread.mentions}
+			/>
 
 			<Note
 				pubkey={noteEvent.pubkey}

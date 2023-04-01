@@ -4,6 +4,7 @@ import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteLoader } from './NoteLoader';
 import { useCallback, useMemo, useState } from 'react';
 import { Event, nip10 } from 'nostr-tools';
+import { ScrollKeeper } from './ScrollKepeer';
 
 export function NoteParentNotes({
 	id,
@@ -16,7 +17,7 @@ export function NoteParentNotes({
 	reply: undefined | EventPointer;
 	mentions: EventPointer[];
 }) {
-	const treeLeafEdge = useMemo(() => ({ [id]: reply?.id }), [ id, reply ]);
+	const treeLeafEdge = useMemo(() => ({ [id]: (reply ?? root)?.id }), [ id, reply, root ]);
 	const [treeLoadedEventEdges, setTreeLoadedEventEdges] = useState<Record<string, undefined | string>>({});
 	const parents = useMemo(() => {
 		const edges = {
@@ -55,7 +56,7 @@ export function NoteParentNotes({
 	}, []);
 
 	return (
-		<>
+		<ScrollKeeper>
 			{parents.flatMap((eventPointer) => eventPointer ? (
 				<NoteLoader
 					key={eventPointer.id}
@@ -64,6 +65,6 @@ export function NoteParentNotes({
 					onEventQuerySuccess={handleEventQuerySuccess}
 				/>
 			) : [])}
-		</>
+		</ScrollKeeper>
 	);
 }

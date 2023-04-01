@@ -3,6 +3,7 @@ import './globals.css'
 import { NextSeo } from 'next-seo';
 import styles from './layout.module.css'
 import { QueryClientProvider } from '@/components/QueryClientProvider';
+import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
 
 export default function RootLayout({
 	children
@@ -23,21 +24,23 @@ export default function RootLayout({
 
 			<body className={styles.body}>
 				<QueryClientProvider>
-					<header className={styles.header}>
-						{/* TODO: header */}
-					</header>
+					<ScrollKeeperProvider>
+						<header className={styles.header}>
+							{/* TODO: header */}
+						</header>
 
-					<main className={styles.main}>
-						<section className={styles.section}>
-							<div className={styles.content}>
-								{children}
-							</div>
-						</section>
+						<main className={styles.main}>
+							<section className={styles.section}>
+								<div className={styles.content}>
+									{children}
+								</div>
+							</section>
 
-						<aside className={styles.aside}>
-							{/* TODO: aside */}
-						</aside>
-					</main>
+							<aside className={styles.aside}>
+								{/* TODO: aside */}
+							</aside>
+						</main>
+					</ScrollKeeperProvider>
 				</QueryClientProvider>
 			</body>
 		</html>

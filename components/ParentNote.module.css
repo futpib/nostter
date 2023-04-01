@@ -17,6 +17,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 4px;
+	margin-bottom: 8px;
 }
 
 .threadLine {
