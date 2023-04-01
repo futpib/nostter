@@ -13,7 +13,7 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 	});
 
 	if (!event || event.id !== id) {
-		return new Response('Event not found', { status: 404 });
+		return NextResponse.json({}, { status: 404 });
 	}
 
 	const response = NextResponse.json({ event });

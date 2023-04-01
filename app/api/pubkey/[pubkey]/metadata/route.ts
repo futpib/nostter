@@ -16,7 +16,7 @@ export async function GET(_request: NextRequest, { params: { pubkey } }: { param
 	});
 
 	if (!event) {
-		const response = new NextResponse('Event not found', { status: 404 });
+		const response = NextResponse.json({}, { status: 404 });
 
 		setCacheControlHeader(response, {
 			public: true,
