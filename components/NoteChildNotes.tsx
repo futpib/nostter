@@ -40,7 +40,10 @@ export function NoteChildNotes({
 
 			return (
 				descendantThread.reply?.id === id
-				|| descendantThread.root?.id === id
+				|| (
+					!descendantThread.reply
+					&& descendantThread.root?.id === id
+				)
 			);
 		});
 	}, [ id, descendantNotesQuery.data ]);
