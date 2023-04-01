@@ -15,43 +15,43 @@ export function NoteChildNotes({
 	id: string;
 }) {
 	const { publicUrl } = getPublicRuntimeConfig();
-	const childNotesUrl = `${publicUrl}/api/event/${id}/children`;
-	const childNotesQuery = useQuery([ childNotesUrl ], async (): Promise<{ events: Event[] }> => {
-		return fetch(childNotesUrl).then((response) => response.json())
+	const descendantNotesUrl = `${publicUrl}/api/event/${id}/descendants`;
+	const descendantNotesQuery = useQuery([ descendantNotesUrl ], async (): Promise<{ events: Event[] }> => {
+		return fetch(descendantNotesUrl).then((response) => response.json())
 	});
 
-	const childNotes = useMemo(() => {
-		const childNoteEvents = childNotesQuery.data?.events || [];
+	const childNoteEvents = useMemo(() => {
+		const descendantNoteEvents = descendantNotesQuery.data?.events || [];
 
-		return childNoteEvents.filter(childNoteEvent => {
-			const references = parseReferences(childNoteEvent);
+		return descendantNoteEvents.filter(descendantNoteEvent => {
+			const references = parseReferences(descendantNoteEvent);
 
 			const { contentTokens } = renderNoteContent({
-				content: childNoteEvent.content,
+				content: descendantNoteEvent.content,
 				references,
 				pubkeyMetadatas: new Map(),
 			});
 
 			const contentReferencedEvents = getContentReferencedEvents(contentTokens);
 
-			const childThread = getThread(childNoteEvent, {
+			const descendantThread = getThread(descendantNoteEvent, {
 				contentReferencedEvents,
 			});
 
 			return (
-				childThread.reply?.id === id
-				|| childThread.root?.id === id
+				descendantThread.reply?.id === id
+				|| descendantThread.root?.id === id
 			);
 		});
-	}, [ id, childNotesQuery.data ]);
+	}, [ id, descendantNotesQuery.data ]);
 
 	return (
 		<>
-			{childNotes.flatMap((event) => event ? (
+			{childNoteEvents.flatMap(childNoteEvent => childNoteEvent ? (
 				<NoteLoader
-					key={event.id}
+					key={childNoteEvent.id}
 					componentKey="ChildNoteLink"
-					eventPointer={event}
+					eventPointer={childNoteEvent}
 				/>
 			) : [])}
 		</>
