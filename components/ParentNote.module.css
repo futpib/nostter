@@ -17,14 +17,6 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 4px;
-	margin-bottom: 8px;
-}
-
-.threadLine {
-	flex-grow: 1;
-	width: 2px;
-	background: rgb(var(--border-rgb));
-	margin-bottom: -8px;
 }
 
 .avatar {
@@ -32,6 +24,14 @@
 	height: 48px;
 	border-radius: 50%;
 	object-fit: cover;
+}
+
+.threadLine {
+	flex-grow: 1;
+	width: 2px;
+	background: rgb(var(--border-rgb));
+	padding-bottom: 8px;
+	margin-bottom: -8px;
 }
 
 .contentColumn {
