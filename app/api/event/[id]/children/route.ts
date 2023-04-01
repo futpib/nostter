@@ -15,6 +15,8 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 		'#e': [ id ],
 	} ]);
 
+	events.sort((a, b) => a.id > b.id ? -1 : 1);
+
 	const response = NextResponse.json({ events }, { status: events.length ? 200 : 404 });
 
 	setCacheControlHeader(response, {
