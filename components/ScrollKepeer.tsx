@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { ScrollKeeperContextValue, ScrollKeeperProvider } from "./ScrollKepeerProvider";
 import { isElementVisible } from "@/utils/isElementVisible";
-import invariant from "invariant";
 
 export function ScrollKeeper({
 	children,
@@ -53,7 +52,9 @@ export function ScrollKeeper({
 
 	const scrollKeeperContextValue = useMemo((): ScrollKeeperContextValue => ({
 		onReflow() {
-			invariant(afterChildrenRef.current, "ScrollKeeper: `onReflow` was called before `afterChildrenRef` was set.");
+			if (!afterChildrenRef.current) {
+				return;
+			}
 
 			const { offsetTop } = afterChildrenRef.current;
 
