@@ -15,9 +15,11 @@ import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
 import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
+import { ParentNote } from "./ParentNote";
 
 const components = {
 	Note,
+	ParentNote,
 	EmbeddedNote,
 	EmbeddedNoteLink,
 };
@@ -26,6 +28,7 @@ const Stub = () => null;
 
 const skeletonComponents = {
 	Note: Stub,
+	ParentNote: Stub,
 	EmbeddedNote: EmbeddedNoteSkeleton,
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
 };
@@ -33,6 +36,7 @@ const skeletonComponents = {
 const notFoundComponents = {
 	// TODO
 	Note: Stub,
+	ParentNote: Stub,
 	EmbeddedNote: Stub,
 	EmbeddedNoteLink: Stub,
 };
@@ -40,9 +44,11 @@ const notFoundComponents = {
 export function NoteLoader({
 	componentKey,
 	eventPointer,
+	onEventQuerySuccess,
 }: {
 	componentKey: keyof typeof components;
 	eventPointer: EventPointer;
+	onEventQuerySuccess?: (data: { event?: Event }) => void;
 }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 	const eventUrl = `${publicUrl}/api/event/${eventPointer.id}`;
@@ -54,6 +60,10 @@ export function NoteLoader({
 		}
 
 		return response.json();
+	}, {
+		onSuccess: (data) => {
+			onEventQuerySuccess?.(data);
+		},
 	});
 
 	const pubkeyMetadataRequests = useMemo(() => {

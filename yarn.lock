@@ -1129,9 +1129,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nostr-tools@npm:^1.8.1":
-  version: 1.8.1
-  resolution: "nostr-tools@npm:1.8.1"
+"nostr-tools@npm:@futpib/nostr-tools@1.9.1":
+  version: 1.9.1
+  resolution: "@futpib/nostr-tools@npm:1.9.1"
   dependencies:
     "@noble/hashes": 1.0.0
     "@noble/secp256k1": ^1.7.1
@@ -1139,7 +1139,7 @@ __metadata:
     "@scure/bip32": ^1.1.5
     "@scure/bip39": ^1.1.1
     prettier: ^2.8.4
-  checksum: 6012159ade2fe4711d837a5472064aea31710a1d72753a9daafb476e158464d5eb244d357ae89ab8d1aa27e4e19dd7da28d4d8bbc10d94214e4fc0f3d2a805d1
+  checksum: a90057773fb8ebcd4b2fcf925f5ac4666755741a067172592ca3e2dffe41f8832c20e03a6b80f1a6c0dba7e7413ea932f7207a283a5e6444c276a749d45f0a18
   languageName: node
   linkType: hard
 
@@ -1163,7 +1163,7 @@ __metadata:
     mime-types: ^2.1.35
     next: 13.2.4
     next-seo: ^5.15.0
-    nostr-tools: ^1.8.1
+    nostr-tools: "npm:@futpib/nostr-tools@1.9.1"
     react: 18.2.0
     react-content-loader: ^6.2.1
     react-dom: 18.2.0

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Event, nip19, parseReferences } from 'nostr-tools';
+import { Event, nip10, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { renderNoteContent } from '@/utils/renderNoteContent';
@@ -10,6 +10,7 @@ import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
 import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
 import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
+import { NoteParentNotes } from '@/components/NoteParentNotes';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -67,7 +68,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 
 	const contentText = contentChildren.join('');
 
-	console.dir({ noteEvent, references, pubkeyMetadatas }, { depth: null });
+	const thread = nip10.parse(noteEvent);
+
+	console.dir({ noteEvent, references, pubkeyMetadatas, thread }, { depth: null });
 
 	const notePubkeyMetadata = pubkeyMetadatas.get(noteEvent.pubkey);
 	const notePubkeyDisplayName = notePubkeyMetadata?.display_name;
@@ -107,6 +110,15 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				}}
 			/>
 
+			{Math.random() < 0 && (
+				<NoteParentNotes
+					id={noteEvent.id}
+					root={thread.root}
+					reply={thread.reply}
+					mentions={thread.mentions}
+				/>
+			)}
+
 			<Note
 				pubkey={noteEvent.pubkey}
 				content={noteEvent.content}
@@ -117,6 +129,8 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				references={references}
 				pubkeyMetadatas={pubkeyMetadatas}
 			/>
+
+			<div style={{ height: '100vh' }} />
 		</>
 	);
 }
