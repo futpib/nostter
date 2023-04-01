@@ -53,6 +53,18 @@ function defaultRender<T extends string | ReactNode>({ token }: {
 	return token.string as T;
 }
 
+function isEmpty<T extends string | ReactNode>(value: T): boolean {
+	if (value == null) {
+		return true;
+	}
+
+	if (typeof value === 'string') {
+		return value.trim().length === 0;
+	}
+
+	return false;
+}
+
 export function renderNoteContent<T extends string | ReactNode>({
 	content,
 	references,
@@ -192,6 +204,14 @@ export function renderNoteContent<T extends string | ReactNode>({
 	}
 
 	contentChildren.push(unparsedContent as T);
+
+	while (contentChildren.length > 0 && isEmpty(contentChildren[0])) {
+		contentChildren.shift();
+	}
+
+	while (contentChildren.length > 0 && isEmpty(contentChildren[contentChildren.length - 1])) {
+		contentChildren.pop();
+	}
 
 	return {
 		contentTokens: tokens,
