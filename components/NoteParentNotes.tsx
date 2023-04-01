@@ -3,19 +3,20 @@
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteLoader } from './NoteLoader';
 import { useCallback, useMemo, useState } from 'react';
-import { Event, nip10 } from 'nostr-tools';
+import { Event } from 'nostr-tools';
 import { ScrollKeeper } from './ScrollKepeer';
+import { getThread } from '@/utils/getThread';
 
 export function NoteParentNotes({
 	id,
 	root,
 	reply,
-	mentions,
+	contentReferencedEvents,
 }: {
 	id: string;
 	root: undefined | EventPointer;
 	reply: undefined | EventPointer;
-	mentions: EventPointer[];
+	contentReferencedEvents: EventPointer[],
 }) {
 	const treeLeafEdge = useMemo(() => ({ [id]: (reply ?? root)?.id }), [ id, reply, root ]);
 	const [treeLoadedEventEdges, setTreeLoadedEventEdges] = useState<Record<string, undefined | string>>({});
@@ -47,7 +48,9 @@ export function NoteParentNotes({
 			return;
 		}
 
-		const { reply, root } = nip10.parse(event);
+		const { reply, root } = getThread(event, {
+			contentReferencedEvents,
+		});
 
 		setTreeLoadedEventEdges((tree) => ({
 			...tree,

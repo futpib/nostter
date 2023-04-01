@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Event, nip10, nip19, parseReferences } from 'nostr-tools';
+import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { renderNoteContent } from '@/utils/renderNoteContent';
@@ -12,6 +12,7 @@ import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
 import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 import { NoteParentNotes } from '@/components/NoteParentNotes';
 import { NoteChildNotes } from '@/components/NoteChildNotes';
+import { getThread } from '@/utils/getThread';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	if (typeof nip19IdParam !== "string") {
@@ -69,7 +70,9 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 
 	const contentText = contentChildren.join('');
 
-	const thread = nip10.parse(noteEvent);
+	const thread = getThread(noteEvent, {
+		contentReferencedEvents,
+	});
 
 	console.dir({ noteEvent, references, pubkeyMetadatas, thread }, { depth: null });
 
@@ -115,7 +118,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 				id={noteEvent.id}
 				root={thread.root}
 				reply={thread.reply}
-				mentions={thread.mentions}
+				contentReferencedEvents={contentReferencedEvents}
 			/>
 
 			<div style={{ minHeight: '100vh' }}>
