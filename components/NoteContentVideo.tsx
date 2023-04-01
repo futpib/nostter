@@ -1,11 +1,16 @@
 "use client";
 
-import { MouseEvent, useCallback } from 'react';
+import classNames from 'classnames';
+import { CSSProperties, MouseEvent, useCallback } from 'react';
 import styles from './NoteContentVideo.module.css';
 
 export function NoteContentVideo({
+	style,
+	className,
 	src,
 }: {
+	style?: CSSProperties;
+	className?: string;
 	src: string;
 }) {
 	const handleClick = useCallback((event: MouseEvent<HTMLVideoElement>) => {
@@ -15,7 +20,8 @@ export function NoteContentVideo({
 	return (
 		<video
 			controls
-			className={styles.contentVideo}
+			style={style}
+			className={classNames(styles.contentVideo, className)}
 			src={src}
 			onClick={handleClick}
 		/>
