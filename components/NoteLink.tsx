@@ -35,7 +35,8 @@ export function NoteLink<K extends ComponentKey>({
 			return;
 		}
 
-		window.open(href, "_blank");
+		const newTabWindow = window.open(href, "_blank");
+		newTabWindow?.blur();
 	}, [ router, href ]);
 
 	return (
