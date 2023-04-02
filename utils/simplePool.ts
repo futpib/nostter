@@ -3,7 +3,4 @@ import { SimplePool } from 'nostr-tools';
 
 global.WebSocket = WebSocket;
 
-export const simplePool = new SimplePool({
-	eoseSubTimeout: 5000,
-	getTimeout: 5000,
-});
+export const simplePool = new SimplePool();
