@@ -4,10 +4,14 @@
 				 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
 	--foreground-rgb: 0, 0, 0;
-	--background-rgb: 255, 255, 255;
-	--background-hover-rgba: 0, 0, 0, 0.03;
 	--foreground-link-rgb: 29, 155, 240;
 	--foreground-secondary-rgb: 83, 100, 113;
+	--foreground-tooltip-rgb: 255, 255, 255;
+
+	--background-rgb: 255, 255, 255;
+	--background-hover-rgba: 0, 0, 0, 0.03;
+	--background-tooltip-rgba: 0, 0, 0, 0.6;
+
 	--border-rgb: 207, 217, 222;
 	--border-section-rgb: 239, 243, 244;
 }
@@ -15,11 +19,16 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		--foreground-rgb: 255, 255, 255;
-		--background-rgb: 0, 0, 0;
-		--background-hover-rgba: 255, 255, 255, 0.03;
 		--foreground-link-rgb: 29, 155, 240;
 		--foreground-secondary-rgb: 113, 118, 123;
+		--foreground-tooltip-rgb: 0, 0, 0;
+
+		--background-rgb: 0, 0, 0;
+		--background-hover-rgba: 255, 255, 255, 0.03;
+		--background-tooltip-rgba: 255, 255, 255, 0.6;
+
 		--border-rgb: 47, 51, 54;
+		--border-section-rgb: 239, 243, 244;
 	}
 }
 

@@ -5,3 +5,11 @@
 .createdAtLink:hover {
 	text-decoration: underline;
 }
+
+.tooltip {
+	background: rgba(var(--background-tooltip-rgba));
+	color: rgb(var(--foreground-tooltip-rgb));
+	font-size: 0.73em;
+	padding: 2px 4px;
+	border-radius: 2px;
+}
