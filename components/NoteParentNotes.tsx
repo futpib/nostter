@@ -20,6 +20,7 @@ export function NoteParentNotes({
 }) {
 	const treeLeafEdge = useMemo(() => ({ [id]: (reply ?? root)?.id }), [ id, reply, root ]);
 	const [treeLoadedEventEdges, setTreeLoadedEventEdges] = useState<Record<string, undefined | string>>({});
+	const [eventCustomRelays, setEventCustomRelays] = useState<Record<string, undefined | string[]>>({});
 	const parents = useMemo(() => {
 		const edges = {
 			...treeLeafEdge,
@@ -36,25 +37,40 @@ export function NoteParentNotes({
 				break;
 			}
 
-			parents.unshift({ id: parentId });
+			const customRelays = eventCustomRelays[parentId];
+
+			parents.unshift({
+				id: parentId,
+				relays: customRelays,
+			});
+
 			currentId = parentId;
 		}
 
 		return parents;
-	}, [ id, root, treeLeafEdge, treeLoadedEventEdges ]);
+	}, [ id, root, treeLeafEdge, treeLoadedEventEdges, eventCustomRelays ]);
 
 	const handleEventQuerySuccess = useCallback(({ event }: { event?: Event }) => {
 		if (!event) {
 			return;
 		}
 
+		debugger;
+
 		const { reply, root } = getThread(event, {
 			contentReferencedEvents,
 		});
 
+		const parent = reply ?? root;
+
 		setTreeLoadedEventEdges((tree) => ({
 			...tree,
-			[event.id]: (reply ?? root)?.id,
+			[event.id]: parent?.id,
+		}));
+
+		setEventCustomRelays((relays) => ({
+			...relays,
+			[event.id]: parent?.relays,
 		}));
 	}, []);
 

@@ -74,8 +74,6 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		contentReferencedEvents,
 	});
 
-	console.dir({ noteEvent, references, pubkeyMetadatas, thread }, { depth: null });
-
 	const notePubkeyMetadata = pubkeyMetadatas.get(noteEvent.pubkey);
 	const notePubkeyDisplayName = notePubkeyMetadata?.display_name;
 	const notePubkeyName = notePubkeyMetadata?.name;

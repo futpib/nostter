@@ -63,7 +63,17 @@ export function NoteLoader({
 	onEventQuerySuccess?: (data: { event?: Event }) => void;
 }) {
 	const { publicUrl } = getPublicRuntimeConfig();
-	const eventUrl = `${publicUrl}/api/event/${eventPointer.id}`;
+
+	const eventUrl = useMemo(() => {
+		const url = new URL(`${publicUrl}/api/event/${eventPointer.id}`);
+
+		for (const relay of eventPointer.relays ?? []) {
+			url.searchParams.append('relays', relay);
+		}
+
+		return url.toString();
+	}, [eventPointer.id, eventPointer.relays]);
+
 	const eventQuery = useQuery([ eventUrl ], async (): Promise<{ event?: Event }> => {
 		const response = await fetch(eventUrl);
 
