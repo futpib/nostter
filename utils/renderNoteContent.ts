@@ -88,7 +88,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 		key: number | string;
 		token: ContentToken;
 		profilePointer: ProfilePointer;
-		metadata: PubkeyMetadata;
+		metadata?: PubkeyMetadata;
 	}) => T;
 
 	renderLink?: (props: {
@@ -179,16 +179,12 @@ export function renderNoteContent<T extends string | ReactNode>({
 			if (reference.profile) {
 				const metadata = pubkeyMetadatas.get(reference.profile.pubkey);
 
-				if (metadata?.name || metadata?.display_name) {
-					contentChildren.push(renderProfileReference({
-						key: reference.text,
-						token,
-						profilePointer: reference.profile,
-						metadata,
-					}));
-				} else {
-					contentChildren.push(reference.text as T);
-				}
+				contentChildren.push(renderProfileReference({
+					key: reference.text,
+					token,
+					profilePointer: reference.profile,
+					metadata,
+				}));
 			} else if (reference.event) {
 				contentChildren.push(renderEventReference({
 					key: reference.text,

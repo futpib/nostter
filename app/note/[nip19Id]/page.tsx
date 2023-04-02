@@ -59,7 +59,7 @@ export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { 
 		pubkeyMetadatas,
 	}, {
 		renderEventReference: () => '',
-		renderProfileReference: ({ metadata }) => `@${metadata.name}`,
+		renderProfileReference: ({ profilePointer, metadata }) => `@${metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}`,
 		renderLink: ({ link }) => link.value,
 	});
 

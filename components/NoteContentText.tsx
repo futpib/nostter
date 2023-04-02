@@ -32,7 +32,7 @@ export function NoteContentText({
 					href={`/user/${nip19.npubEncode(profilePointer.pubkey)}`}
 					target="_blank"
 				>
-					@{metadata.name}
+					@{metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
 				</Link>
 			),
 			renderLink: ({ key, link }) => (
