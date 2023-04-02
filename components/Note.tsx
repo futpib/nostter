@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import styles from './Note.module.css';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
@@ -7,8 +6,10 @@ import { NoteContentText } from './NoteContentText';
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
+import { CreatedAtLink } from './CreatedAtLink';
 
 export function Note({
+	id,
 	pubkey,
 	content,
 	references,
@@ -89,11 +90,11 @@ export function Note({
 			<div
 				className={styles.metadata}
 			>
-				<span
-					className={styles.createdAt}
-				>
-					{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
-				</span>
+				<CreatedAtLink
+					long
+					id={id}
+					createdAt={createdAt}
+				/>
 			</div>
 		</article>
 	);

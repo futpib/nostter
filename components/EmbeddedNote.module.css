@@ -32,7 +32,3 @@
 .name {
 	color: rgb(var(--foreground-secondary-rgb));
 }
-
-.createdAt {
-	color: rgb(var(--foreground-secondary-rgb));
-}

@@ -34,7 +34,3 @@
 .metadata {
 	margin: 16px 0;
 }
-
-.createdAt {
-	color: rgb(var(--foreground-secondary-rgb));
-}

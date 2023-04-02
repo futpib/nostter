@@ -1,0 +1,7 @@
+.createdAtLink {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.createdAtLink:hover {
+	text-decoration: underline;
+}

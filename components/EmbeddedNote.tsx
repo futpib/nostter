@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import styles from './EmbeddedNote.module.css';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
@@ -6,8 +5,10 @@ import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { MouseEvent } from 'react';
+import { CreatedAtLink } from './CreatedAtLink';
 
 export function EmbeddedNote({
+	id,
 	pubkey,
 	content,
 	references,
@@ -67,11 +68,10 @@ export function EmbeddedNote({
 					)}
 				</div>
 
-				<span
-					className={styles.createdAt}
-				>
-					{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
-				</span>
+				<CreatedAtLink
+					id={id}
+					createdAt={createdAt}
+				/>
 			</div>
 
 			<NoteContentText

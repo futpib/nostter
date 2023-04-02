@@ -8,8 +8,10 @@ import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { MouseEvent } from 'react';
+import { CreatedAtLink } from './CreatedAtLink';
 
 export function ChildNote({
+	id,
 	pubkey,
 	content,
 	references,
@@ -74,11 +76,10 @@ export function ChildNote({
 						)}
 					</div>
 
-					<span
-						className={styles.createdAt}
-					>
-						{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
-					</span>
+					<CreatedAtLink
+						id={id}
+						createdAt={createdAt}
+					/>
 				</div>
 
 				<NoteContentText

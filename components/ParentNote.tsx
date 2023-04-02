@@ -9,8 +9,10 @@ import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { useScrollKeeper } from '@/hooks/useScrollKeeper';
 import { MouseEvent } from 'react';
+import { CreatedAtLink } from './CreatedAtLink';
 
 export function ParentNote({
+	id,
 	pubkey,
 	content,
 	references,
@@ -82,11 +84,10 @@ export function ParentNote({
 						)}
 					</div>
 
-					<span
-						className={styles.createdAt}
-					>
-						{DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED)}
-					</span>
+					<CreatedAtLink
+						id={id}
+						createdAt={createdAt}
+					/>
 				</div>
 
 				<NoteContentText
