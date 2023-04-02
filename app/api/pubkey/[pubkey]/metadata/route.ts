@@ -1,19 +1,49 @@
 import { EVENT_KIND_METADATA } from "@/constants/eventKinds";
-import { relays } from "@/constants/relays";
+import { relays as defaultRelays } from "@/constants/relays";
 import { setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { Duration } from "luxon";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(_request: NextRequest, { params: { pubkey } }: { params: { pubkey?: string } }) {
+export async function GET(request: NextRequest, { params: { pubkey } }: { params: { pubkey?: string } }) {
 	if (!pubkey) {
 		return new Response('No pubkey provided', { status: 400 });
 	}
 
-	const event = await simplePool.get(relays, {
+	const url = new URL(request.url);
+
+	const paramsRelays = url.searchParams.getAll('relays');
+
+	const [
+		defaultRelaysResult,
+		paramsRelaysResult,
+	] = await Promise.allSettled([
+		defaultRelays,
+		paramsRelays,
+	].map(effectiveRelays => simplePool.get(effectiveRelays, {
 		kinds: [ EVENT_KIND_METADATA ],
 		authors: [ pubkey ],
-	});
+	})));
+
+	const event = (() => {
+		if (defaultRelaysResult.status === 'fulfilled' && defaultRelaysResult.value) {
+			return defaultRelaysResult.value;
+		}
+
+		if (paramsRelaysResult.status === 'fulfilled' && paramsRelaysResult.value) {
+			return paramsRelaysResult.value;
+		}
+
+		if (defaultRelaysResult.status === 'rejected') {
+			throw defaultRelaysResult.reason;
+		}
+
+		if (paramsRelaysResult.status === 'rejected') {
+			throw paramsRelaysResult.reason;
+		}
+
+		return undefined;
+	})();
 
 	if (!event) {
 		const response = NextResponse.json({}, { status: 404 });
