@@ -10,6 +10,7 @@ import { ImageLink } from '@/utils/getContentImageLinks';
 import { useScrollKeeper } from '@/hooks/useScrollKeeper';
 import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
+import { NoteCounters } from './NoteCounters';
 
 export function ParentNote({
 	id,
@@ -105,6 +106,10 @@ export function ParentNote({
 
 				<NoteContentNotes
 					contentReferencedEvents={contentReferencedEvents}
+				/>
+
+				<NoteCounters
+					noteEventPointer={{ id }}
 				/>
 			</div>
 		</article>

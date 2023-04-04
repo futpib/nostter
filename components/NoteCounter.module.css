@@ -1,0 +1,12 @@
+
+.noteCounter {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+
+	min-height: 36px;
+
+	color: rbg(var(--foreground-secondary-rgb));
+	font-size: 0.86em;
+}

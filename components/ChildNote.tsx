@@ -9,6 +9,7 @@ import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
+import { NoteCounters } from './NoteCounters';
 
 export function ChildNote({
 	id,
@@ -97,6 +98,10 @@ export function ChildNote({
 
 				<NoteContentNotes
 					contentReferencedEvents={contentReferencedEvents}
+				/>
+
+				<NoteCounters
+					noteEventPointer={{ id }}
 				/>
 			</div>
 		</article>
