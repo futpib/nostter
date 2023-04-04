@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { Event } from 'nostr-tools';
 import { ScrollKeeper } from './ScrollKepeer';
 import { getThread } from '@/utils/getThread';
+import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
+import { useQuery } from '@tanstack/react-query';
 
 export function NoteParentNotes({
 	id,
@@ -19,8 +21,10 @@ export function NoteParentNotes({
 	contentReferencedEvents: EventPointer[],
 }) {
 	const treeLeafEdge = useMemo(() => ({ [id]: (reply ?? root)?.id }), [ id, reply, root ]);
+	const [treeRoot, setTreeRoot] = useState<undefined | EventPointer>(root);
 	const [treeLoadedEventEdges, setTreeLoadedEventEdges] = useState<Record<string, undefined | string>>({});
 	const [eventCustomRelays, setEventCustomRelays] = useState<Record<string, undefined | string[]>>({});
+
 	const parents = useMemo(() => {
 		const edges = {
 			...treeLeafEdge,
@@ -30,7 +34,7 @@ export function NoteParentNotes({
 		const parents: EventPointer[] = [];
 
 		let currentId = id;
-		while (currentId && currentId !== root?.id) {
+		while (currentId && currentId !== treeRoot?.id) {
 			const parentId = edges[currentId];
 
 			if (!parentId) {
@@ -48,18 +52,20 @@ export function NoteParentNotes({
 		}
 
 		return parents;
-	}, [ id, root, treeLeafEdge, treeLoadedEventEdges, eventCustomRelays ]);
+	}, [ id, treeRoot, treeLeafEdge, treeLoadedEventEdges, eventCustomRelays ]);
 
 	const handleEventQuerySuccess = useCallback(({ event }: { event?: Event }) => {
 		if (!event) {
 			return;
 		}
 
-		debugger;
-
 		const { reply, root } = getThread(event, {
 			contentReferencedEvents,
 		});
+
+		if (root) {
+			setTreeRoot(oldRoot => oldRoot ?? root);
+		}
 
 		const parent = reply ?? root;
 
@@ -73,6 +79,23 @@ export function NoteParentNotes({
 			[event.id]: parent?.relays,
 		}));
 	}, []);
+
+	const { publicUrl } = getPublicRuntimeConfig();
+	const descendantNotesUrl = treeRoot ? `${publicUrl}/api/event/${treeRoot.id}/descendants` : undefined;
+	const descendantNotesQuery = useQuery([ descendantNotesUrl ], async (): Promise<{ events: Event[] }> => {
+		if (!descendantNotesUrl) {
+			return { events: [] };
+		}
+
+		return fetch(descendantNotesUrl).then((response) => response.json())
+	}, {
+		enabled: Boolean(descendantNotesUrl),
+		onSuccess({ events }) {
+			for (const event of events) {
+				handleEventQuerySuccess({ event });
+			}
+		},
+	});
 
 	return (
 		<ScrollKeeper>
