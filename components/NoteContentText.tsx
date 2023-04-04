@@ -1,12 +1,9 @@
-'use client';
-
-import { ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import Link from 'next/link';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
-import twemoji from 'twemoji';
 
 export function NoteContentText({
 	content,
@@ -55,17 +52,8 @@ export function NoteContentText({
 		});
 	}, [content, references, pubkeyMetadatas]);
 
-	const handleContentTextRef = useCallback((element: HTMLDivElement | null) => {
-		if (!element) {
-			return;
-		}
-
-		twemoji.parse(element);
-	}, []);
-
 	return (
 		<div
-			ref={handleContentTextRef}
 			className={styles.content}
 		>
 			{contentChildren}
