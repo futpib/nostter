@@ -7,6 +7,6 @@
 
 	min-height: 36px;
 
-	color: rbg(var(--foreground-secondary-rgb));
+	color: rgb(var(--foreground-secondary-rgb));
 	font-size: 0.86em;
 }
