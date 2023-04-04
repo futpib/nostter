@@ -1,24 +1,19 @@
 "use client";
 
 import { NoteLoader } from './NoteLoader';
-import { Event, parseReferences } from 'nostr-tools';
-import { useQuery } from '@tanstack/react-query';
-import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
+import { parseReferences } from 'nostr-tools';
 import { useMemo } from 'react';
 import { renderNoteContent } from '@/utils/renderNoteContent';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 import { getThread } from '@/utils/getThread';
+import { useDescendantNotesQuery } from '@/hooks/useDescendantNotesQuery';
 
 export function NoteChildNotes({
 	id,
 }: {
 	id: string;
 }) {
-	const { publicUrl } = getPublicRuntimeConfig();
-	const descendantNotesUrl = `${publicUrl}/api/event/${id}/descendants`;
-	const descendantNotesQuery = useQuery([ descendantNotesUrl ], async (): Promise<{ events: Event[] }> => {
-		return fetch(descendantNotesUrl).then((response) => response.json())
-	});
+	const descendantNotesQuery = useDescendantNotesQuery({ eventPointer: { id } });
 
 	const childNoteEvents = useMemo(() => {
 		const descendantNoteEvents = descendantNotesQuery.data?.events || [];

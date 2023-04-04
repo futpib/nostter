@@ -6,8 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Event } from 'nostr-tools';
 import { ScrollKeeper } from './ScrollKepeer';
 import { getThread } from '@/utils/getThread';
-import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
-import { useQuery } from '@tanstack/react-query';
+import { useDescendantNotesQuery } from '@/hooks/useDescendantNotesQuery';
 
 export function NoteParentNotes({
 	id,
@@ -80,16 +79,7 @@ export function NoteParentNotes({
 		}));
 	}, []);
 
-	const { publicUrl } = getPublicRuntimeConfig();
-	const descendantNotesUrl = treeRoot ? `${publicUrl}/api/event/${treeRoot.id}/descendants` : undefined;
-	const descendantNotesQuery = useQuery([ descendantNotesUrl ], async (): Promise<{ events: Event[] }> => {
-		if (!descendantNotesUrl) {
-			return { events: [] };
-		}
-
-		return fetch(descendantNotesUrl).then((response) => response.json())
-	}, {
-		enabled: Boolean(descendantNotesUrl),
+	const descendantNotesQuery = useDescendantNotesQuery({ eventPointer: treeRoot }, {
 		onSuccess({ events }) {
 			for (const event of events) {
 				handleEventQuerySuccess({ event });
