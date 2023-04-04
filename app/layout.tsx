@@ -1,9 +1,16 @@
 import { ReactNode } from 'react';
+import { Noto_Sans as NotoSans } from 'next/font/google';
 import './globals.css'
 import { NextSeo } from 'next-seo';
 import styles from './layout.module.css'
 import { QueryClientProvider } from '@/components/QueryClientProvider';
 import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
+
+const notoSans = NotoSans({
+	weight: ['400', '700'],
+	subsets: ['latin'],
+	display: 'swap',
+});
 
 export default function RootLayout({
 	children
@@ -11,7 +18,7 @@ export default function RootLayout({
 	children: ReactNode;
 }) {
 	return (
-		<html>
+		<html className={notoSans.className}>
 			<head>
 				<NextSeo
 					useAppDir
