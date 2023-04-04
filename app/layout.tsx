@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { Noto_Sans as NotoSans } from 'next/font/google';
+import classNames from 'classnames';
+import { Noto_Sans as NotoSans, Noto_Color_Emoji as NotoColorEmoji } from 'next/font/google';
 import './globals.css'
 import { NextSeo } from 'next-seo';
 import styles from './layout.module.css'
@@ -7,8 +8,16 @@ import { QueryClientProvider } from '@/components/QueryClientProvider';
 import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
 
 const notoSans = NotoSans({
+	variable: '--font-noto-sans',
 	weight: ['400', '700'],
 	subsets: ['latin'],
+	display: 'swap',
+});
+
+const notoColorEmoji = NotoColorEmoji({
+	variable: '--font-noto-color-emoji',
+	weight: ['400'],
+	subsets: ['emoji'],
 	display: 'swap',
 });
 
@@ -18,7 +27,7 @@ export default function RootLayout({
 	children: ReactNode;
 }) {
 	return (
-		<html className={notoSans.className}>
+		<html className={classNames(notoSans.variable, notoColorEmoji.variable)}>
 			<head>
 				<NextSeo
 					useAppDir
