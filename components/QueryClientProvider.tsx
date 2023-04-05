@@ -19,7 +19,7 @@ export function QueryClientProvider({
 	}), [])
 
 	useEffect(() => {
-		return patchFetchForClientOnlyNavigation();
+		// return patchFetchForClientOnlyNavigation();
 	}, [])
 
 	return (
