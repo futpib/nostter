@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
@@ -13,8 +14,17 @@ import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 import { NoteParentNotes } from '@/components/NoteParentNotes';
 import { NoteChildNotes } from '@/components/NoteChildNotes';
 import { getThread } from '@/utils/getThread';
+import { NotePageLoader } from '@/components/NotePageLoader';
 
 export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
+	const headerList = headers();
+
+	if (headerList.has('referer')) {
+		return (
+			<NotePageLoader />
+		);
+	}
+
 	if (typeof nip19IdParam !== "string") {
 		notFound();
 	}
