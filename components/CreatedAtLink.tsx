@@ -70,7 +70,7 @@ export function CreatedAtLink({
 			<Link
 				ref={refs.setReference}
 				className={styles.createdAtLink}
-				href={`/note/${nip19.noteEncode(id)}`}
+				href={`/${nip19.noteEncode(id)}`}
 				{...getReferenceProps()}
 			>
 				{text}

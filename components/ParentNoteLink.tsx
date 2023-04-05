@@ -8,7 +8,7 @@ export function ParentNoteLink(props: ComponentProps<typeof ParentNote>) {
 
 	return (
 		<NoteLink
-			href={`/note/${nip19.noteEncode(id)}`}
+			href={`/${nip19.noteEncode(id)}`}
 			componentKey="ParentNote"
 			{...props}
 		/>

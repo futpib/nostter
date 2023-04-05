@@ -8,7 +8,7 @@ import { notFound, usePathname } from "next/navigation";
 export function NotePageLoader() {
 	const pathname = usePathname();
 
-	const [ _1, _2, nip19IdParam ] = pathname.split('/');
+	const [ _1, nip19IdParam ] = pathname.split('/');
 
 	if (typeof nip19IdParam !== "string") {
 		notFound();

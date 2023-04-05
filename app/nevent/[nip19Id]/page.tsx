@@ -15,5 +15,5 @@ export default async function EventPage({ params: { nip19Id: nip19IdParam } }: {
 
 	const newNip19IdParam = nip19.noteEncode(nip19Id.data.id);
 
-	redirect(`/note/${newNip19IdParam}`);
+	redirect(`/${newNip19IdParam}`);
 }

@@ -8,7 +8,7 @@ export function EmbeddedNoteLink(props: ComponentProps<typeof EmbeddedNote>) {
 
 	return (
 		<NoteLink
-			href={`/note/${nip19.noteEncode(id)}`}
+			href={`/${nip19.noteEncode(id)}`}
 			componentKey="EmbeddedNote"
 			{...props}
 		/>
