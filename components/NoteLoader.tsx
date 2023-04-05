@@ -45,16 +45,22 @@ const skeletonComponents = {
 	ChildNoteLink: Stub,
 };
 
+const NoteNotFound = () => (
+	<>
+		Note not found
+	</>
+);
+
 const notFoundComponents = {
 	// TODO
-	NotePage: Stub,
-	Note: Stub,
-	ParentNote: Stub,
-	ParentNoteLink: Stub,
-	EmbeddedNote: Stub,
-	EmbeddedNoteLink: Stub,
-	ChildNote: Stub,
-	ChildNoteLink: Stub,
+	NotePage: NoteNotFound,
+	Note: NoteNotFound,
+	ParentNote: NoteNotFound,
+	ParentNoteLink: NoteNotFound,
+	EmbeddedNote: NoteNotFound,
+	EmbeddedNoteLink: NoteNotFound,
+	ChildNote: NoteNotFound,
+	ChildNoteLink: NoteNotFound,
 };
 
 export function NoteLoader({
@@ -121,12 +127,14 @@ export function NoteLoader({
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventQueries.flatMap(query => query.data?.event ? [ query.data.event ] : []));
 
 	const { contentTokens } = useMemo(() => {
+		const references = noteEvent ? parseReferences(noteEvent) : [];
+
 		return renderNoteContent({
 			content: noteEvent?.content || '',
-			references: [],
-			pubkeyMetadatas: new Map(),
+			references,
+			pubkeyMetadatas,
 		});
-	}, [noteEvent?.content]);
+	}, [noteEvent?.content, pubkeyMetadatas]);
 
 	const contentImageLinks = useMemo(() => {
 		return getContentImageLinks(contentTokens);
