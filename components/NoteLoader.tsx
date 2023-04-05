@@ -19,8 +19,10 @@ import { ParentNote } from "./ParentNote";
 import { ParentNoteLink } from "./ParentNoteLink";
 import { ChildNote } from "./ChildNote";
 import { ChildNoteLink } from "./ChildNoteLink";
+import { NotePage } from "./NotePage";
 
 const components = {
+	NotePage,
 	Note,
 	ParentNote,
 	ParentNoteLink,
@@ -33,6 +35,7 @@ const components = {
 const Stub = () => null;
 
 const skeletonComponents = {
+	NotePage: Stub,
 	Note: Stub,
 	ParentNote: Stub,
 	ParentNoteLink: Stub,
@@ -44,6 +47,7 @@ const skeletonComponents = {
 
 const notFoundComponents = {
 	// TODO
+	NotePage: Stub,
 	Note: Stub,
 	ParentNote: Stub,
 	ParentNoteLink: Stub,
