@@ -149,7 +149,9 @@ export function NoteLoader({
 	const references = noteEvent ? parseReferences(noteEvent) : undefined;
 
 	return overallLoading ? (
-		<SkeletonComponent />
+		<SkeletonComponent
+			id={eventPointer.id}
+		/>
 	) : (
 		(noteEvent && references) ? (
 			<Component

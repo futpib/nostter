@@ -1,10 +1,15 @@
 import ContentLoader from "react-content-loader";
 import styles from "./EmbeddedNoteSkeleton.module.css";
 
-export function EmbeddedNoteSkeleton() {
+export function EmbeddedNoteSkeleton({
+	id,
+}: {
+	id: string;
+}) {
 	return (
 		<div className={styles.embeddedNoteSkeleton}>
 			<ContentLoader
+				uniqueKey={id}
 				speed={2}
 				width={568}
 				height={120}
