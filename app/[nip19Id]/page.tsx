@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { Event, nip19, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
@@ -8,36 +8,45 @@ import { getPubkeyMetadataRequests } from '@/utils/getPubkeyMetadataRequests';
 import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
 import { getContentImageLinks } from '@/utils/getContentImageLinks';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
-import { nip19DecodeNote } from '@/utils/nip19DecodeNote';
 import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
 import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 import { NoteParentNotes } from '@/components/NoteParentNotes';
 import { NoteChildNotes } from '@/components/NoteChildNotes';
 import { getThread } from '@/utils/getThread';
-import { NotePageLoader } from '@/components/NotePageLoader';
+import { nip19Decode } from '@/utils/nip19Decode';
+import { Nip19IdPageLoader } from '@/components/Nip19IdPageLoader';
 
-export default async function NotePage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
+export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	const headerList = headers();
 
 	if (headerList.has('referer')) {
 		return (
-			<NotePageLoader />
+			<Nip19IdPageLoader />
 		);
 	}
 
-	if (typeof nip19IdParam !== "string") {
+	const nip19DecodeResult = nip19Decode(nip19IdParam);
+
+	if (!nip19DecodeResult) {
 		notFound();
 	}
 
-	const nip19Id = nip19DecodeNote(nip19.decode(nip19IdParam));
+	const { normalizedNip19Id, decoded } = nip19DecodeResult;
 
-	if (!nip19Id) {
+	if (normalizedNip19Id !== nip19IdParam) {
+		redirect(`/${normalizedNip19Id}`);
+	}
+
+	if (decoded.type === 'profilePointer') {
+		// TODO
 		notFound();
 	}
+
+	const { eventPointer } = decoded;
 
 	const { publicUrl } = getPublicRuntimeConfig();
 
-	const eventResponse = await fetch(`${publicUrl}/api/event/${nip19Id.data}`);
+	const eventResponse = await fetch(`${publicUrl}/api/event/${eventPointer.id}`);
 
 	if (eventResponse.status === 404) {
 		notFound();
