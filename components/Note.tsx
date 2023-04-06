@@ -7,6 +7,7 @@ import { EventPointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { CreatedAtLink } from './CreatedAtLink';
+import { NoteTextCounters } from './NoteTextCounters';
 
 export function Note({
 	id,
@@ -96,6 +97,12 @@ export function Note({
 					createdAt={createdAt}
 				/>
 			</div>
+
+			<NoteTextCounters
+				noteEventPointer={{
+					id,
+				}}
+			/>
 		</article>
 	);
 }

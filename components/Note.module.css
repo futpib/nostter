@@ -12,16 +12,24 @@
 	flex-direction: row;
 	justify-content: flex-start;
 	align-items: center;
-	word-break: break-word;
 	gap: 12px;
+}
+
+.names {
+	min-width: 0;
+	white-space: nowrap;
 }
 
 .displayName {
 	font-weight: 700;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .name {
 	color: rgb(var(--foreground-secondary-rgb));
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .avatar {
@@ -29,8 +37,4 @@
 	height: 48px;
 	border-radius: 50%;
 	object-fit: cover;
-}
-
-.metadata {
-	margin: 16px 0;
 }

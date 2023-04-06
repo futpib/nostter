@@ -1,0 +1,17 @@
+
+.noteTextCounter {
+	display: flex;
+	align-items: center;
+
+	min-height: 52px;
+
+	font-size: 0.86em;
+}
+
+.noteTextCounter > :first-child {
+	font-weight: 700;
+}
+
+.noteTextCounter > :last-child {
+	color: rgb(var(--foreground-secondary-rgb));
+}
