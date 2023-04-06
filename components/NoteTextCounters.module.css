@@ -9,5 +9,5 @@
 }
 
 .noteTextCounters:empty {
-	display: none;
+	border-top: none;
 }
