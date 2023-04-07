@@ -3,6 +3,10 @@
 	word-break: break-word;
 }
 
+.content:empty {
+	display: none;
+}
+
 .link {
 	color: rgb(var(--foreground-link-rgb));
 }
