@@ -38,27 +38,25 @@ export default function RootLayout({
 				/>
 			</head>
 
-			<body className={styles.body}>
-				<QueryClientProvider>
-					<ScrollKeeperProvider>
+			<QueryClientProvider>
+				<ScrollKeeperProvider>
+					<body className={styles.body}>
 						<header className={styles.header}>
 							{/* TODO: header */}
 						</header>
 
-						<main className={styles.main}>
-							<section className={styles.section}>
-								<div className={styles.content}>
-									{children}
-								</div>
-							</section>
+						<section className={styles.section}>
+							<div className={styles.content}>
+								{children}
+							</div>
+						</section>
 
-							<aside className={styles.aside}>
-								{/* TODO: aside */}
-							</aside>
-						</main>
-					</ScrollKeeperProvider>
-				</QueryClientProvider>
-			</body>
+						<aside className={styles.aside}>
+							{/* TODO: aside */}
+						</aside>
+					</body>
+				</ScrollKeeperProvider>
+			</QueryClientProvider>
 		</html>
 	);
 }
