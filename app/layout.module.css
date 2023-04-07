@@ -27,8 +27,8 @@
 	flex-shrink: 1;
 	max-width: 600px;
 	min-width: 0;
-	border-right: 1px solid rgb(var(--border-section-rgb));
-	border-left: 1px solid rgb(var(--border-section-rgb));
+	border-right: 1px solid rgb(var(--border-rgb));
+	border-left: 1px solid rgb(var(--border-rgb));
 }
 
 .content {

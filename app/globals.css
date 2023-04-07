@@ -13,7 +13,6 @@
 	--background-tooltip-rgba: 0, 0, 0, 0.6;
 
 	--border-rgb: 207, 217, 222;
-	--border-section-rgb: 239, 243, 244;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +27,6 @@
 		--background-tooltip-rgba: 255, 255, 255, 0.6;
 
 		--border-rgb: 47, 51, 54;
-		--border-section-rgb: 239, 243, 244;
 	}
 }
 
