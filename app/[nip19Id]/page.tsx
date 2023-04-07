@@ -16,6 +16,7 @@ import { getThread } from '@/utils/getThread';
 import { nip19Decode } from '@/utils/nip19Decode';
 import { Nip19IdPageLoader } from '@/components/Nip19IdPageLoader';
 import { debugExtend } from '@/utils/debugExtend';
+import { getReferencedProfiles } from '@/utils/getReferencedProfiles';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -114,6 +115,8 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 		)
 	);
 
+	const { repliedProfilePointers } = getReferencedProfiles(noteEvent);
+
 	return (
 		<>
 			<NextSeo
@@ -155,6 +158,7 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 					contentReferencedEvents={contentReferencedEvents}
 					createdAt={noteEvent.created_at}
 					references={references}
+					repliedProfilePointers={repliedProfilePointers}
 					pubkeyMetadatas={pubkeyMetadatas}
 				/>
 

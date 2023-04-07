@@ -3,17 +3,19 @@ import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
-import { EventPointer } from 'nostr-tools/lib/nip19';
+import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteTextCounters } from './NoteTextCounters';
+import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 
 export function Note({
 	id,
 	pubkey,
 	content,
 	references,
+	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
@@ -24,6 +26,7 @@ export function Note({
 	pubkey: string;
 	content: string;
 	references: Reference[];
+	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
@@ -70,6 +73,12 @@ export function Note({
 					</div>
 				</div>
 			</div>
+
+			<NoteRepliedProfiles
+				pubkey={pubkey}
+				repliedProfilePointers={repliedProfilePointers}
+				pubkeyMetadatas={pubkeyMetadatas}
+			/>
 
 			<NoteContentText
 				content={content}

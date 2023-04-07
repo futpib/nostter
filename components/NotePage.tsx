@@ -1,7 +1,7 @@
 import { ImageLink } from "@/utils/getContentImageLinks";
 import { PubkeyMetadata, Reference, renderNoteContent } from "@/utils/renderNoteContent";
 import { NextSeo } from "next-seo";
-import { EventPointer } from "nostr-tools/lib/nip19";
+import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { MouseEvent, useMemo } from "react";
 import { Note } from "./Note";
 import { NoteChildNotes } from "./NoteChildNotes";
@@ -15,6 +15,7 @@ export function NotePage({
 	pubkey,
 	content,
 	references,
+	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
@@ -27,6 +28,7 @@ export function NotePage({
 	pubkey: string;
 	content: string;
 	references: Reference[];
+	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
@@ -114,6 +116,7 @@ export function NotePage({
 					contentReferencedEvents={contentReferencedEvents}
 					createdAt={noteEvent.created_at}
 					references={references}
+					repliedProfilePointers={repliedProfilePointers}
 					pubkeyMetadatas={pubkeyMetadatas}
 				/>
 

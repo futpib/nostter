@@ -1,0 +1,14 @@
+
+.repliedProfiles {
+	font-size: 0.86em;
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+
+.link {
+	color: rgb(var(--foreground-link-rgb));
+}
+
+.link:hover {
+	text-decoration: underline;
+}

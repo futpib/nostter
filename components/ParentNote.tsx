@@ -11,12 +11,14 @@ import { useScrollKeeper } from '@/hooks/useScrollKeeper';
 import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteCounters } from './NoteCounters';
+import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 
 export function ParentNote({
 	id,
 	pubkey,
 	content,
 	references,
+	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
@@ -29,6 +31,7 @@ export function ParentNote({
 	pubkey: string;
 	content: string;
 	references: Reference[];
+	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
@@ -90,6 +93,12 @@ export function ParentNote({
 						createdAt={createdAt}
 					/>
 				</div>
+
+				<NoteRepliedProfiles
+					pubkey={pubkey}
+					repliedProfilePointers={repliedProfilePointers}
+					pubkeyMetadatas={pubkeyMetadatas}
+				/>
 
 				<NoteContentText
 					content={content}

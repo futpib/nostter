@@ -20,6 +20,7 @@ import { ParentNoteLink } from "./ParentNoteLink";
 import { ChildNote } from "./ChildNote";
 import { ChildNoteLink } from "./ChildNoteLink";
 import { NotePage } from "./NotePage";
+import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
 
 const components = {
 	NotePage,
@@ -155,6 +156,7 @@ export function NoteLoader({
 	]);
 
 	const references = noteEvent ? parseReferences(noteEvent) : undefined;
+	const { repliedProfilePointers } = noteEvent ? getReferencedProfiles(noteEvent) : { repliedProfilePointers: [] };
 
 	return overallLoading ? (
 		<SkeletonComponent
@@ -171,6 +173,7 @@ export function NoteLoader({
 				contentReferencedEvents={contentReferencedEvents}
 				createdAt={noteEvent.created_at}
 				references={references}
+				repliedProfilePointers={repliedProfilePointers}
 				pubkeyMetadatas={pubkeyMetadatas}
 			/>
 		) : (

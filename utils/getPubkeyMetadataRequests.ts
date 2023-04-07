@@ -1,17 +1,16 @@
-import { Event, parseReferences } from "nostr-tools";
+import { Event } from "nostr-tools";
 import { getPublicRuntimeConfig } from "./getPublicRuntimeConfig";
+import { getReferencedProfiles } from "./getReferencedProfiles";
 
 export function getPubkeyMetadataRequests(event: Event): string[] {
-	const references = parseReferences(event);
+	const { profilePointers } = getReferencedProfiles(event);
 
 	const referencedPubkeys = new Map<string, string[]>();
 
 	referencedPubkeys.set(event.pubkey, []);
 
-	for (const reference of references) {
-		if (reference.profile) {
-			referencedPubkeys.set(reference.profile.pubkey, reference.profile.relays ?? []);
-		}
+	for (const profilePointer of profilePointers) {
+		referencedPubkeys.set(profilePointer.pubkey, profilePointer.relays ?? []);
 	}
 
 	const { publicUrl } = getPublicRuntimeConfig();
