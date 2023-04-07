@@ -1,13 +1,19 @@
 import ContentLoader from "react-content-loader";
 import styles from "./ParentNoteSkeleton.module.css";
+import { useScrollKeeper } from "@/hooks/useScrollKeeper";
 
 export function ParentNoteSkeleton({
 	id,
 }: {
 	id: string;
 }) {
+	const { handleReflow } = useScrollKeeper();
+
 	return (
-		<div className={styles.parentNoteSkeleton}>
+		<div
+			ref={handleReflow}
+			className={styles.parentNoteSkeleton}
+		>
 			<ContentLoader
 				uniqueKey={id}
 				speed={2}
