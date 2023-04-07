@@ -15,6 +15,9 @@ import { NoteChildNotes } from '@/components/NoteChildNotes';
 import { getThread } from '@/utils/getThread';
 import { nip19Decode } from '@/utils/nip19Decode';
 import { Nip19IdPageLoader } from '@/components/Nip19IdPageLoader';
+import { debugExtend } from '@/utils/debugExtend';
+
+const log = debugExtend('pages', 'Nip19IdPage');
 
 export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
 	const headerList = headers();
@@ -46,7 +49,9 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 
 	const { publicUrl } = getPublicRuntimeConfig();
 
+	const t0 = performance.now();
 	const eventResponse = await fetch(`${publicUrl}/api/event/${eventPointer.id}`);
+	log('fetch event', performance.now() - t0);
 
 	if (eventResponse.status === 404) {
 		notFound();
@@ -59,7 +64,9 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 	}
 
 	const pubkeyMetadataEventResponses = await Promise.all(getPubkeyMetadataRequests(noteEvent).map(async (request): Promise<{ event?: Event }> => {
+		const t0 = performance.now();
 		const response = await fetch(request);
+		log('fetch', request, performance.now() - t0);
 
 		if (response.status === 404) {
 			return {};
