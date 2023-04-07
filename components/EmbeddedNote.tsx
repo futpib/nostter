@@ -6,12 +6,15 @@ import { NoteContentText } from './NoteContentText';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
+import { NoteRepliedProfiles } from './NoteRepliedProfiles';
+import { ProfilePointer } from 'nostr-tools/lib/nip19';
 
 export function EmbeddedNote({
 	id,
 	pubkey,
 	content,
 	references,
+	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
 	contentImageLinks,
@@ -23,6 +26,7 @@ export function EmbeddedNote({
 	pubkey: string;
 	content: string;
 	references: Reference[];
+	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
@@ -73,6 +77,12 @@ export function EmbeddedNote({
 					createdAt={createdAt}
 				/>
 			</div>
+
+			<NoteRepliedProfiles
+				pubkey={pubkey}
+				repliedProfilePointers={repliedProfilePointers}
+				pubkeyMetadatas={pubkeyMetadatas}
+			/>
 
 			<NoteContentText
 				content={content}

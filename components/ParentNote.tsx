@@ -4,7 +4,7 @@ import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
-import { EventPointer } from 'nostr-tools/lib/nip19';
+import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { useScrollKeeper } from '@/hooks/useScrollKeeper';
