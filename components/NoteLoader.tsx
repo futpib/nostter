@@ -21,6 +21,9 @@ import { ChildNote } from "./ChildNote";
 import { ChildNoteLink } from "./ChildNoteLink";
 import { NotePage } from "./NotePage";
 import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
+import { NoteSkeleton } from "./NoteSkeleton";
+import { ParentNoteSkeleton } from "./ParentNoteSkeleton";
+import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
 
 const components = {
 	NotePage,
@@ -33,23 +36,21 @@ const components = {
 	ChildNoteLink,
 };
 
-const Stub = () => null;
-
 const skeletonComponents = {
-	NotePage: Stub,
-	Note: Stub,
-	ParentNote: Stub,
-	ParentNoteLink: Stub,
+	NotePage: NoteSkeleton,
+	Note: NoteSkeleton,
+	ParentNote: ParentNoteSkeleton,
+	ParentNoteLink: ParentNoteSkeleton,
 	EmbeddedNote: EmbeddedNoteSkeleton,
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
-	ChildNote: Stub,
-	ChildNoteLink: Stub,
+	ChildNote: ChildNoteSkeleton,
+	ChildNoteLink: ChildNoteSkeleton,
 };
 
 const NoteNotFound = () => (
-	<>
+	<div>
 		Note not found
-	</>
+	</div>
 );
 
 const notFoundComponents = {
