@@ -1,8 +1,8 @@
 import { AddressPointer, EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ReactNode } from "react";
 import * as linkify from 'linkifyjs';
-import * as mimeTypes from 'mime-types';
 import invariant from "invariant";
+import { guessMimeType } from "./guessMimeType";
 
 export type PubkeyMetadata = {
 	name?: string;
@@ -127,7 +127,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 				string: beforeLink,
 			});
 
-			const mimeType = mimeTypes.lookup(link.href);
+			const mimeType = guessMimeType(link.href);
 
 			tokens.push({
 				type: 'link',
