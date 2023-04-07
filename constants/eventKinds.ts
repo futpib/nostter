@@ -30,6 +30,11 @@ export const EVENT_KIND_ENCRYPTED_DIRECT_MESSAGES = 4;
 export const EVENT_KIND_EVENT_DELETION = 5;
 
 /**
+ * NIP-16
+ */
+export const EVENT_KIND_REPOST = 6;
+
+/**
  * NIP-25
  */
 export const EVENT_KIND_REACTION = 7;
