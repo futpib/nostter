@@ -28,7 +28,7 @@ export function NoteRepliedProfiles({
 				href={`/${nip19.npubEncode(profilePointer.pubkey)}`}
 				target="_blank"
 			>
-				@{metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
+				@{metadata?.name?.trim() || nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
 			</Link>
 		) ];
 	})
