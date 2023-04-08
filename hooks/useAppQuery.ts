@@ -3,6 +3,7 @@ import { UseQueryOptions, UseQueryResult, useQueries, QueriesOptions } from "@ta
 import { useMemo } from "react";
 import { usePreferences } from "./usePreferences";
 import { EventSet } from "@/nostr/EventSet";
+import { handleSuccess } from "@/clients/handleSuccess";
 
 type UseAppQueryResult<TData, TError> = Pick<UseQueryResult<TData, TError>, 'data' | 'isLoading'>;
 
@@ -67,7 +68,15 @@ function useMergeAppQueryResults<TError>(
 	queryResults: UseQueryResult<EventSet, TError>[],
 ): UseAppQueryResult<EventSet, TError> {
 	const isLoading = useMemo(() => {
-		return queryResults.some(query => query.isLoading);
+		const everyDone = queryResults.every(queryResult => !queryResult.isLoading);
+		const someDoneAndNonEmpty = queryResults.some(queryResult => (
+			(
+				queryResult.data
+					&& queryResult.data.size > 0
+			) && !queryResult.isLoading
+		));
+
+		return !(everyDone || someDoneAndNonEmpty);
 	}, [ queryResults ]);
 
 	const data = useMemo(() => {
@@ -127,9 +136,13 @@ export function useAppQuery(
 	const queryKeys = useMemo(() => expandQueryKey(fullQueryKey), [ fullQueryKey ]);
 
 	const queryResults = useQueries({
-		queries: queryKeys.map(queryKey => ({
-			queryKey,
+		queries: queryKeys.map((queryKey): UseAppQueryOptions & { queryKey: any } => ({
 			...options,
+			queryKey,
+			onSuccess(eventSet) {
+				handleSuccess(eventSet);
+				return options?.onSuccess?.(eventSet);
+			},
 		})),
 	});
 
@@ -150,9 +163,13 @@ export function useAppQueries<
 		return queries.flatMap((query) => {
 			const fullQueryKeys = expandQueryKey([ queryPreferences, ...query.queryKey ] as any);
 
-			return fullQueryKeys.map(fullQueryKey => ({
+			return fullQueryKeys.map((fullQueryKey): UseAppQueryOptions => ({
 				...query,
 				queryKey: fullQueryKey,
+				onSuccess(eventSet) {
+					handleSuccess(eventSet);
+					return query.onSuccess?.(eventSet);
+				},
 			}));
 		});
 	}, [ queryPreferences, queries ]);

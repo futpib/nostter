@@ -1,4 +1,5 @@
 import { EVENT_KIND_METADATA, EVENT_KIND_REACTION, EVENT_KIND_REPOST, EVENT_KIND_SHORT_TEXT_NOTE } from "@/constants/eventKinds";
+import { localRelayDexie } from "@/dexie/localRelay";
 import { FullQueryKey } from "@/hooks/useAppQuery";
 import { EventSet } from "@/nostr/EventSet";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
@@ -122,6 +123,85 @@ async function poolQueryFn(queryKey: FullQueryKey) {
 	return eventSet;
 }
 
+async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, subresource: unknown) {
+	if (resourceType === 'event') {
+		if (!subresource) {
+			return localRelayDexie.events.where({
+				id: resourceId,
+				kind: EVENT_KIND_SHORT_TEXT_NOTE,
+			}).toArray();
+		}
+
+		if (subresource === 'descendants') {
+			const tags = await localRelayDexie.tags.where({
+				_0: 'e',
+				_1: resourceId,
+			}).toArray();
+
+			return localRelayDexie.events.where({
+				tagIds: tags.map(tag => tag.id),
+				kind: EVENT_KIND_SHORT_TEXT_NOTE,
+			}).toArray();
+		}
+
+		if (subresource === 'reposts') {
+			const tags = await localRelayDexie.tags.where({
+				_0: 'e',
+				_1: resourceId,
+			}).toArray();
+
+			return localRelayDexie.events.where({
+				tagIds: tags.map(tag => tag.id),
+				kind: EVENT_KIND_REPOST,
+			}).toArray();
+		}
+
+		if (subresource === 'reactions') {
+			const tags = await localRelayDexie.tags.where({
+				_0: 'e',
+				_1: resourceId,
+			}).toArray();
+
+			return localRelayDexie.events.where({
+				tagIds: tags.map(tag => tag.id),
+				kind: EVENT_KIND_REACTION,
+			}).toArray();
+		}
+	}
+
+	if (resourceType === 'pubkey') {
+		if (subresource === 'metadata') {
+			return localRelayDexie.events.where({
+				pubkey: resourceId,
+				kind: EVENT_KIND_METADATA,
+			}).toArray();
+		}
+	}
+
+	invariant(false, 'localQueryFn cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
+}
+
+async function localQueryFn(queryKey: FullQueryKey) {
+	const [ preferences, backend, network, parameters, ...resource ] = queryKey;
+
+	invariant(backend === 'local', 'localQueryFn called with non-local backend');
+	invariant(network === 'nostr', 'localQueryFn called with non-nostr network');
+
+	const [ resourceType, resourceId, subresource ] = resource;
+
+	invariant(resourceId, 'localQueryFn called with no resource ID');
+
+	const events = await queryLocalRelayDexie(resourceType, resourceId, subresource);
+
+	const eventSet = new EventSet();
+
+	for (const event of events) {
+		eventSet.add(event);
+	}
+
+	return eventSet;
+}
+
 export const queryFn: QueryFunction<EventSet, FullQueryKey> = ({ queryKey }) => {
 	const [ _preferences, backend ] = queryKey;
 
@@ -133,6 +213,9 @@ export const queryFn: QueryFunction<EventSet, FullQueryKey> = ({ queryKey }) => 
 		return poolQueryFn(queryKey);
 	}
 
-	console.log('TODO', backend);
-	return new EventSet();
+	if (backend === 'local') {
+		return localQueryFn(queryKey);
+	}
+
+	invariant(false, 'queryFn cannot handle this backend: %s', backend);
 }
