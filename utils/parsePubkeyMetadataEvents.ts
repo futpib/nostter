@@ -13,10 +13,10 @@ export function parsePubkeyMetadataEvents(
 		let pubkeyMetadata: PubkeyMetadata = {};
 
 		try {
-			pubkeyMetadata = JSON.parse(event.content);
+			pubkeyMetadata = event.content ? JSON.parse(event.content) : {};
 		} catch (error) {
 			if (error instanceof SyntaxError) {
-				console.error('Failed to parse metadata', event);
+				console.error('Failed to parse metadata event content:', event.content);
 			} else {
 				throw error;
 			}
