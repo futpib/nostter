@@ -20,7 +20,7 @@ export function QueryClientProvider({
 			defaultOptions: {
 				queries: {
 					queryFn: queryFn as QueryFunction,
-					refetchOnWindowFocus: true,
+					refetchOnWindowFocus: false,
 					refetchOnMount: false,
 					refetchOnReconnect: false,
 				},
