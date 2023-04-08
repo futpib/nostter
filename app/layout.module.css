@@ -16,7 +16,7 @@
 	padding: 0 8px;
 }
 
-.section {
+.main {
 	flex-grow: 1;
 	flex-shrink: 1;
 
@@ -24,9 +24,6 @@
 	flex-direction: column;
 	max-width: 600px;
 	min-width: 0;
-
-	border-right: 1px solid rgb(var(--border-rgb));
-	border-left: 1px solid rgb(var(--border-rgb));
 }
 
 .content {
@@ -38,7 +35,7 @@
 	min-width: 0;
 }
 
-.aside {
+.footer {
 	flex-grow: 1;
 	flex-shrink: 0;
 
@@ -51,10 +48,15 @@
 	.header {
 		display: flex;
 	}
+
+	.main {
+		border-right: 1px solid rgb(var(--border-rgb));
+		border-left: 1px solid rgb(var(--border-rgb));
+	}
 }
 
 @media (min-width: 1000px) {
-	.aside {
+	.footer {
 		display: flex;
 	}
 }

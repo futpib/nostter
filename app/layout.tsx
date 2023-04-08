@@ -47,15 +47,15 @@ export default function RootLayout({
 								{/* TODO: header */}
 							</header>
 
-							<section className={styles.section}>
+							<main className={styles.main}>
 								<div className={styles.content}>
 									{children}
 								</div>
-							</section>
+							</main>
 
-							<aside className={styles.aside}>
+							<footer className={styles.footer}>
 								{/* TODO: aside */}
-							</aside>
+							</footer>
 						</body>
 					</ScrollKeeperProvider>
 				</QueryClientProvider>
