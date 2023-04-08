@@ -6,6 +6,7 @@ import { NextSeo } from 'next-seo';
 import styles from './layout.module.css'
 import { QueryClientProvider } from '@/components/QueryClientProvider';
 import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
+import { PreferencesProvider } from '@/components/PreferencesProvider';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -38,25 +39,27 @@ export default function RootLayout({
 				/>
 			</head>
 
-			<QueryClientProvider>
-				<ScrollKeeperProvider>
-					<body className={styles.body}>
-						<header className={styles.header}>
-							{/* TODO: header */}
-						</header>
+			<PreferencesProvider>
+				<QueryClientProvider>
+					<ScrollKeeperProvider>
+						<body className={styles.body}>
+							<header className={styles.header}>
+								{/* TODO: header */}
+							</header>
 
-						<section className={styles.section}>
-							<div className={styles.content}>
-								{children}
-							</div>
-						</section>
+							<section className={styles.section}>
+								<div className={styles.content}>
+									{children}
+								</div>
+							</section>
 
-						<aside className={styles.aside}>
-							{/* TODO: aside */}
-						</aside>
-					</body>
-				</ScrollKeeperProvider>
-			</QueryClientProvider>
+							<aside className={styles.aside}>
+								{/* TODO: aside */}
+							</aside>
+						</body>
+					</ScrollKeeperProvider>
+				</QueryClientProvider>
+			</PreferencesProvider>
 		</html>
 	);
 }

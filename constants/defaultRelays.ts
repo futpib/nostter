@@ -1,4 +1,4 @@
-export const relays = [
+export const defaultRelays = [
 	"wss://nostr.bitcoiner.social",
 	"wss://relay.nostr.bg",
 	"wss://relay.snort.social",

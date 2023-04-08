@@ -1,5 +1,5 @@
 import { EVENT_KIND_REPOST } from "@/constants/eventKinds";
-import { relays } from "@/constants/relays";
+import { defaultRelays } from "@/constants/defaultRelays";
 import { setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { Duration } from "luxon";
@@ -10,7 +10,7 @@ export async function GET(_request: NextRequest, { params: { id } }: { params: {
 		return new Response('No id provided', { status: 400 });
 	}
 
-	const events = await simplePool.list(relays, [ {
+	const events = await simplePool.list(defaultRelays, [ {
 		kinds: [ EVENT_KIND_REPOST ],
 		'#e': [ id ],
 	} ]);

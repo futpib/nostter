@@ -1,5 +1,5 @@
 import { EVENT_KIND_METADATA } from "@/constants/eventKinds";
-import { relays as defaultRelays } from "@/constants/relays";
+import { defaultRelays } from "@/constants/defaultRelays";
 import { setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { Duration } from "luxon";

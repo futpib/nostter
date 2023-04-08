@@ -1,8 +1,8 @@
 "use client";
 
 import { Note } from "./Note";
-import { EventPointer } from "nostr-tools/lib/nip19";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
+import { useQueries } from "@tanstack/react-query";
 import { EmbeddedNote } from "./EmbeddedNote";
 import { getPubkeyMetadataRequests } from "@/utils/getPubkeyMetadataRequests";
 import { useMemo } from "react";
@@ -13,7 +13,6 @@ import { getContentImageLinks } from "@/utils/getContentImageLinks";
 import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
 import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
-import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import { EmbeddedNoteLink } from "./EmbeddedNoteLink";
 import { ParentNote } from "./ParentNote";
 import { ParentNoteLink } from "./ParentNoteLink";
@@ -24,6 +23,8 @@ import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
 import { NoteSkeleton } from "./NoteSkeleton";
 import { ParentNoteSkeleton } from "./ParentNoteSkeleton";
 import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
+import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
+import { useAppQueries } from "@/hooks/useAppQuery";
 
 const components = {
 	NotePage,
@@ -74,59 +75,44 @@ export function NoteLoader({
 	eventPointer: EventPointer;
 	onEventQuerySuccess?: (data: { event?: Event }) => void;
 }) {
-	const { publicUrl } = getPublicRuntimeConfig();
-
-	const eventUrl = useMemo(() => {
-		const url = new URL(`${publicUrl}/api/event/${eventPointer.id}`);
-
-		for (const relay of eventPointer.relays ?? []) {
-			url.searchParams.append('relays', relay);
-		}
-
-		return url.toString();
-	}, [eventPointer.id, eventPointer.relays]);
-
-	const eventQuery = useQuery([ eventUrl ], async (): Promise<{ event?: Event }> => {
-		const response = await fetch(eventUrl);
-
-		if (response.status === 404) {
-			return {};
-		}
-
-		return response.json();
+	const eventQuery = useNoteEventQuery({
+		eventPointer,
 	}, {
 		onSuccess: (data) => {
 			onEventQuerySuccess?.(data);
 		},
 	});
 
-	const pubkeyMetadataRequests = useMemo(() => {
-		return eventQuery.data?.event ? getPubkeyMetadataRequests(eventQuery.data.event) : [];
-	}, [ eventQuery.data ])
-
-	const pubkeyMetadataEventQueries = useQueries({
-		queries: pubkeyMetadataRequests.map(request => ({
-			queryKey: [ request ],
-			queryFn: async (): Promise<{ event?: Event }> => {
-				const response = await fetch(request);
-
-				if (response.status === 404) {
-					return {};
-				}
-
-				return response.json();
-			},
-		})),
-	});
-
-	const overallLoading = eventQuery.isLoading || pubkeyMetadataEventQueries.some(query => query.isLoading);
-
 	const Component = components[componentKey];
 	const SkeletonComponent = skeletonComponents[componentKey];
 	const NotFoundComponent = notFoundComponents[componentKey];
 
-	const noteEvent = eventQuery.data?.event;
-	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventQueries.flatMap(query => query.data?.event ? [ query.data.event ] : []));
+	const noteEvent = eventQuery.data?.toEvent();
+
+	const noteEventProfilePointer: undefined | ProfilePointer = noteEvent ? {
+		pubkey: noteEvent.pubkey,
+	} : undefined;
+
+	const { profilePointers = [], repliedProfilePointers = [] } = noteEvent ? getReferencedProfiles(noteEvent) : {};
+
+	const pubkeyMetadataEventQueries = useAppQueries({
+		queries: [ noteEventProfilePointer, ...profilePointers ].flatMap(profilePointer => profilePointer ? [
+			{
+				queryKey: [
+					'auto',
+					'nostr',
+					{ relays: profilePointer.relays ?? [] },
+					'pubkey',
+					profilePointer.pubkey,
+					'metadata',
+				],
+			},
+		] : []),
+	});
+
+	const overallLoading = eventQuery.isLoading || pubkeyMetadataEventQueries.isLoading;
+
+	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
 
 	const { contentTokens } = useMemo(() => {
 		const references = noteEvent ? parseReferences(noteEvent) : [];
@@ -157,7 +143,6 @@ export function NoteLoader({
 	]);
 
 	const references = noteEvent ? parseReferences(noteEvent) : undefined;
-	const { repliedProfilePointers } = noteEvent ? getReferencedProfiles(noteEvent) : { repliedProfilePointers: [] };
 
 	return overallLoading ? (
 		<SkeletonComponent

@@ -1,4 +1,4 @@
-import { relays as defaultRelays } from "@/constants/relays";
+import { defaultRelays } from "@/constants/defaultRelays";
 import { maxCacheTime, setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { NextRequest, NextResponse } from "next/server";
