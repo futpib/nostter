@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { nip19 } from 'nostr-tools';
 import { ProfilePointer } from "nostr-tools/lib/nip19";
@@ -8,12 +10,14 @@ import { Fragment, useCallback } from 'react';
 export function NoteRepliedProfiles({
 	pubkey,
 	repliedProfilePointers,
-	pubkeyMetadatas,
+	pubkeyMetadatas: pubkeyMetadatas_,
 }: {
 	pubkey: string;
 	repliedProfilePointers: ProfilePointer[];
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }) {
+	const pubkeyMetadatas = new Map(pubkeyMetadatas_);
+
 	const handleProfileLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 		event.stopPropagation();
 	}, []);
