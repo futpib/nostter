@@ -3,6 +3,30 @@
 import { NoteLoader } from "./NoteLoader";
 import { notFound, redirect, usePathname } from "next/navigation";
 import { nip19Decode } from "@/utils/nip19Decode";
+import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
+import { ProfileLoader } from "./ProfileLoader";
+
+function Nip19IdNotePageLoader({ eventPointer }: {
+	eventPointer: EventPointer;
+}) {
+	return (
+		<NoteLoader
+			componentKey="NotePage"
+			eventPointer={eventPointer}
+		/>
+	);
+}
+
+function Nip19IdProfilePageLoader({ profilePointer }: {
+	profilePointer: ProfilePointer;
+}) {
+	return (
+		<ProfileLoader
+			componentKey="ProfilePage"
+			profilePointer={profilePointer}
+		/>
+	);
+}
 
 export function Nip19IdPageLoader() {
 	const pathname = usePathname();
@@ -22,16 +46,8 @@ export function Nip19IdPageLoader() {
 	}
 
 	if (decoded.type === 'profilePointer') {
-		// TODO
-		notFound();
+		return Nip19IdProfilePageLoader({ profilePointer: decoded.profilePointer });
 	}
 
-	const { eventPointer } = decoded;
-
-	return (
-		<NoteLoader
-			componentKey="NotePage"
-			eventPointer={eventPointer}
-		/>
-	);
+	return Nip19IdNotePageLoader({ eventPointer: decoded.eventPointer });
 }

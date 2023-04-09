@@ -99,7 +99,7 @@ export function NoteLoader({
 				queryKey: [
 					'auto',
 					'nostr',
-					{ relays: profilePointer.relays ?? [] },
+					profilePointer,
 					'pubkey',
 					profilePointer.pubkey,
 					'metadata',

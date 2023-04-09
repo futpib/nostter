@@ -15,7 +15,7 @@ export class EventSet {
 	}
 
 	/**
-	 * @deprecated Use `eventSet.toEvent()` instead
+	 * @deprecated Use `eventSet.toEvent()` or `eventSet.getLatestEvent()` instead
 	 */
 	get event(): undefined | Event {
 		return this.toEvent();
@@ -51,5 +51,17 @@ export class EventSet {
 		}
 
 		return this._events.values().next().value;
+	}
+
+	getLatestEvent(): undefined | Event {
+		let latestEvent: undefined | Event;
+
+		for (const event of this._events.values()) {
+			if (!latestEvent || event.created_at > latestEvent.created_at) {
+				latestEvent = event;
+			}
+		}
+
+		return latestEvent;
 	}
 }

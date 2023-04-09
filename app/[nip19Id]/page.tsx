@@ -19,11 +19,11 @@ import { debugExtend } from '@/utils/debugExtend';
 import { getReferencedProfiles } from '@/utils/getReferencedProfiles';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { guessMimeType } from '@/utils/guessMimeType';
-import { ProfileMetadata } from '@/components/ProfileMetadata';
+import { Profile } from '@/components/Profile';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
-async function Nip19IdPageProfile({ profilePointer }: { profilePointer: ProfilePointer }) {
+async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfilePointer }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
 	const t0 = performance.now();
@@ -73,14 +73,15 @@ async function Nip19IdPageProfile({ profilePointer }: { profilePointer: ProfileP
 				}}
 			/>
 
-			<ProfileMetadata
+			<Profile
+				pubkey={profilePointer.pubkey}
 				pubkeyMetadata={pubkeyMetadata}
 			/>
 		</>
 	);
 }
 
-async function Nip19IdPageNote({ eventPointer }: { eventPointer: EventPointer }) {
+async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
 	const t0 = performance.now();
@@ -225,8 +226,8 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 	}
 
 	if (decoded.type === 'profilePointer') {
-		return Nip19IdPageProfile({ profilePointer: decoded.profilePointer });
+		return Nip19IdProfilePage({ profilePointer: decoded.profilePointer });
 	}
 
-	return Nip19IdPageNote({ eventPointer: decoded.eventPointer });
+	return Nip19IdNotePage({ eventPointer: decoded.eventPointer });
 }
