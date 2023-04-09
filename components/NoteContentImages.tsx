@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import styles from './NoteContentImages.module.css';
 import { NoteContentVideo } from './NoteContentVideo';
+import { Image } from './Image';
 import { CSSProperties, useMemo } from 'react';
 
 type ContentMediaSize = 'full' | 'half' | 'quarter';
@@ -115,7 +116,7 @@ export function NoteContentImages({
 									src={url}
 								/>
 							) : (
-								<img
+								<Image
 									style={style}
 									className={styles.contentImage}
 									key={url}

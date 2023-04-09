@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import styles from './ChildNote.module.css';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
@@ -11,6 +10,7 @@ import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteCounters } from './NoteCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
+import { Image } from './Image';
 
 export function ChildNote({
 	id,
@@ -48,7 +48,7 @@ export function ChildNote({
 			onAuxClick={onAuxClick}
 		>
 			<div className={styles.avatarColumn}>
-				<img
+				<Image
 					className={styles.avatar}
 					src={pubkeyMetadata?.picture}
 				/>

@@ -8,6 +8,7 @@ import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfilePointer } from 'nostr-tools/lib/nip19';
+import { Image } from './Image';
 
 export function EmbeddedNote({
 	id,
@@ -45,7 +46,7 @@ export function EmbeddedNote({
 			<div
 				className={styles.header}
 			>
-				<img
+				<Image
 					className={styles.avatar}
 					src={pubkeyMetadata?.picture}
 				/>

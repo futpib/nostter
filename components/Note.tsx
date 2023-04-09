@@ -7,6 +7,7 @@ import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { CreatedAtLink } from './CreatedAtLink';
+import { Image } from './Image';
 import { NoteTextCounters } from './NoteTextCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 
@@ -42,7 +43,7 @@ export function Note({
 			<div
 				className={styles.header}
 			>
-				<img
+				<Image
 					className={styles.avatar}
 					src={pubkeyMetadata?.picture}
 				/>
