@@ -17,37 +17,70 @@ import { nip19Decode } from '@/utils/nip19Decode';
 import { Nip19IdPageLoader } from '@/components/Nip19IdPageLoader';
 import { debugExtend } from '@/utils/debugExtend';
 import { getReferencedProfiles } from '@/utils/getReferencedProfiles';
+import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
+import { guessMimeType } from '@/utils/guessMimeType';
+import { ProfileMetadata } from '@/components/ProfileMetadata';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
-export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
-	const headerList = headers();
+async function Nip19IdPageProfile({ profilePointer }: { profilePointer: ProfilePointer }) {
+	const { publicUrl } = getPublicRuntimeConfig();
 
-	if (headerList.has('referer')) {
-		return (
-			<Nip19IdPageLoader />
-		);
-	}
+	const t0 = performance.now();
+	const pubkeyMetadataResponse = await fetch(`${publicUrl}/api/pubkey/${profilePointer.pubkey}/metadata`);
+	log('fetch pubkey metadata', performance.now() - t0);
 
-	const nip19DecodeResult = nip19Decode(nip19IdParam);
-
-	if (!nip19DecodeResult) {
+	if (pubkeyMetadataResponse.status === 404) {
 		notFound();
 	}
 
-	const { normalizedNip19Id, decoded } = nip19DecodeResult;
+	const { event: pubkeyMetadataEvent }: { event: Event } = await pubkeyMetadataResponse.json();
 
-	if (normalizedNip19Id !== nip19IdParam) {
-		redirect(`/${normalizedNip19Id}`);
-	}
+	const pubkeyMetadatas = parsePubkeyMetadataEvents([ pubkeyMetadataEvent ]);
 
-	if (decoded.type === 'profilePointer') {
-		// TODO
-		notFound();
-	}
+	const pubkeyMetadata = pubkeyMetadatas.get(profilePointer.pubkey);
+	const pubkeyDisplayName = pubkeyMetadata?.display_name;
+	const pubkeyName = pubkeyMetadata?.name;
 
-	const { eventPointer } = decoded;
+	const pubkeyText = (
+		pubkeyDisplayName ? (
+			pubkeyDisplayName
+		) : (
+			pubkeyName
+			? `@${pubkeyName}`
+			: nip19.npubEncode(profilePointer.pubkey)
+		)
+	);
 
+	const pubkeyImageUrl = pubkeyMetadata?.picture ?? pubkeyMetadata?.banner
+
+	return (
+		<>
+			<NextSeo
+				useAppDir
+				title={`${pubkeyText} on Nostter`}
+				description={pubkeyMetadata?.about}
+				openGraph={{
+					title: pubkeyText,
+					images: pubkeyImageUrl ? [ {
+						url: pubkeyImageUrl,
+						secureUrl: pubkeyImageUrl,
+						type: guessMimeType(pubkeyImageUrl),
+					} ] : undefined,
+				}}
+				twitter={{
+					cardType: pubkeyImageUrl ? 'summary_large_image' : undefined,
+				}}
+			/>
+
+			<ProfileMetadata
+				pubkeyMetadata={pubkeyMetadata}
+			/>
+		</>
+	);
+}
+
+async function Nip19IdPageNote({ eventPointer }: { eventPointer: EventPointer }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
 	const t0 = performance.now();
@@ -168,4 +201,32 @@ export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }:
 			</div>
 		</>
 	);
+}
+
+export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
+	const headerList = headers();
+
+	if (headerList.has('referer')) {
+		return (
+			<Nip19IdPageLoader />
+		);
+	}
+
+	const nip19DecodeResult = nip19Decode(nip19IdParam);
+
+	if (!nip19DecodeResult) {
+		notFound();
+	}
+
+	const { normalizedNip19Id, decoded } = nip19DecodeResult;
+
+	if (normalizedNip19Id !== nip19IdParam) {
+		redirect(`/${normalizedNip19Id}`);
+	}
+
+	if (decoded.type === 'profilePointer') {
+		return Nip19IdPageProfile({ profilePointer: decoded.profilePointer });
+	}
+
+	return Nip19IdPageNote({ eventPointer: decoded.eventPointer });
 }
