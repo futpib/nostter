@@ -11,9 +11,9 @@
   "dependencies": {
     "@floating-ui/react": "^0.22.3",
     "@tanstack/react-query": "^4.28.0",
-    "@tanstack/react-query-devtools": "^4.28.0",
+    "@tanstack/react-query-devtools": "^4.29.0",
     "@types/node": "18.15.11",
-    "@types/react": "18.0.31",
+    "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
     "bufferutil": "^4.0.7",
     "classnames": "^2.3.2",
@@ -25,16 +25,16 @@
     "linkifyjs": "^4.1.1",
     "luxon": "^3.3.0",
     "mime-types": "^2.1.35",
-    "next": "13.2.4",
+    "next": "13.3.0",
     "next-seo": "^5.15.0",
-    "nostr-tools": "^1.8.2",
+    "nostr-tools": "^1.8.3",
     "react": "18.2.0",
     "react-content-loader": "^6.2.1",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
-    "supports-color": "^8",
-    "type-fest": "^3.7.2",
-    "typescript": "5.0.3",
+    "supports-color": "^8.1.1",
+    "type-fest": "^3.8.0",
+    "typescript": "5.0.4",
     "utf-8-validate": "^6.0.3",
     "ws": "^8.13.0"
   },
@@ -43,7 +43,7 @@
     "@types/debug": "^4.1.7",
     "@types/deepmerge": "^2.2.0",
     "@types/invariant": "^2.2.35",
-    "@types/luxon": "^3.2.0",
+    "@types/luxon": "^3.3.0",
     "@types/mime-types": "^2.1.1"
   }
 }
