@@ -1,6 +1,8 @@
 
 .profileMetadata {
 	--avatar-size: calc(min(30%, 134px));
+
+	border-bottom: 1px solid rgb(var(--border-rgb));
 }
 
 .bannerImage {

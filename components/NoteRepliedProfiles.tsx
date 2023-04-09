@@ -2,9 +2,8 @@ import Link from 'next/link';
 import { nip19 } from 'nostr-tools';
 import { ProfilePointer } from "nostr-tools/lib/nip19";
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
-
 import styles from './NoteRepliedProfiles.module.css';
-import { Fragment } from 'react';
+import { Fragment, useCallback } from 'react';
 
 export function NoteRepliedProfiles({
 	pubkey,
@@ -15,6 +14,10 @@ export function NoteRepliedProfiles({
 	repliedProfilePointers: ProfilePointer[];
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }) {
+	const handleProfileLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+		event.stopPropagation();
+	}, []);
+
 	const links = repliedProfilePointers.flatMap(profilePointer => {
 		if (profilePointer.pubkey === pubkey) {
 			return [];
@@ -27,6 +30,7 @@ export function NoteRepliedProfiles({
 				className={styles.link}
 				href={`/${nip19.npubEncode(profilePointer.pubkey)}`}
 				target="_blank"
+				onClick={handleProfileLinkClick}
 			>
 				@{metadata?.name?.trim() || nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
 			</Link>
