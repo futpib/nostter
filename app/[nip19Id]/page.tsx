@@ -20,6 +20,7 @@ import { getReferencedProfiles } from '@/utils/getReferencedProfiles';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { guessMimeType } from '@/utils/guessMimeType';
 import { Profile } from '@/components/Profile';
+import { ProfileNotes } from '@/components/ProfileNotes';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -76,6 +77,10 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 			<Profile
 				pubkey={profilePointer.pubkey}
 				pubkeyMetadata={pubkeyMetadata}
+			/>
+
+			<ProfileNotes
+				pubkey={profilePointer.pubkey}
 			/>
 		</>
 	);

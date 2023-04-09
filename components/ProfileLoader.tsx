@@ -38,6 +38,7 @@ export function ProfileLoader({
 	profilePointer: ProfilePointer;
 }) {
 	const pubkeyMetadataEventQuery = useAppQuery([
+		'finite',
 		'auto',
 		'nostr',
 		profilePointer,

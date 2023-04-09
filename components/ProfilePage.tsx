@@ -2,6 +2,7 @@ import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { NextSeo } from "next-seo";
 import { nip19 } from "nostr-tools";
 import { Profile } from "./Profile";
+import { ProfileNotes } from "./ProfileNotes";
 
 export function ProfilePage({
 	pubkey,
@@ -31,6 +32,10 @@ export function ProfilePage({
 			<Profile
 				pubkey={pubkey}
 				pubkeyMetadata={pubkeyMetadata}
+			/>
+
+			<ProfileNotes
+				pubkey={pubkey}
 			/>
 		</>
 	);

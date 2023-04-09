@@ -20,6 +20,8 @@ import { NotePage } from "./NotePage";
 import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
 import { NoteSkeleton } from "./NoteSkeleton";
 import { ParentNoteSkeleton } from "./ParentNoteSkeleton";
+import { TimelineNote } from "./TimelineNote";
+import { TimelineNoteLink } from "./TimelineNoteLink";
 import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
 import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { useAppQueries } from "@/hooks/useAppQuery";
@@ -33,6 +35,8 @@ const components = {
 	EmbeddedNoteLink,
 	ChildNote,
 	ChildNoteLink,
+	TimelineNote,
+	TimelineNoteLink,
 };
 
 const skeletonComponents = {
@@ -44,6 +48,8 @@ const skeletonComponents = {
 	EmbeddedNoteLink: EmbeddedNoteSkeleton,
 	ChildNote: ChildNoteSkeleton,
 	ChildNoteLink: ChildNoteSkeleton,
+	TimelineNote: ParentNoteSkeleton,
+	TimelineNoteLink: ParentNoteSkeleton,
 };
 
 const NoteNotFound = () => (
@@ -62,6 +68,8 @@ const notFoundComponents = {
 	EmbeddedNoteLink: NoteNotFound,
 	ChildNote: NoteNotFound,
 	ChildNoteLink: NoteNotFound,
+	TimelineNote: NoteNotFound,
+	TimelineNoteLink: NoteNotFound,
 };
 
 export function NoteLoader({
@@ -97,6 +105,7 @@ export function NoteLoader({
 		queries: [ noteEventProfilePointer, ...profilePointers ].flatMap(profilePointer => profilePointer ? [
 			{
 				queryKey: [
+					'finite',
 					'auto',
 					'nostr',
 					profilePointer,

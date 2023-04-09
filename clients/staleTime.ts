@@ -4,7 +4,7 @@ import { Duration } from "luxon";
 const oneMinute = Duration.fromObject({ minutes: 1 }).as('milliseconds');
 
 export function getStaleTime(queryKey: FullQueryKey) {
-	const [ preferences, backend, network, parameters, resourceType, resourceId, subresource ] = queryKey;
+	const [ mode, preferences, backend, network, parameters, resourceType, resourceId, subresource ] = queryKey;
 
 	if (resourceType === 'event') {
 		if (!subresource) {

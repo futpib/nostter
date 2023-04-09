@@ -10,6 +10,7 @@ export function useReactionsQuery(
 	options?: UseAppQueryOptions,
 ) {
 	return useAppQuery([
+		'finite',
 		'auto',
 		'nostr',
 		eventPointer,

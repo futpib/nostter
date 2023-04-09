@@ -5,6 +5,8 @@ import { EVENT_KIND_METADATA } from "@/constants/eventKinds";
 export function parsePubkeyMetadataEvents(
 	pubkeyMetadataEvents: Event[],
 ): Map<string, PubkeyMetadata> {
+	const pubkeyMetadataEventsCreatedAt = new Map<string, number>();
+
 	const pubkeyMetadatas = pubkeyMetadataEvents.reduce((map, event) => {
 		if (event?.kind !== EVENT_KIND_METADATA) {
 			return map;
@@ -22,7 +24,12 @@ export function parsePubkeyMetadataEvents(
 			}
 		}
 
+		if ((pubkeyMetadataEventsCreatedAt.get(event.pubkey) ?? -Infinity) > event.created_at) {
+			return map;
+		}
+
 		map.set(event.pubkey, pubkeyMetadata);
+		pubkeyMetadataEventsCreatedAt.set(event.pubkey, event.created_at);
 
 		return map;
 	}, new Map<string, PubkeyMetadata>());

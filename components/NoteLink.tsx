@@ -4,12 +4,14 @@ import { ParentNote } from "./ParentNote";
 import { EmbeddedNote } from "./EmbeddedNote";
 import { ChildNote } from "./ChildNote";
 import { useRouter } from "next/navigation";
+import { TimelineNote } from "./TimelineNote";
 
 const components = {
 	Note,
 	ParentNote,
 	EmbeddedNote,
 	ChildNote,
+	TimelineNote,
 };
 
 type ComponentKey = keyof typeof components;

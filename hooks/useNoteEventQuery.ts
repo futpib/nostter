@@ -10,6 +10,7 @@ export function useNoteEventQuery(
 	options?: UseAppQueryOptions,
 ) {
 	return useAppQuery([
+		'finite',
 		'auto',
 		'nostr',
 		eventPointer,

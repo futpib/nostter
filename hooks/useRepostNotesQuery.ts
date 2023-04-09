@@ -10,6 +10,7 @@ export function useRepostNotesQuery(
 	options?: UseAppQueryOptions,
 ) {
 	return useAppQuery([
+		'finite',
 		'auto',
 		'nostr',
 		eventPointer,
