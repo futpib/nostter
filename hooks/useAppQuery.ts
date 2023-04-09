@@ -4,14 +4,20 @@ import { useMemo } from "react";
 import { usePreferences } from "./usePreferences";
 import { EventSet } from "@/nostr/EventSet";
 import { handleSuccess } from "@/clients/handleSuccess";
+import { prehashQueryKey } from "@/clients/prehashQueryKey";
+import { getStaleTime } from "@/clients/staleTime";
 
 type UseAppQueryResult<TData, TError> = Pick<UseQueryResult<TData, TError>, 'data' | 'isLoading'>;
 
-type QueryKeyParameters = {
+export type QueryKeyParameters = {
 	relays: string[];
 };
 
-type QueryKeyResource =
+export type ShortQueryKeyParameters = undefined | {
+	relays?: string[];
+};
+
+export type QueryKeyResource =
 	| readonly [
 		resource: 'event',
 		id: undefined | string,
@@ -31,17 +37,20 @@ type QueryKeyResource =
 type ShortQueryKey = readonly [
 	backend: 'auto' | 'api' | 'pool' | 'local',
 	network: 'nostr',
-	parameters: QueryKeyParameters,
+	parameters: ShortQueryKeyParameters,
 	...resource: QueryKeyResource,
 ];
 
-type QueryKeyPreferences = {
+export type QueryKeyPreferences = {
 	relays: string[],
 };
 
 export type FullQueryKey = readonly [
 	preferences: QueryKeyPreferences,
-	...shortQueryKey: ShortQueryKey,
+	backend: 'auto' | 'api' | 'pool' | 'local',
+	network: 'nostr',
+	parameters: QueryKeyParameters,
+	...resource: QueryKeyResource,
 ]
 
 const backends = {
@@ -50,11 +59,11 @@ const backends = {
 	'local': {},
 };
 
-function expandQueryKey<TQueryKey extends FullQueryKey>(queryKey: TQueryKey): TQueryKey[] {
+function expandQueryKey(queryKey: FullQueryKey): FullQueryKey[] {
 	const [ preferences, backend, ...rest ] = queryKey;
 
 	if (typeof backend === 'string' && backend === 'auto') {
-		return Object.keys(backends).map(backend => [ preferences, backend, ...rest ] as unknown as TQueryKey);
+		return Object.keys(backends).map(backend => [ preferences, backend as any, ...rest ]);
 	}
 
 	if (typeof backend === 'string' && backend in backends) {
@@ -121,6 +130,25 @@ function useQueryPreferences() {
 	}, [ preferences ]);
 }
 
+function shortQueryKeyToFullQueryKey(shortQueryKey: ShortQueryKey, queryPreferences: QueryKeyPreferences): FullQueryKey {
+	const [ backend, network, shortParameters, ...resource ] = shortQueryKey;
+
+	const parameters = {
+		...shortParameters,
+		relays: shortParameters?.relays?.sort() ?? [],
+	};
+
+	return [ queryPreferences, backend, network, parameters, ...resource ];
+}
+
+function useFullQueryKey(shortQueryKey: ShortQueryKey): FullQueryKey {
+	const queryPreferences = useQueryPreferences();
+
+	return useMemo(() => {
+		return shortQueryKeyToFullQueryKey(shortQueryKey, queryPreferences);
+	}, [ queryPreferences, shortQueryKey ]);
+}
+
 type UseAppQueryError = unknown;
 
 export type UseAppQueryOptions = Omit<UseQueryOptions<EventSet, UseAppQueryError, EventSet, ShortQueryKey>, 'queryKey' | 'queryFn'>;
@@ -129,16 +157,15 @@ export function useAppQuery(
 	shortQueryKey: ShortQueryKey,
 	options?: UseAppQueryOptions,
 ): UseAppQueryResult<EventSet, UseAppQueryError> {
-	const queryPreferences = useQueryPreferences();
-
-	const fullQueryKey = useMemo(() => [ queryPreferences, ...shortQueryKey ] as any, [ queryPreferences, shortQueryKey ]);
+	const fullQueryKey = useFullQueryKey(shortQueryKey);
 
 	const queryKeys = useMemo(() => expandQueryKey(fullQueryKey), [ fullQueryKey ]);
 
 	const queryResults = useQueries({
-		queries: queryKeys.map((queryKey): UseAppQueryOptions & { queryKey: any } => ({
+		queries: queryKeys.map((fullQueryKey): UseAppQueryOptions & { queryKey: any } => ({
 			...options,
-			queryKey,
+			queryKey: prehashQueryKey(fullQueryKey),
+			staleTime: getStaleTime(fullQueryKey),
 			onSuccess(eventSet) {
 				handleSuccess(eventSet);
 				return options?.onSuccess?.(eventSet);
@@ -161,11 +188,13 @@ export function useAppQueries<
 
 	const expandedQueries = useMemo(() => {
 		return queries.flatMap((query) => {
-			const fullQueryKeys = expandQueryKey([ queryPreferences, ...query.queryKey ] as any);
+			const fullQueryKey = shortQueryKeyToFullQueryKey(query.queryKey, queryPreferences);
+			const fullQueryKeys = expandQueryKey(fullQueryKey);
 
 			return fullQueryKeys.map((fullQueryKey): UseAppQueryOptions => ({
 				...query,
-				queryKey: fullQueryKey,
+				queryKey: prehashQueryKey(fullQueryKey),
+				staleTime: getStaleTime(fullQueryKey),
 				onSuccess(eventSet) {
 					handleSuccess(eventSet);
 					return query.onSuccess?.(eventSet);

@@ -5,14 +5,15 @@ import { EventSet } from "@/nostr/EventSet";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import { QueryFunction } from "@tanstack/react-query";
 import invariant from "invariant";
-import { Filter, SimplePool } from "nostr-tools";
+import { Event, Filter, SimplePool } from "nostr-tools";
+import { PrehashedQueryKey, unprehashQueryKey } from "./prehashQueryKey";
 
 export const simplePool = new SimplePool({
 	eoseSubTimeout: 10000,
 	getTimeout: 10000,
 });
 
-async function apiQueryFn(queryKey: FullQueryKey) {
+async function apiQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey): Promise<EventSet> {
 	const [ preferences, backend, network, parameters, ...resource ] = queryKey;
 
 	invariant(backend === 'api', 'apiQueryFn called with non-api backend');
@@ -38,7 +39,9 @@ async function apiQueryFn(queryKey: FullQueryKey) {
 
 	const urlString = url.toString();
 
-	const response = await fetch(urlString);
+	const response = await fetch(urlString, {
+		signal: abortSignal,
+	});
 	const json = await response.json();
 
 	const eventSet = new EventSet();
@@ -98,7 +101,27 @@ function getPoolQueryFilter(resourceType: unknown, resourceId: string, subresour
 	invariant(false, 'getPoolQueryFilter cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
 }
 
-async function poolQueryFn(queryKey: FullQueryKey) {
+async function list(simplePool: SimplePool, abortSignal: AbortSignal, relays: string[], filters: Filter[]) {
+	return new Promise<EventSet>(resolve => {
+		const eventSet = new EventSet();
+		const sub = simplePool.sub(relays, filters);
+
+		sub.on('event', (event) => {
+			eventSet.add(event);
+		});
+
+		const finish = () => {
+			sub.unsub()
+			resolve(eventSet)
+		};
+
+		sub.on('eose', finish);
+
+		abortSignal.addEventListener('abort', finish);
+	});
+}
+
+async function poolQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey): Promise<EventSet> {
 	const [ preferences, backend, network, parameters, ...resource ] = queryKey;
 
 	invariant(backend === 'pool', 'poolQueryFn called with non-pool backend');
@@ -112,18 +135,12 @@ async function poolQueryFn(queryKey: FullQueryKey) {
 
 	const filter = getPoolQueryFilter(resourceType, resourceId, subresource);
 
-	const events = await simplePool.list(relays, [ filter ]);
-
-	const eventSet = new EventSet();
-
-	for (const event of events) {
-		eventSet.add(event);
-	}
+	const eventSet = await list(simplePool, abortSignal, relays, [ filter ]);
 
 	return eventSet;
 }
 
-async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, subresource: unknown) {
+async function queryLocalRelayDexie(abortSignal: AbortSignal, resourceType: unknown, resourceId: string, subresource: unknown): Promise<Event[]> {
 	if (resourceType === 'event') {
 		if (!subresource) {
 			return localRelayDexie.events.where({
@@ -138,6 +155,10 @@ async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, s
 				_1: resourceId,
 			}).toArray();
 
+			if (abortSignal.aborted) {
+				return [];
+			}
+
 			return localRelayDexie.events.where({
 				tagIds: tags.map(tag => tag.id),
 				kind: EVENT_KIND_SHORT_TEXT_NOTE,
@@ -150,6 +171,10 @@ async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, s
 				_1: resourceId,
 			}).toArray();
 
+			if (abortSignal.aborted) {
+				return [];
+			}
+
 			return localRelayDexie.events.where({
 				tagIds: tags.map(tag => tag.id),
 				kind: EVENT_KIND_REPOST,
@@ -161,6 +186,10 @@ async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, s
 				_0: 'e',
 				_1: resourceId,
 			}).toArray();
+
+			if (abortSignal.aborted) {
+				return [];
+			}
 
 			return localRelayDexie.events.where({
 				tagIds: tags.map(tag => tag.id),
@@ -181,7 +210,7 @@ async function queryLocalRelayDexie(resourceType: unknown, resourceId: string, s
 	invariant(false, 'localQueryFn cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
 }
 
-async function localQueryFn(queryKey: FullQueryKey) {
+async function localQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey): Promise<EventSet> {
 	const [ preferences, backend, network, parameters, ...resource ] = queryKey;
 
 	invariant(backend === 'local', 'localQueryFn called with non-local backend');
@@ -191,7 +220,7 @@ async function localQueryFn(queryKey: FullQueryKey) {
 
 	invariant(resourceId, 'localQueryFn called with no resource ID');
 
-	const events = await queryLocalRelayDexie(resourceType, resourceId, subresource);
+	const events = await queryLocalRelayDexie(abortSignal, resourceType, resourceId, subresource);
 
 	const eventSet = new EventSet();
 
@@ -202,19 +231,23 @@ async function localQueryFn(queryKey: FullQueryKey) {
 	return eventSet;
 }
 
-export const queryFn: QueryFunction<EventSet, FullQueryKey> = ({ queryKey }) => {
+export const queryFn: QueryFunction<EventSet, PrehashedQueryKey> = ({ queryKey: prehashedQueryKey, signal: abortSignal }): Promise<EventSet> => {
+	invariant(abortSignal, 'queryFn called without abortSignal');
+
+	const queryKey = unprehashQueryKey(prehashedQueryKey);
+
 	const [ _preferences, backend ] = queryKey;
 
 	if (backend === 'api') {
-		return apiQueryFn(queryKey);
+		return apiQueryFn(abortSignal, queryKey);
 	}
 
 	if (backend === 'pool') {
-		return poolQueryFn(queryKey);
+		return poolQueryFn(abortSignal, queryKey);
 	}
 
 	if (backend === 'local') {
-		return localQueryFn(queryKey);
+		return localQueryFn(abortSignal, queryKey);
 	}
 
 	invariant(false, 'queryFn cannot handle this backend: %s', backend);

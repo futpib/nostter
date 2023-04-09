@@ -12,7 +12,7 @@ export function useNoteEventQuery(
 	return useAppQuery([
 		'auto',
 		'nostr',
-		{ relays: eventPointer?.relays ?? [] },
+		eventPointer,
 		'event',
 		eventPointer?.id,
 	], {

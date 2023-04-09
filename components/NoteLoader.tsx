@@ -2,9 +2,7 @@
 
 import { Note } from "./Note";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
-import { useQueries } from "@tanstack/react-query";
 import { EmbeddedNote } from "./EmbeddedNote";
-import { getPubkeyMetadataRequests } from "@/utils/getPubkeyMetadataRequests";
 import { useMemo } from "react";
 import { Event, parseReferences } from "nostr-tools";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";

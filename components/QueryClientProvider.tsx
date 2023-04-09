@@ -1,8 +1,9 @@
 "use client";
 
+import { queryKeyHashFn } from "@/clients/prehashQueryKey";
 import { queryFn } from "@/clients/queryFn";
 import { debugExtend } from "@/utils/debugExtend";
-import { QueryClient, QueryClientProvider as QueryClientProviderBase, QueryFunction } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider as QueryClientProviderBase, QueryFunction, QueryKey, QueryKeyHashFunction } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ReactNode, useEffect, useMemo, useRef } from "react"
 
@@ -20,7 +21,8 @@ export function QueryClientProvider({
 			defaultOptions: {
 				queries: {
 					queryFn: queryFn as QueryFunction,
-					refetchOnWindowFocus: false,
+					queryKeyHashFn: queryKeyHashFn as QueryKeyHashFunction<QueryKey>,
+					refetchOnWindowFocus: true,
 					refetchOnMount: false,
 					refetchOnReconnect: false,
 				},
