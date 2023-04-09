@@ -7,7 +7,7 @@ import { handleSuccess } from "@/clients/handleSuccess";
 import { prehashQueryKey } from "@/clients/prehashQueryKey";
 import { getStaleTime } from "@/clients/staleTime";
 
-type UseAppQueryResult<TData, TError> = Pick<UseQueryResult<TData, TError>, 'data' | 'isLoading'>;
+type UseAppQueryResult<TData, TError> = Pick<UseQueryResult<TData, TError>, 'data' | 'isInitialLoading'>;
 
 export type QueryKeyParameters = {
 	relays: string[];
@@ -76,13 +76,13 @@ function expandQueryKey(queryKey: FullQueryKey): FullQueryKey[] {
 function useMergeAppQueryResults<TError>(
 	queryResults: UseQueryResult<EventSet, TError>[],
 ): UseAppQueryResult<EventSet, TError> {
-	const isLoading = useMemo(() => {
-		const everyDone = queryResults.every(queryResult => !queryResult.isLoading);
+	const isInitialLoading = useMemo(() => {
+		const everyDone = queryResults.every(queryResult => !queryResult.isInitialLoading);
 		const someDoneAndNonEmpty = queryResults.some(queryResult => (
 			(
 				queryResult.data
 					&& queryResult.data.size > 0
-			) && !queryResult.isLoading
+			) && !queryResult.isInitialLoading
 		));
 
 		return !(everyDone || someDoneAndNonEmpty);
@@ -108,10 +108,10 @@ function useMergeAppQueryResults<TError>(
 
 	return useMemo(() => ({
 		data,
-		isLoading,
+		isInitialLoading,
 	}), [
 		data,
-		isLoading,
+		isInitialLoading,
 	]);
 }
 

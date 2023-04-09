@@ -108,7 +108,7 @@ export function NoteLoader({
 		] : []),
 	});
 
-	const overallLoading = eventQuery.isLoading || pubkeyMetadataEventQueries.isLoading;
+	const overallLoading = eventQuery.isInitialLoading || pubkeyMetadataEventQueries.isInitialLoading;
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
 
