@@ -33,7 +33,7 @@ export function NoteParentNotes({
 		const parents: EventPointer[] = [];
 
 		let currentId = id;
-		while (currentId && currentId !== treeRoot?.id) {
+		while (currentId) {
 			const parentId = edges[currentId];
 
 			if (!parentId) {
@@ -51,7 +51,7 @@ export function NoteParentNotes({
 		}
 
 		return parents;
-	}, [ id, treeRoot, treeLeafEdge, treeLoadedEventEdges, eventCustomRelays ]);
+	}, [ id, treeLeafEdge, treeLoadedEventEdges, eventCustomRelays ]);
 
 	const handleEventQuerySuccess = useCallback(({ event }: { event?: Event }) => {
 		if (!event) {
