@@ -4,10 +4,15 @@ import debug from 'debug';
 const debugLog = debug('nostter');
 
 if (typeof window !== 'undefined') {
+	(window as any).debug = debug;
+
 	const namespaces = process.env.NEXT_PUBLIC_DEBUG;
+
 	if (namespaces) {
 		debug.enable(namespaces);
 		debug.log('debug enabled by NEXT_PUBLIC_DEBUG', namespaces);
+	} else {
+		debug.disable();
 	}
 }
 

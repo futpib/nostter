@@ -1,8 +1,8 @@
-import { AddressPointer, EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
+import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ReactNode } from "react";
-import * as linkify from 'linkifyjs';
 import invariant from "invariant";
-import { guessMimeType } from "./guessMimeType";
+import { ContentToken, Reference, getNoteContentTokens } from "./getNoteContentTokens";
+import { Link } from "./findLinks";
 
 export type PubkeyMetadata = {
 	name?: string;
@@ -15,36 +15,6 @@ export type PubkeyMetadata = {
 	lud16?: string;
 	nip05?: string;
 	nip05valid?: boolean;
-};
-
-export type Reference = {
-	text: string;
-	profile?: ProfilePointer;
-	event?: EventPointer;
-	address?: AddressPointer;
-};
-
-type Link = {
-	type: string;
-	value: string;
-	isLink: boolean;
-	href: string;
-	start: number;
-	end: number;
-};
-
-export type ContentToken = {
-	type: 'string';
-	string: string;
-} | {
-	type: 'reference';
-	string: string;
-	reference: Reference;
-} | {
-	type: 'link';
-	string: string;
-	link: Link;
-	mimeType?: | string;
 };
 
 function defaultRender<T extends string | ReactNode>({ token }: {
@@ -100,61 +70,7 @@ export function renderNoteContent<T extends string | ReactNode>({
 	contentTokens: ContentToken[];
 	contentChildren: T[];
 } {
-	const tokens: ContentToken[] = [];
-
-	const fakeFinalReference = {
-		text: Math.random().toString(),
-	};
-
-	const unparsedReferences = references.concat([ fakeFinalReference ]);
-	let unparsedContent = content;
-	let reference = unparsedReferences.shift();
-
-	while (reference) {
-		const [ beforeReference, ...afterReference ] = unparsedContent.split(reference.text);
-
-		const linksBeforeReference = linkify.find(beforeReference);
-
-		const unparsedLinks = linksBeforeReference.slice();
-		let unparsedBeforeReference = beforeReference;
-		let link = unparsedLinks.shift();
-
-		while (link) {
-			const [ beforeLink, ...afterLink ] = unparsedBeforeReference.split(link.value);
-
-			tokens.push({
-				type: 'string',
-				string: beforeLink,
-			});
-
-			const mimeType = guessMimeType(link.href);
-
-			tokens.push({
-				type: 'link',
-				string: link.value,
-				link,
-				mimeType: mimeType || undefined,
-			});
-
-			unparsedBeforeReference = afterLink.join(link.value);
-			link = unparsedLinks.shift();
-		}
-
-		tokens.push({
-			type: 'string',
-			string: unparsedBeforeReference,
-		});
-
-		tokens.push({
-			type: 'reference',
-			string: reference.text,
-			reference,
-		});
-
-		unparsedContent = afterReference.join(reference.text);
-
-		reference = unparsedReferences.shift();
-	}
+	const tokens = getNoteContentTokens(content, references);
 
 	const contentChildren: T[] = [];
 
@@ -171,10 +87,6 @@ export function renderNoteContent<T extends string | ReactNode>({
 			}));
 		} else if (token.type === 'reference') {
 			const { reference } = token;
-
-			if (reference === fakeFinalReference) {
-				continue;
-			}
 
 			if (reference.profile) {
 				const metadata = pubkeyMetadatas.get(reference.profile.pubkey);
@@ -199,8 +111,6 @@ export function renderNoteContent<T extends string | ReactNode>({
 		}
 	}
 
-	contentChildren.push(unparsedContent as T);
-
 	while (contentChildren.length > 0 && isEmpty(contentChildren[0])) {
 		contentChildren.shift();
 	}
@@ -214,3 +124,18 @@ export function renderNoteContent<T extends string | ReactNode>({
 		contentChildren,
 	};
 }
+
+/**
+ * @deprecated Use `Reference` instead
+ */
+type DeprecatedExportReference = Reference;
+
+/**
+ * @deprecated Use `ContentToken` instead
+ */
+type DeprecatedExportContentToken = ContentToken;
+
+export type {
+	DeprecatedExportReference as Reference,
+	DeprecatedExportContentToken as ContentToken,
+};

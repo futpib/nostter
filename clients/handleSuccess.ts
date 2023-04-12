@@ -1,10 +1,17 @@
 import { EventRecord, TagRecord, localRelayDexie } from "@/dexie/localRelay";
 import { EventSet } from "@/nostr/EventSet";
 
+const existingEventIds = new Set<string>();
+
 export async function handleSuccess(eventSet: EventSet) {
-	const promises: Promise<unknown>[] = [];
+	const tagRecords = new Map<string, TagRecord>();
+	const eventRecords = new Map<string, EventRecord>();
 
 	for (const event of eventSet) {
+		if (existingEventIds.has(event.id)) {
+			continue;
+		}
+
 		const tagIds: string[] = [];
 
 		for (const tag of event.tags) {
@@ -19,17 +26,19 @@ export async function handleSuccess(eventSet: EventSet) {
 				values: tag,
 			};
 
-			promises.push(localRelayDexie.tags.put(tagRecord, tagRecord.id));
 			tagIds.push(tagRecord.id);
+			tagRecords.set(tagRecord.id, tagRecord);
 		}
 
-		const eventRecord: EventRecord = {
-			...event,
-			tagIds,
-		};
+		const eventRecord = event as EventRecord;
+		eventRecord.tagIds = tagIds;
 
-		promises.push(localRelayDexie.events.put(eventRecord, eventRecord.id));
+		eventRecords.set(eventRecord.id, eventRecord);
+		existingEventIds.add(eventRecord.id);
 	}
 
-	return Promise.all(promises);
+	return Promise.all([
+		localRelayDexie.tags.bulkPut([...tagRecords.values()]),
+		localRelayDexie.events.bulkPut([...eventRecords.values()]),
+	]);
 }

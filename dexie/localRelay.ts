@@ -1,3 +1,4 @@
+import { debugEnabled } from '@/utils/debugEnabled';
 import Dexie, { Table } from 'dexie';
 
 export interface EventRecord {
@@ -37,3 +38,7 @@ export class LocalRelayDexie extends Dexie {
 }
 
 export const localRelayDexie = new LocalRelayDexie();
+
+if (debugEnabled('dexie', 'localRelay') && typeof window !== 'undefined') {
+	(window as any).localRelayDexie = localRelayDexie;
+}

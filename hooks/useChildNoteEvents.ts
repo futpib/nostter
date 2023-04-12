@@ -1,6 +1,6 @@
 import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
+import { getNoteContentTokens } from "@/utils/getNoteContentTokens";
 import { getThread } from "@/utils/getThread";
-import { renderNoteContent } from "@/utils/renderNoteContent";
 import { Event, parseReferences } from "nostr-tools";
 import { useMemo } from "react";
 
@@ -15,11 +15,7 @@ export function useChildNoteEvents({
 		return descendantNoteEvents.filter(descendantNoteEvent => {
 			const references = parseReferences(descendantNoteEvent);
 
-			const { contentTokens } = renderNoteContent({
-				content: descendantNoteEvent.content,
-				references,
-				pubkeyMetadatas: new Map(),
-			});
+			const contentTokens = getNoteContentTokens(descendantNoteEvent.content, references);
 
 			const contentReferencedEvents = getContentReferencedEvents(contentTokens);
 
@@ -35,7 +31,7 @@ export function useChildNoteEvents({
 				)
 			);
 		});
-	}, [ id, descendantNoteEvents ]);
+	}, [ id, descendantNoteEvents.length ]);
 
 	return childNoteEvents;
 }

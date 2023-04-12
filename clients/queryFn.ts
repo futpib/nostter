@@ -7,6 +7,9 @@ import { QueryFunction } from "@tanstack/react-query";
 import invariant from "invariant";
 import { Event, Filter, SimplePool } from "nostr-tools";
 import { PrehashedQueryKey, unprehashQueryKey } from "./prehashQueryKey";
+import { debugExtend } from "@/utils/debugExtend";
+
+const log = debugExtend('clients', 'queryFn');
 
 export const simplePool = new SimplePool({
 	eoseSubTimeout: 10000,
@@ -29,11 +32,13 @@ async function apiQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey, page
 
 	const [ resourceType, resourceId, subresource ] = resource;
 
-	invariant(resourceId, 'apiQueryFn called with no resource ID');
-
 	const { publicUrl } = getPublicRuntimeConfig();
 
-	const url = new URL(`${publicUrl}/api/${resourceType}/${resourceId}`);
+	const url = new URL(`${publicUrl}/api/${resourceType}`);
+
+	if (resourceId) {
+		url.pathname += `/${resourceId}`;
+	}
 
 	if (subresource) {
 		url.pathname += `/${subresource}`;
@@ -67,40 +72,68 @@ async function apiQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey, page
 
 function getPoolQueryFilter(
 	resourceType: unknown,
-	resourceId: string,
+	resourceId: unknown,
 	subresource: unknown,
 	pageParam: PageParam,
 ) {
 	const filter: Filter = {};
 
-	if (resourceType === 'event') {
-		filter.ids = [ resourceId ];
+	if (resourceType === 'event' && typeof resourceId === 'string') {
+		if (resourceId) {
+			filter.ids = [ resourceId ];
 
-		if (!subresource) {
-			filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-			return filter;
-		}
+			if (!subresource) {
+				filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
+				return filter;
+			}
 
-		if (subresource === 'descendants') {
-			filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-			filter['#e'] = [ resourceId ];
-			return filter;
-		}
+			if (subresource === 'descendants') {
+				filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
+				filter['#e'] = [ resourceId ];
+				return filter;
+			}
 
-		if (subresource === 'reposts') {
-			filter.kinds = [ EVENT_KIND_REPOST ];
-			filter['#e'] = [ resourceId ];
-			return filter;
-		}
+			if (subresource === 'reposts') {
+				filter.kinds = [ EVENT_KIND_REPOST ];
+				filter['#e'] = [ resourceId ];
+				return filter;
+			}
 
-		if (subresource === 'reactions') {
-			filter.kinds = [ EVENT_KIND_REACTION ];
-			filter['#e'] = [ resourceId ];
-			return filter;
+			if (subresource === 'reactions') {
+				filter.kinds = [ EVENT_KIND_REACTION ];
+				filter['#e'] = [ resourceId ];
+				return filter;
+			}
 		}
 	}
 
-	if (resourceType === 'pubkey') {
+	if (resourceType === 'events' && typeof resourceId === 'number') {
+		filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
+		filter.limit = 32;
+		filter.since = resourceId;
+
+		if (
+			pageParam
+				&& 'lastPageOldestEventCreatedAt' in pageParam
+				&& typeof pageParam.lastPageOldestEventCreatedAt === 'number'
+		) {
+			filter.until = pageParam.lastPageOldestEventCreatedAt;
+		}
+
+		if (
+			pageParam
+				&& 'firstPageLatestEventCreatedAt' in pageParam
+				&& typeof pageParam.firstPageLatestEventCreatedAt === 'number'
+		) {
+			filter.since = Math.max(pageParam.firstPageLatestEventCreatedAt, resourceId);
+		}
+
+		return filter;
+	}
+
+	if (resourceType === 'pubkey' && typeof resourceId === 'string') {
+		invariant(resourceId, 'getPoolQueryFilter called with pubkey resource type but no resource ID');
+
 		filter.authors = [ resourceId ];
 
 		if (subresource === 'metadata') {
@@ -159,8 +192,6 @@ async function poolQueryFn(
 
 	const [ resourceType, resourceId, subresource ] = resource;
 
-	invariant(resourceId, 'poolQueryFn called with no resource ID');
-
 	const relays = [...new Set([...preferences.relays, ...parameters.relays])].sort();
 
 	const filter = getPoolQueryFilter(resourceType, resourceId, subresource, pageParam);
@@ -173,7 +204,7 @@ async function poolQueryFn(
 async function queryLocalRelayDexie(
 	abortSignal: AbortSignal,
 	resourceType: unknown,
-	resourceId: string,
+	resourceId: unknown,
 	subresource: unknown,
 	pageParam: PageParam,
 ): Promise<Event[]> {
@@ -234,6 +265,24 @@ async function queryLocalRelayDexie(
 		}
 	}
 
+	if (resourceType === 'events') {
+		if (typeof resourceId === 'number') {
+			const since = resourceId;
+			const until = pageParam && 'lastPageOldestEventCreatedAt' in pageParam ? pageParam.lastPageOldestEventCreatedAt : undefined;
+
+			return localRelayDexie.events
+				.orderBy('created_at')
+				.reverse()
+				.filter(x => (
+					x.kind === EVENT_KIND_SHORT_TEXT_NOTE
+						&& (!since || x.created_at > since)
+						&& (!until || x.created_at < until)
+				))
+				.limit(32)
+				.toArray();
+		}
+	}
+
 	if (resourceType === 'pubkey') {
 		if (subresource === 'metadata') {
 			return localRelayDexie.events.where({
@@ -252,6 +301,7 @@ async function queryLocalRelayDexie(
 				const { lastPageOldestEventCreatedAt } = pageParam;
 
 				if (lastPageOldestEventCreatedAt) {
+					query = query
 					query = query.and(event => event.created_at < lastPageOldestEventCreatedAt);
 				}
 			}
@@ -279,8 +329,6 @@ async function localQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey, pa
 
 	const [ resourceType, resourceId, subresource ] = resource;
 
-	invariant(resourceId, 'localQueryFn called with no resource ID');
-
 	const events = await queryLocalRelayDexie(abortSignal, resourceType, resourceId, subresource, pageParam);
 
 	const eventSet = new EventSet();
@@ -292,7 +340,19 @@ async function localQueryFn(abortSignal: AbortSignal, queryKey: FullQueryKey, pa
 	return eventSet;
 }
 
-export const queryFn: QueryFunction<EventSet, PrehashedQueryKey> = ({
+export const backends = {
+	'api': {
+		queryFn: apiQueryFn,
+	},
+	'pool': {
+		queryFn: poolQueryFn,
+	},
+	'local': {
+		queryFn: localQueryFn,
+	},
+};
+
+export const queryFn: QueryFunction<EventSet, PrehashedQueryKey> = async ({
 	queryKey: prehashedQueryKey,
 	signal: abortSignal,
 	pageParam,
@@ -301,18 +361,16 @@ export const queryFn: QueryFunction<EventSet, PrehashedQueryKey> = ({
 
 	const queryKey = unprehashQueryKey(prehashedQueryKey);
 
-	const [ _preferences, _mode, backend ] = queryKey;
+	const [ _preferences, _mode, backendKey ] = queryKey;
 
-	if (backend === 'api') {
-		return apiQueryFn(abortSignal, queryKey, pageParam);
-	}
+	const backend = backendKey in backends ? backends[backendKey as keyof typeof backends] : undefined;
 
-	if (backend === 'pool') {
-		return poolQueryFn(abortSignal, queryKey, pageParam);
-	}
+	if (backend) {
+		const result = await backend.queryFn(abortSignal, queryKey, pageParam);
 
-	if (backend === 'local') {
-		return localQueryFn(abortSignal, queryKey, pageParam);
+		log('queryFn', queryKey, pageParam, result);
+
+		return result;
 	}
 
 	invariant(false, 'queryFn cannot handle this backend: %s', backend);

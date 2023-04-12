@@ -6,7 +6,7 @@ import { EventSet } from "@/nostr/EventSet";
 import { handleSuccess } from "@/clients/handleSuccess";
 import { PrehashedQueryKey, prehashQueryKey } from "@/clients/prehashQueryKey";
 import { getStaleTime } from "@/clients/staleTime";
-import { PageParam } from "@/clients/queryFn";
+import { PageParam, backends } from "@/clients/queryFn";
 
 export type QueryKeyParameters = {
 	relays: string[];
@@ -19,11 +19,19 @@ export type ShortQueryKeyParameters = undefined | {
 export type QueryKeyResource =
 	| readonly [
 		resource: 'event',
-		id: undefined | string,
 		...rest:
-			| []
-			| [ subresource: 'descendants' | 'reposts' | 'reactions' ]
+			| readonly [
+				id: undefined | string,
+				...rest:
+					| readonly []
+					| [ subresource: 'descendants' | 'reposts' | 'reactions' ]
+				,
+			]
 		,
+	]
+	| readonly [
+		resource: 'events',
+		since: number,
 	]
 	| readonly [
 		resource: 'pubkey',
@@ -53,12 +61,6 @@ export type FullQueryKey = readonly [
 	parameters: QueryKeyParameters,
 	...resource: QueryKeyResource,
 ]
-
-const backends = {
-	'api': {},
-	'pool': {},
-	'local': {},
-};
 
 function expandQueryKey(queryKey: FullQueryKey): FullQueryKey[] {
 	const [ preferences, mode, backend, ...rest ] = queryKey;
@@ -136,8 +138,7 @@ function useQueryPreferences() {
 function shortQueryKeyToFullQueryKey(shortQueryKey: ShortQueryKey, queryPreferences: QueryKeyPreferences): FullQueryKey {
 	const [ mode, backend, network, shortParameters, ...resource ] = shortQueryKey;
 
-	const parameters = {
-		...shortParameters,
+	const parameters: QueryKeyParameters = {
 		relays: shortParameters?.relays?.sort() ?? [],
 	};
 

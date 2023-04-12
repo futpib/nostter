@@ -4,20 +4,18 @@ import { useAppInfiniteQuery } from '@/hooks/useAppQuery';
 import { useEffect, useMemo } from 'react';
 import { NoteLoader } from './NoteLoader';
 import { useVisibleEventsLimitScroll } from '@/hooks/useVisibleEventsLimitScroll';
+import { DateTime } from 'luxon';
 
-export function ProfileNotes({
-	pubkey,
-}: {
-	pubkey: string;
-}) {
+export function AllNotes() {
+	const now = useMemo(() => DateTime.local(), []);
+
 	const notesInfiniteQuery = useAppInfiniteQuery([
 		'infinite',
 		'auto',
 		'nostr',
 		undefined,
-		'pubkey',
-		pubkey,
-		'notes',
+		'events',
+		Math.ceil(now.toSeconds()),
 	]);
 
 	const eventSet = notesInfiniteQuery.data;

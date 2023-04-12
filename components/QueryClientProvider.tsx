@@ -32,7 +32,7 @@ export function QueryClientProvider({
 		const queryCache = queryClient.getQueryCache();
 
 		const unsubscribe = queryCache.subscribe(event => {
-			log('queryCache', event);
+			log('queryCache', event.query.queryKey, event);
 		});
 
 		teardownCallbacksRef.current.push(unsubscribe);

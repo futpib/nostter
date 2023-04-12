@@ -24,6 +24,7 @@
     "isomorphic-ws": "^5.0.0",
     "linkifyjs": "^4.1.1",
     "luxon": "^3.3.0",
+    "mem": "^9.0.2",
     "mime-types": "^2.1.35",
     "next": "13.3.0",
     "next-seo": "^5.15.0",
