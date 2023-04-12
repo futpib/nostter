@@ -9,7 +9,7 @@ import { NoteParentNotes } from "./NoteParentNotes";
 import { nip19 } from "nostr-tools";
 import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { getThread } from "@/utils/getThread";
-import { getProfileAnyNameText } from "@/utils/getProfileAnyNameText";
+import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
 import { Reference } from "@/utils/getNoteContentTokens";
 import { getProfileMentionNameText } from "@/utils/getProfileMentionNameText";
 
@@ -46,7 +46,7 @@ export function NotePage({
 
 	const noteEvent = noteEventQuery.data?.toEvent();
 
-	const pubkeyText = noteEvent ? getProfileAnyNameText({
+	const pubkeyText = noteEvent ? getProfileDisplayNameText({
 		pubkey: noteEvent.pubkey,
 		pubkeyMetadatas,
 	}) : undefined;

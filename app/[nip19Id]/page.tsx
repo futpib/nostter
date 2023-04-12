@@ -21,7 +21,7 @@ import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { guessMimeType } from '@/utils/guessMimeType';
 import { Profile } from '@/components/Profile';
 import { ProfileNotes } from '@/components/ProfileNotes';
-import { getProfileAnyNameText } from '@/utils/getProfileAnyNameText';
+import { getProfileDisplayNameText } from '@/utils/getProfileDisplayNameText';
 import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
 
 const log = debugExtend('pages', 'Nip19IdPage');
@@ -43,7 +43,7 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 
 	const pubkeyMetadata = pubkeyMetadatas.get(profilePointer.pubkey);
 
-	const pubkeyText = getProfileAnyNameText({
+	const pubkeyText = getProfileDisplayNameText({
 		pubkey: profilePointer.pubkey,
 		pubkeyMetadatas,
 	});
@@ -137,7 +137,7 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		contentReferencedEvents,
 	});
 
-	const pubkeyText = getProfileAnyNameText({
+	const pubkeyText = getProfileDisplayNameText({
 		pubkey: noteEvent.pubkey,
 		pubkeyMetadatas,
 	});

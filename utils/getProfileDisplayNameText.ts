@@ -1,7 +1,7 @@
 import { PubkeyMetadata } from "./renderNoteContent";
 import { getProfileMentionNameText } from "./getProfileMentionNameText";
 
-export function getProfileAnyNameText({
+export function getProfileDisplayNameText({
 	pubkey,
 	pubkeyMetadatas,
 }: {

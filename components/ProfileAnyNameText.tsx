@@ -1,4 +1,4 @@
-import { getProfileAnyNameText } from "@/utils/getProfileAnyNameText";
+import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
 import { PubkeyMetadata } from "@/utils/renderNoteContent";
 
 export function ProfileAnyNameText({
@@ -10,7 +10,7 @@ export function ProfileAnyNameText({
 }) {
 	return (
 		<>
-			{getProfileAnyNameText({
+			{getProfileDisplayNameText({
 				pubkey,
 				pubkeyMetadatas,
 			})}

@@ -2,7 +2,7 @@ import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { NextSeo } from "next-seo";
 import { Profile } from "./Profile";
 import { ProfileNotes } from "./ProfileNotes";
-import { getProfileAnyNameText } from "@/utils/getProfileAnyNameText";
+import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
 
 export function ProfilePage({
 	pubkey,
@@ -11,7 +11,7 @@ export function ProfilePage({
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
 }) {
-	const pubkeyText = getProfileAnyNameText({
+	const pubkeyText = getProfileDisplayNameText({
 		pubkey,
 		pubkeyMetadatas: pubkeyMetadata ? new Map([[pubkey, pubkeyMetadata]]) : new Map(),
 	});

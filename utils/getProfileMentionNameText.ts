@@ -10,11 +10,16 @@ export function getProfileMentionNameText({
 }) {
 	const notePubkeyMetadata = pubkeyMetadatas.get(pubkey);
 	const notePubkeyName = notePubkeyMetadata?.name;
+	const notePubkeyDisplayName = notePubkeyMetadata?.display_name;
 
 	const pubkeyText = (
 		notePubkeyName
 			? `@${notePubkeyName}`
-			: nip19.npubEncode(pubkey).slice(0, 12)
+			: (
+				notePubkeyDisplayName
+					? `@${notePubkeyDisplayName}`
+					: nip19.npubEncode(pubkey).slice(0, 12)
+			)
 	);
 
 	return pubkeyText;
