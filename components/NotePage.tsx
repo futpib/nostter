@@ -1,5 +1,5 @@
 import { ImageLink } from "@/utils/getContentImageLinks";
-import { PubkeyMetadata, Reference, renderNoteContent } from "@/utils/renderNoteContent";
+import { PubkeyMetadata, renderNoteContent } from "@/utils/renderNoteContent";
 import { NextSeo } from "next-seo";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { MouseEvent, useMemo } from "react";
@@ -9,6 +9,8 @@ import { NoteParentNotes } from "./NoteParentNotes";
 import { nip19 } from "nostr-tools";
 import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { getThread } from "@/utils/getThread";
+import { getProfileAnyNameText } from "@/utils/getProfileAnyNameText";
+import { Reference } from "@/utils/getNoteContentTokens";
 
 export function NotePage({
 	id,
@@ -41,25 +43,12 @@ export function NotePage({
 		eventPointer: { id },
 	});
 
-	const noteEvent = noteEventQuery.data?.event;
+	const noteEvent = noteEventQuery.data?.toEvent();
 
-	const notePubkeyMetadata = noteEvent?.pubkey ? pubkeyMetadatas.get(noteEvent.pubkey) : undefined;
-	const notePubkeyDisplayName = notePubkeyMetadata?.display_name;
-	const notePubkeyName = notePubkeyMetadata?.name;
-
-	const pubkeyText = (
-		notePubkeyDisplayName ? (
-			notePubkeyDisplayName
-		) : (
-			notePubkeyName
-			? `@${notePubkeyName}`
-			: (
-				noteEvent?.pubkey
-				? nip19.npubEncode(noteEvent.pubkey)
-				: undefined
-			)
-		)
-	);
+	const pubkeyText = noteEvent ? getProfileAnyNameText({
+		pubkey: noteEvent.pubkey,
+		pubkeyMetadatas,
+	}) : undefined;
 
 	const contentText = useMemo(() => {
 		if (!noteEvent) {

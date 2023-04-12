@@ -21,6 +21,7 @@ import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { guessMimeType } from '@/utils/guessMimeType';
 import { Profile } from '@/components/Profile';
 import { ProfileNotes } from '@/components/ProfileNotes';
+import { getProfileAnyNameText } from '@/utils/getProfileAnyNameText';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -40,18 +41,11 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 	const pubkeyMetadatas = parsePubkeyMetadataEvents([ pubkeyMetadataEvent ]);
 
 	const pubkeyMetadata = pubkeyMetadatas.get(profilePointer.pubkey);
-	const pubkeyDisplayName = pubkeyMetadata?.display_name;
-	const pubkeyName = pubkeyMetadata?.name;
 
-	const pubkeyText = (
-		pubkeyDisplayName ? (
-			pubkeyDisplayName
-		) : (
-			pubkeyName
-			? `@${pubkeyName}`
-			: nip19.npubEncode(profilePointer.pubkey)
-		)
-	);
+	const pubkeyText = getProfileAnyNameText({
+		pubkey: profilePointer.pubkey,
+		pubkeyMetadatas,
+	});
 
 	const pubkeyImageUrl = pubkeyMetadata?.picture ?? pubkeyMetadata?.banner
 
@@ -140,19 +134,10 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		contentReferencedEvents,
 	});
 
-	const notePubkeyMetadata = pubkeyMetadatas.get(noteEvent.pubkey);
-	const notePubkeyDisplayName = notePubkeyMetadata?.display_name;
-	const notePubkeyName = notePubkeyMetadata?.name;
-
-	const pubkeyText = (
-		notePubkeyDisplayName ? (
-			notePubkeyDisplayName
-		) : (
-			notePubkeyName
-			? `@${notePubkeyName}`
-			: nip19.npubEncode(noteEvent.pubkey)
-		)
-	);
+	const pubkeyText = getProfileAnyNameText({
+		pubkey: noteEvent.pubkey,
+		pubkeyMetadatas,
+	});
 
 	const { repliedProfilePointers } = getReferencedProfiles(noteEvent);
 
