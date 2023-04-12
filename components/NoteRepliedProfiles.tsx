@@ -1,11 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { nip19 } from 'nostr-tools';
 import { ProfilePointer } from "nostr-tools/lib/nip19";
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import styles from './NoteRepliedProfiles.module.css';
-import { Fragment, useCallback } from 'react';
+import { Fragment } from 'react';
+import { ProfileMentionNameLink } from "./ProfileMentionNameLink";
 
 export function NoteRepliedProfiles({
 	pubkey,
@@ -18,26 +17,17 @@ export function NoteRepliedProfiles({
 }) {
 	const pubkeyMetadatas = new Map(pubkeyMetadatas_);
 
-	const handleProfileLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-		event.stopPropagation();
-	}, []);
-
 	const links = repliedProfilePointers.flatMap(profilePointer => {
 		if (profilePointer.pubkey === pubkey) {
 			return [];
 		}
 
-		const metadata = pubkeyMetadatas.get(profilePointer.pubkey);
 		return [ (
-			<Link
+			<ProfileMentionNameLink
 				key={profilePointer.pubkey}
-				className={styles.link}
-				href={`/${nip19.npubEncode(profilePointer.pubkey)}`}
-				target="_blank"
-				onClick={handleProfileLinkClick}
-			>
-				@{metadata?.name?.trim() || nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
-			</Link>
+				pubkey={profilePointer.pubkey}
+				pubkeyMetadatas={pubkeyMetadatas}
+			/>
 		) ];
 	})
 

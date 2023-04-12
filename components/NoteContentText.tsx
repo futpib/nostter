@@ -1,10 +1,9 @@
 import { ReactNode, useMemo } from 'react';
 import Link from 'next/link';
-import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
-import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { ProfileMentionNameLink } from './ProfileMentionNameLink';
 
 export function NoteContentText({
 	content,
@@ -26,17 +25,11 @@ export function NoteContentText({
 		}, {
 			renderEventReference: () => '',
 			renderProfileReference: ({ key, profilePointer }) => (
-				<Link
+				<ProfileMentionNameLink
 					key={key}
-					className={styles.link}
-					href={`/${nip19.npubEncode(profilePointer.pubkey)}`}
-					target="_blank"
-				>
-					<ProfileMentionNameText
-						pubkey={profilePointer.pubkey}
-						pubkeyMetadatas={pubkeyMetadatas}
-					/>
-				</Link>
+					pubkey={profilePointer.pubkey}
+					pubkeyMetadatas={pubkeyMetadatas}
+				/>
 			),
 			renderLink: ({ key, link }) => (
 				contentImageLinks.some(imageLink => imageLink.url === link.href)

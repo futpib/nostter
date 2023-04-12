@@ -10,3 +10,7 @@
 .link {
 	color: rgb(var(--foreground-link-rgb));
 }
+
+.link:hover {
+	text-decoration: underline;
+}

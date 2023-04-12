@@ -1,0 +1,8 @@
+
+.profileAnyNameLink {
+	color: rgb(var(--foreground-link-rgb));
+}
+
+.profileAnyNameLink:hover {
+	text-decoration: underline;
+}
