@@ -127,7 +127,6 @@ export function NoteLoader({
 		return renderNoteContent({
 			content: noteEvent?.content || '',
 			references,
-			pubkeyMetadatas,
 		});
 	}, [noteEvent?.content, pubkeyMetadatas]);
 

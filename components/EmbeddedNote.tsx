@@ -9,6 +9,7 @@ import { CreatedAtLink } from './CreatedAtLink';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfilePointer } from 'nostr-tools/lib/nip19';
 import { Image } from './Image';
+import { ProfileMentionNameText } from './ProfileMentionNameText';
 
 export function EmbeddedNote({
 	id,
@@ -62,15 +63,10 @@ export function EmbeddedNote({
 				<div
 					className={styles.name}
 				>
-					{pubkeyMetadata?.name ? (
-						<>
-							@{pubkeyMetadata.name}
-						</>
-					) : (
-						<>
-							{nip19.npubEncode(pubkey)}
-						</>
-					)}
+					<ProfileMentionNameText
+						pubkey={pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
+					/>
 				</div>
 
 				<CreatedAtLink

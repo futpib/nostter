@@ -38,11 +38,9 @@ function isEmpty<T extends string | ReactNode>(value: T): boolean {
 export function renderNoteContent<T extends string | ReactNode>({
 	content,
 	references,
-	pubkeyMetadatas,
 }: {
 	content: string;
 	references: Reference[];
-	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }, {
 	renderEventReference = defaultRender,
 	renderProfileReference = defaultRender,
@@ -58,7 +56,6 @@ export function renderNoteContent<T extends string | ReactNode>({
 		key: number | string;
 		token: ContentToken;
 		profilePointer: ProfilePointer;
-		metadata?: PubkeyMetadata;
 	}) => T;
 
 	renderLink?: (props: {
@@ -89,13 +86,10 @@ export function renderNoteContent<T extends string | ReactNode>({
 			const { reference } = token;
 
 			if (reference.profile) {
-				const metadata = pubkeyMetadatas.get(reference.profile.pubkey);
-
 				contentChildren.push(renderProfileReference({
 					key: reference.text,
 					token,
 					profilePointer: reference.profile,
-					metadata,
 				}));
 			} else if (reference.event) {
 				contentChildren.push(renderEventReference({

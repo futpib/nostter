@@ -11,6 +11,7 @@ import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { getThread } from "@/utils/getThread";
 import { getProfileAnyNameText } from "@/utils/getProfileAnyNameText";
 import { Reference } from "@/utils/getNoteContentTokens";
+import { getProfileMentionNameText } from "@/utils/getProfileMentionNameText";
 
 export function NotePage({
 	id,
@@ -58,10 +59,12 @@ export function NotePage({
 		const { contentChildren } = renderNoteContent({
 			content: noteEvent.content,
 			references,
-			pubkeyMetadatas,
 		}, {
 			renderEventReference: () => '',
-			renderProfileReference: ({ profilePointer, metadata }) => `@${metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}`,
+			renderProfileReference: ({ profilePointer }) => getProfileMentionNameText({
+				pubkey: profilePointer.pubkey,
+				pubkeyMetadatas,
+			}),
 			renderLink: ({ link }) => link.value,
 		});
 

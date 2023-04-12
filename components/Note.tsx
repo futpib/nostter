@@ -10,6 +10,7 @@ import { CreatedAtLink } from './CreatedAtLink';
 import { Image } from './Image';
 import { NoteTextCounters } from './NoteTextCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
+import { ProfileMentionNameText } from './ProfileMentionNameText';
 
 export function Note({
 	id,
@@ -62,15 +63,10 @@ export function Note({
 					<div
 						className={styles.name}
 					>
-						{pubkeyMetadata?.name ? (
-							<>
-								@{pubkeyMetadata.name}
-							</>
-						) : (
-							<>
-								{nip19.npubEncode(pubkey)}
-							</>
-						)}
+						<ProfileMentionNameText
+							pubkey={pubkey}
+							pubkeyMetadatas={pubkeyMetadatas}
+						/>
 					</div>
 				</div>
 			</div>

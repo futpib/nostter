@@ -1,7 +1,7 @@
 import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { Image } from './Image';
 import styles from "./Profile.module.css";
-import { nip19 } from "nostr-tools";
+import { ProfileMentionNameText } from "./ProfileMentionNameText";
 
 export function Profile({
 	pubkey,
@@ -33,15 +33,10 @@ export function Profile({
 					<div
 						className={styles.name}
 					>
-						{pubkeyMetadata?.name ? (
-							<>
-								@{pubkeyMetadata.name}
-							</>
-						) : (
-							<>
-								{nip19.npubEncode(pubkey)}
-							</>
-						)}
+						<ProfileMentionNameText
+							pubkey={pubkey}
+							pubkeyMetadatas={pubkeyMetadata ? new Map([[pubkey, pubkeyMetadata]]) : new Map()}
+						/>
 					</div>
 				</div>
 

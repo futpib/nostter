@@ -22,6 +22,7 @@ import { guessMimeType } from '@/utils/guessMimeType';
 import { Profile } from '@/components/Profile';
 import { ProfileNotes } from '@/components/ProfileNotes';
 import { getProfileAnyNameText } from '@/utils/getProfileAnyNameText';
+import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -116,10 +117,12 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 	const { contentChildren, contentTokens } = renderNoteContent({
 		content: noteEvent.content,
 		references,
-		pubkeyMetadatas,
 	}, {
 		renderEventReference: () => '',
-		renderProfileReference: ({ profilePointer, metadata }) => `@${metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}`,
+		renderProfileReference: ({ profilePointer }) => getProfileMentionNameText({
+			pubkey: profilePointer.pubkey,
+			pubkeyMetadatas,
+		}),
 		renderLink: ({ link }) => link.value,
 	});
 

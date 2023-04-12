@@ -4,6 +4,7 @@ import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
+import { ProfileMentionNameText } from './ProfileMentionNameText';
 
 export function NoteContentText({
 	content,
@@ -22,17 +23,19 @@ export function NoteContentText({
 		return renderNoteContent<ReactNode>({
 			content,
 			references,
-			pubkeyMetadatas,
 		}, {
 			renderEventReference: () => '',
-			renderProfileReference: ({ key, profilePointer, metadata }) => (
+			renderProfileReference: ({ key, profilePointer }) => (
 				<Link
 					key={key}
 					className={styles.link}
 					href={`/${nip19.npubEncode(profilePointer.pubkey)}`}
 					target="_blank"
 				>
-					@{metadata?.name ?? nip19.npubEncode(profilePointer.pubkey).slice(0, 12)}
+					<ProfileMentionNameText
+						pubkey={profilePointer.pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
+					/>
 				</Link>
 			),
 			renderLink: ({ key, link }) => (

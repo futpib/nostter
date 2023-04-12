@@ -12,6 +12,7 @@ import { CreatedAtLink } from './CreatedAtLink';
 import { NoteCounters } from './NoteCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { Image } from './Image';
+import { ProfileMentionNameText } from './ProfileMentionNameText';
 
 export function ParentNote({
 	id,
@@ -77,15 +78,10 @@ export function ParentNote({
 					<div
 						className={styles.name}
 					>
-						{pubkeyMetadata?.name ? (
-							<>
-								@{pubkeyMetadata.name}
-							</>
-						) : (
-							<>
-								{nip19.npubEncode(pubkey)}
-							</>
-						)}
+						<ProfileMentionNameText
+							pubkey={pubkey}
+							pubkeyMetadatas={pubkeyMetadatas}
+						/>
 					</div>
 
 					<CreatedAtLink
