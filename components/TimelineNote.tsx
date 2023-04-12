@@ -1,6 +1,5 @@
 import styles from './TimelineNote.module.css';
-import { nip19 } from 'nostr-tools';
-import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
+import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
@@ -13,6 +12,8 @@ import { NoteCounters } from './NoteCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { ProfileLink } from './ProfileLink';
+import { Reference } from '@/utils/getNoteContentTokens';
 
 export function TimelineNote({
 	id,
@@ -53,10 +54,15 @@ export function TimelineNote({
 			onAuxClick={onAuxClick}
 		>
 			<div className={styles.avatarColumn}>
-				<Image
-					className={styles.avatar}
-					src={pubkeyMetadata?.picture}
-				/>
+				<ProfileLink
+					unstyled
+					pubkey={pubkey}
+				>
+					<Image
+						className={styles.avatar}
+						src={pubkeyMetadata?.picture}
+					/>
+				</ProfileLink>
 			</div>
 
 			<div className={styles.contentColumn}>
@@ -64,20 +70,30 @@ export function TimelineNote({
 					className={styles.header}
 				>
 					{pubkeyMetadata?.display_name && (
-						<div
-							className={styles.displayName}
+						<ProfileLink
+							unstyled
+							pubkey={pubkey}
 						>
-							{pubkeyMetadata?.display_name}
-						</div>
+							<div
+								className={styles.displayName}
+							>
+								{pubkeyMetadata?.display_name}
+							</div>
+						</ProfileLink>
 					)}
 
 					<div
 						className={styles.name}
 					>
-						<ProfileMentionNameText
+						<ProfileLink
+							unstyled
 							pubkey={pubkey}
-							pubkeyMetadatas={pubkeyMetadatas}
-						/>
+						>
+							<ProfileMentionNameText
+								pubkey={pubkey}
+								pubkeyMetadatas={pubkeyMetadatas}
+							/>
+						</ProfileLink>
 					</div>
 
 					<CreatedAtLink
