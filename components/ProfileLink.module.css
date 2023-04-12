@@ -6,3 +6,20 @@
 .profileLink:hover {
 	text-decoration: underline;
 }
+
+.profileTooltip {
+	background-color: rgb(var(--background-rgb));
+	border: 1px solid rgb(var(--background-rgb));
+	border-radius: 16px;
+	box-shadow: 0 0 4px 0px rgba(var(--shadow-rgba));
+	color: rgb(var(--foreground-rgb));
+
+	font-weight: initial;
+	white-space: initial;
+
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	max-width: 300px;
+	padding: 16px;
+}

@@ -1,0 +1,21 @@
+.avatarImage {
+	width: 64px;
+	height: 64px;
+
+	border-radius: 50%;
+}
+
+.names {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.displayName {
+	font-size: 1.33em;
+	font-weight: 600;
+}
+
+.name {
+	color: rgb(var(--foreground-secondary-rgb));
+}

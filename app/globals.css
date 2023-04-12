@@ -12,6 +12,8 @@
 	--background-hover-rgba: 0, 0, 0, 0.03;
 	--background-tooltip-rgba: 0, 0, 0, 0.6;
 
+	--shadow-rgba: 0, 0, 0, 0.3;
+
 	--border-rgb: 207, 217, 222;
 }
 
@@ -25,6 +27,8 @@
 		--background-rgb: 0, 0, 0;
 		--background-hover-rgba: 255, 255, 255, 0.03;
 		--background-tooltip-rgba: 255, 255, 255, 0.6;
+
+		--shadow-rgba: 255, 255, 255, 0.3;
 
 		--border-rgb: 47, 51, 54;
 	}

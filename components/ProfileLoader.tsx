@@ -5,10 +5,12 @@ import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { useAppQuery } from "@/hooks/useAppQuery";
 import { Profile } from "./Profile";
 import { ProfilePage } from "./ProfilePage";
+import { ProfileTooltipContent } from "./ProfileTooltipContent";
 
 const components = {
 	ProfilePage,
 	Profile,
+	ProfileTooltipContent,
 };
 
 const Stub = () => null;
@@ -16,6 +18,7 @@ const Stub = () => null;
 const skeletonComponents = {
 	ProfilePage: Stub,
 	Profile: Stub,
+	ProfileTooltipContent: Stub,
 };
 
 const ProfileNotFound = () => (
@@ -28,14 +31,17 @@ const notFoundComponents = {
 	// TODO
 	ProfilePage: ProfileNotFound,
 	Profile: ProfileNotFound,
+	ProfileTooltipContent: ProfileNotFound,
 };
 
 export function ProfileLoader({
 	componentKey,
 	profilePointer,
+	onProfileQuerySuccess,
 }: {
 	componentKey: keyof typeof components;
 	profilePointer: ProfilePointer;
+	onProfileQuerySuccess?: () => void;
 }) {
 	const pubkeyMetadataEventQuery = useAppQuery([
 		'finite',
@@ -45,7 +51,11 @@ export function ProfileLoader({
 		'pubkey',
 		profilePointer.pubkey,
 		'metadata',
-	]);
+	], {
+		onSettled: () => {
+			onProfileQuerySuccess?.();
+		},
+	});
 
 	const Component = components[componentKey];
 	const SkeletonComponent = skeletonComponents[componentKey];
