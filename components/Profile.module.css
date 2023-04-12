@@ -45,3 +45,7 @@
 .name {
 	color: rgb(var(--foreground-secondary-rgb));
 }
+
+.about {
+	white-space: pre-wrap;
+}
