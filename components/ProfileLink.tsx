@@ -21,6 +21,10 @@ export function ProfileLink({
 		event.stopPropagation();
 	}, []);
 
+	const handleProfileTooltipClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		event.stopPropagation();
+	}, []);
+
 	const [ isTooltipOpen, setIsTooltipOpen ] = useState(false);
 
 	const { x, y, strategy, refs, context } = useFloating({
@@ -58,6 +62,7 @@ export function ProfileLink({
 						left: x ?? 0,
 					}}
 					className={styles.profileTooltip}
+					onClick={handleProfileTooltipClick}
 					{...getFloatingProps()}
 				>
 					<ProfileLoader

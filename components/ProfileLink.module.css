@@ -16,6 +16,7 @@
 
 	font-weight: initial;
 	white-space: initial;
+	cursor: initial;
 
 	display: flex;
 	flex-direction: column;
