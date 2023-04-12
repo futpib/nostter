@@ -4,7 +4,7 @@ import { ProfilePointer } from "nostr-tools/lib/nip19";
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import styles from './NoteRepliedProfiles.module.css';
 import { Fragment } from 'react';
-import { ProfileMentionNameLink } from "./ProfileMentionNameLink";
+import { ProfileMentionNameTextLink } from "./ProfileMentionNameTextLink";
 
 export function NoteRepliedProfiles({
 	pubkey,
@@ -23,7 +23,7 @@ export function NoteRepliedProfiles({
 		}
 
 		return [ (
-			<ProfileMentionNameLink
+			<ProfileMentionNameTextLink
 				key={profilePointer.pubkey}
 				pubkey={profilePointer.pubkey}
 				pubkeyMetadatas={pubkeyMetadatas}

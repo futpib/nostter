@@ -1,6 +1,5 @@
 import styles from './ParentNote.module.css';
-import { nip19 } from 'nostr-tools';
-import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
+import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
@@ -13,6 +12,8 @@ import { NoteCounters } from './NoteCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { Reference } from '@/utils/getNoteContentTokens';
+import { ProfileLink } from './ProfileLink';
 
 export function ParentNote({
 	id,
@@ -53,10 +54,15 @@ export function ParentNote({
 			onAuxClick={onAuxClick}
 		>
 			<div className={styles.avatarColumn}>
-				<Image
-					className={styles.avatar}
-					src={pubkeyMetadata?.picture}
-				/>
+				<ProfileLink
+					unstyled
+					pubkey={pubkey}
+				>
+					<Image
+						className={styles.avatar}
+						src={pubkeyMetadata?.picture}
+					/>
+				</ProfileLink>
 
 				<div
 					className={styles.threadLine}
@@ -71,17 +77,27 @@ export function ParentNote({
 						<div
 							className={styles.displayName}
 						>
-							{pubkeyMetadata?.display_name}
+							<ProfileLink
+								unstyled
+								pubkey={pubkey}
+							>
+								{pubkeyMetadata?.display_name}
+							</ProfileLink>
 						</div>
 					)}
 
 					<div
 						className={styles.name}
 					>
-						<ProfileMentionNameText
+						<ProfileLink
+							unstyled
 							pubkey={pubkey}
-							pubkeyMetadatas={pubkeyMetadatas}
-						/>
+						>
+							<ProfileMentionNameText
+								pubkey={pubkey}
+								pubkeyMetadatas={pubkeyMetadatas}
+							/>
+						</ProfileLink>
 					</div>
 
 					<CreatedAtLink

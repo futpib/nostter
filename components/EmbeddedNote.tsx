@@ -1,6 +1,6 @@
 import styles from './EmbeddedNote.module.css';
 import { nip19 } from 'nostr-tools';
-import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
+import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { ImageLink } from '@/utils/getContentImageLinks';
@@ -10,6 +10,8 @@ import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfilePointer } from 'nostr-tools/lib/nip19';
 import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { ProfileLink } from './ProfileLink';
+import { Reference } from '@/utils/getNoteContentTokens';
 
 export function EmbeddedNote({
 	id,
@@ -47,26 +49,41 @@ export function EmbeddedNote({
 			<div
 				className={styles.header}
 			>
-				<Image
-					className={styles.avatar}
-					src={pubkeyMetadata?.picture}
-				/>
+				<ProfileLink
+					unstyled
+					pubkey={pubkey}
+				>
+					<Image
+						className={styles.avatar}
+						src={pubkeyMetadata?.picture}
+					/>
+				</ProfileLink>
 
 				{pubkeyMetadata?.display_name && (
 					<div
 						className={styles.displayName}
 					>
-						{pubkeyMetadata?.display_name}
+						<ProfileLink
+							unstyled
+							pubkey={pubkey}
+						>
+							{pubkeyMetadata?.display_name}
+						</ProfileLink>
 					</div>
 				)}
 
 				<div
 					className={styles.name}
 				>
-					<ProfileMentionNameText
+					<ProfileLink
+						unstyled
 						pubkey={pubkey}
-						pubkeyMetadatas={pubkeyMetadatas}
-					/>
+					>
+						<ProfileMentionNameText
+							pubkey={pubkey}
+							pubkeyMetadatas={pubkeyMetadatas}
+						/>
+					</ProfileLink>
 				</div>
 
 				<CreatedAtLink

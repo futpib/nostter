@@ -1,8 +1,0 @@
-
-.profileMentionNameLink {
-	color: rgb(var(--foreground-link-rgb));
-}
-
-.profileMentionNameLink:hover {
-	text-decoration: underline;
-}

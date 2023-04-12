@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
-import { ProfileMentionNameLink } from './ProfileMentionNameLink';
+import { ProfileMentionNameTextLink } from './ProfileMentionNameTextLink';
 
 export function NoteContentText({
 	content,
@@ -25,7 +25,7 @@ export function NoteContentText({
 		}, {
 			renderEventReference: () => '',
 			renderProfileReference: ({ key, profilePointer }) => (
-				<ProfileMentionNameLink
+				<ProfileMentionNameTextLink
 					key={key}
 					pubkey={profilePointer.pubkey}
 					pubkeyMetadatas={pubkeyMetadatas}

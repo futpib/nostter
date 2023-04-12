@@ -1,6 +1,5 @@
 import styles from './Note.module.css';
-import { nip19 } from 'nostr-tools';
-import { PubkeyMetadata, Reference } from '@/utils/renderNoteContent';
+import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentImages } from './NoteContentImages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
@@ -11,6 +10,8 @@ import { Image } from './Image';
 import { NoteTextCounters } from './NoteTextCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { ProfileLink } from './ProfileLink';
+import { Reference } from '@/utils/getNoteContentTokens';
 
 export function Note({
 	id,
@@ -44,10 +45,15 @@ export function Note({
 			<div
 				className={styles.header}
 			>
-				<Image
-					className={styles.avatar}
-					src={pubkeyMetadata?.picture}
-				/>
+				<ProfileLink
+					unstyled
+					pubkey={pubkey}
+				>
+					<Image
+						className={styles.avatar}
+						src={pubkeyMetadata?.picture}
+					/>
+				</ProfileLink>
 
 				<div
 					className={styles.names}
@@ -56,17 +62,27 @@ export function Note({
 						<div
 							className={styles.displayName}
 						>
-							{pubkeyMetadata?.display_name}
+							<ProfileLink
+								unstyled
+								pubkey={pubkey}
+							>
+								{pubkeyMetadata?.display_name}
+							</ProfileLink>
 						</div>
 					)}
 
 					<div
 						className={styles.name}
 					>
-						<ProfileMentionNameText
+						<ProfileLink
+							unstyled
 							pubkey={pubkey}
-							pubkeyMetadatas={pubkeyMetadatas}
-						/>
+						>
+							<ProfileMentionNameText
+								pubkey={pubkey}
+								pubkeyMetadatas={pubkeyMetadatas}
+							/>
+						</ProfileLink>
 					</div>
 				</div>
 			</div>
