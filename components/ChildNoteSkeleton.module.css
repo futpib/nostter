@@ -1,2 +1,4 @@
 
-.childNoteSkeleton {}
+.childNoteSkeleton {
+	border-bottom: 1px solid rgb(var(--border-rgb));
+}
