@@ -28,7 +28,9 @@ export function NoteLink<K extends ComponentKey>({
 
 	const router = useRouter();
 
-	const handleClick = useCallback(() => {
+	const handleClick = useCallback((event: MouseEvent) => {
+		event.stopPropagation();
+
 		router.push(href);
 	}, [ router, href ]);
 
@@ -36,6 +38,8 @@ export function NoteLink<K extends ComponentKey>({
 		if (event.button !== 1) {
 			return;
 		}
+
+		event.stopPropagation();
 
 		const newTabWindow = window.open(href, "_blank");
 		newTabWindow?.blur();
