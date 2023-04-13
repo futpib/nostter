@@ -1,7 +1,7 @@
 import styles from './EmbeddedNote.module.css';
 import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
-import { NoteContentImages } from './NoteContentImages';
+import { NoteContentMedias } from './NoteContentMedias';
 import { NoteContentText } from './NoteContentText';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { MouseEvent } from 'react';
@@ -106,7 +106,7 @@ export function EmbeddedNote({
 				contentVideoLinks={contentVideoLinks}
 			/>
 
-			<NoteContentImages
+			<NoteContentMedias
 				embedded
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}

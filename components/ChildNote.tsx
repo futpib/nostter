@@ -1,6 +1,6 @@
 import styles from './ChildNote.module.css';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
-import { NoteContentImages } from './NoteContentImages';
+import { NoteContentMedias } from './NoteContentMedias';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
@@ -112,7 +112,7 @@ export function ChildNote({
 					contentVideoLinks={contentVideoLinks}
 				/>
 
-				<NoteContentImages
+				<NoteContentMedias
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
 				/>

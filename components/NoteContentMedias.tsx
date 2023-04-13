@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { ImageLink } from '@/utils/getContentImageLinks';
-import styles from './NoteContentImages.module.css';
+import styles from './NoteContentMedias.module.css';
 import { NoteContentVideo } from './NoteContentVideo';
 import { Image } from './Image';
 import { CSSProperties, useMemo } from 'react';
@@ -13,7 +13,7 @@ type ContentMediaLink = {
 	style: CSSProperties;
 };
 
-export function NoteContentImages({
+export function NoteContentMedias({
 	embedded,
 	contentImageLinks,
 	contentVideoLinks,
