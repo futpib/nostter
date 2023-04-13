@@ -1,9 +1,10 @@
 import { ReactNode, useMemo } from 'react';
 import Link from 'next/link';
-import { PubkeyMetadata, Reference, renderNoteContent } from '@/utils/renderNoteContent';
+import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { ProfileMentionNameTextLink } from './ProfileMentionNameTextLink';
+import { Reference } from '@/utils/getNoteContentTokens';
 
 export function NoteContentText({
 	content,

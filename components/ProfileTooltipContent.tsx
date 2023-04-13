@@ -2,6 +2,7 @@ import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { Image } from "./Image";
 import styles from "./ProfileTooltipContent.module.css";
 import { ProfileMentionNameText } from "./ProfileMentionNameText";
+import { ProfileAboutText } from "./ProfileAboutText";
 
 export function ProfileTooltipContent({
 	pubkey,
@@ -34,11 +35,10 @@ export function ProfileTooltipContent({
 				</div>
 			</div>
 
-			<div
+			<ProfileAboutText
 				className={styles.about}
-			>
-				{pubkeyMetadata?.about}
-			</div>
+				content={pubkeyMetadata?.about ?? ''}
+			/>
 		</>
 	);
 }

@@ -17,13 +17,13 @@ export type PubkeyMetadata = {
 	nip05valid?: boolean;
 };
 
-function defaultRender<T extends string | ReactNode>({ token }: {
+export function defaultRender<T extends string | ReactNode>({ token }: {
 	token: ContentToken;
 }): T {
 	return token.string as T;
 }
 
-function isEmpty<T extends string | ReactNode>(value: T): boolean {
+export function isRenderedChildEmpty<T extends string | ReactNode>(value: T): boolean {
 	if (value == null) {
 		return true;
 	}
@@ -105,11 +105,11 @@ export function renderNoteContent<T extends string | ReactNode>({
 		}
 	}
 
-	while (contentChildren.length > 0 && isEmpty(contentChildren[0])) {
+	while (contentChildren.length > 0 && isRenderedChildEmpty(contentChildren[0])) {
 		contentChildren.shift();
 	}
 
-	while (contentChildren.length > 0 && isEmpty(contentChildren[contentChildren.length - 1])) {
+	while (contentChildren.length > 0 && isRenderedChildEmpty(contentChildren[contentChildren.length - 1])) {
 		contentChildren.pop();
 	}
 
