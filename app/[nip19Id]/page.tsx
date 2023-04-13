@@ -54,7 +54,7 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 		<>
 			<NextSeo
 				useAppDir
-				title={`${pubkeyText} on Nostter`}
+				title={`${pubkeyText} on Nostr`}
 				description={pubkeyMetadata?.about}
 				openGraph={{
 					title: pubkeyText,
@@ -148,7 +148,7 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		<>
 			<NextSeo
 				useAppDir
-				title={`${pubkeyText} on Nostter: ${contentText}`}
+				title={`${pubkeyText} on Nostr: ${contentText}`}
 				description={contentText}
 				openGraph={{
 					title: pubkeyText,

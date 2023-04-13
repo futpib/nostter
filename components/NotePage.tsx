@@ -87,7 +87,7 @@ export function NotePage({
 		<>
 			<NextSeo
 				useAppDir
-				title={`${pubkeyText} on Nostter: ${contentText}`}
+				title={`${pubkeyText} on Nostr: ${contentText}`}
 				description={contentText}
 			/>
 

@@ -8,7 +8,7 @@ export function HomePageLoader() {
 		<>
 			<NextSeo
 				useAppDir
-				title="Nostter"
+				title="Nostr"
 				description="A censorship-resistant alternative to Twitter that has a chance of working"
 			/>
 

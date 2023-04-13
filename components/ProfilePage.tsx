@@ -20,7 +20,7 @@ export function ProfilePage({
 		<>
 			<NextSeo
 				useAppDir
-				title={`${pubkeyText} on Nostter`}
+				title={`${pubkeyText} on Nostr`}
 				description={pubkeyMetadata?.about}
 			/>
 

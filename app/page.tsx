@@ -16,7 +16,7 @@ export default async function HomePage() {
 		<>
 			<NextSeo
 				useAppDir
-				title="Nostter"
+				title="Nostr"
 				description="A censorship-resistant alternative to Twitter that has a chance of working"
 			/>
 

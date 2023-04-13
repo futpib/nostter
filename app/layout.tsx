@@ -32,9 +32,9 @@ export default function RootLayout({
 			<head>
 				<NextSeo
 					useAppDir
-					titleTemplate="%s | Nostter"
+					titleTemplate="%s | Nostr"
 					openGraph={{
-						siteName: 'Nostter',
+						siteName: 'Nostr',
 					}}
 				/>
 			</head>
