@@ -48,6 +48,7 @@ export function ProfileLink({
 				className={unstyled ? undefined : styles.profileLink}
 				href={`/${nip19.npubEncode(pubkey)}`}
 				onClick={handleProfileLinkClick}
+				onAuxClick={handleProfileLinkClick}
 				{...getReferenceProps()}
 			>
 				{children}
