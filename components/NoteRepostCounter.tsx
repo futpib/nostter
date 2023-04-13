@@ -10,12 +10,10 @@ export function NoteRepostCounter({
 }) {
 	const repostNotesQuery = useRepostNotesQuery({ eventPointer: noteEventPointer });
 
-	const repostNoteEvents = repostNotesQuery.data?.events ?? [];
-
 	return (
 		<NoteCounter
 			iconComponent={FaRetweet}
-			value={repostNoteEvents.length ?? 0}
+			value={repostNotesQuery.data?.size ?? 0}
 		/>
 	);
 }

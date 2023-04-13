@@ -1,4 +1,4 @@
-.contentImages {
+.contentMedias {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	grid-auto-rows: 140px;
@@ -8,14 +8,14 @@
 	overflow: hidden;
 }
 
-.contentImagesEmbedded {
+.contentMediasEmbedded {
 	border: none;
 	border-radius: 0;
 	margin-left: -16px;
 	margin-right: -16px;
 }
 
-.contentImagesEmbedded:last-child {
+.contentMediasEmbedded:last-child {
 	margin-bottom: -16px;
 }
 
@@ -25,4 +25,34 @@
 	width: 100%;
 	object-fit: cover;
 	cursor: pointer;
+}
+
+.contentMediasDialogOverlay {
+	display: flex;
+	flex-direction: column;
+
+	background: rgba(var(--background-modal-backdrop-rgba));
+
+	--foreground-rgb: var(--foreground-modal-rgb);
+	--background-rgb: var(--background-modal-rgb);
+}
+
+.contentMediasDialog {
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: column;
+
+	max-height: 100%;
+
+	color: rgb(var(--foreground-rgb));
+}
+
+.contentMediasDialogClose {
+	position: absolute;
+
+	top: 0;
+	left: 0;
+
+	padding: 20px;
 }

@@ -1,12 +1,17 @@
+'use client';
+
 import classNames from 'classnames';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import styles from './NoteContentMedias.module.css';
 import { NoteContentVideo } from './NoteContentVideo';
 import { Image } from './Image';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
+import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useClick, useDismiss, useFloating, useInteractions } from '@floating-ui/react';
+import { NoteContentMediasDialogContent } from './NoteContentMediasDialogContent';
+import { FaTimes } from 'react-icons/fa';
 
 type ContentMediaSize = 'full' | 'half' | 'quarter';
-type ContentMediaLink = {
+export type ContentMediaLink = {
 	type: 'image' | 'video';
 	url: string;
 	size: ContentMediaSize;
@@ -103,30 +108,80 @@ export function NoteContentMedias({
 		return contentMediaLinks;
 	}, [contentImageLinks, contentVideoLinks]);
 
+	const [ isDialogOpen, setIsDialogOpen ] = useState(false);
+
+	const { refs, context } = useFloating({
+		open: isDialogOpen,
+		onOpenChange: setIsDialogOpen,
+	});
+
+	const click = useClick(context);
+	const dismiss = useDismiss(context, { outsidePressEvent: "mousedown" });
+
+	const { getFloatingProps } = useInteractions([
+		click,
+		dismiss,
+	]);
+
+	const handleDialogCloseClick = () => {
+		setIsDialogOpen(false);
+	};
+
+	const createHandleMediaClick = (index: number) => () => {
+		console.log('createHandleMediaClick', index);
+		setIsDialogOpen(true);
+	};
+
 	return (
 		<>
 			{contentMediaLinks.length > 0 && (
-				<div className={classNames(styles.contentImages, embedded && styles.contentImagesEmbedded)}>
-					{contentMediaLinks.map(({ type, url, style }) => {
-						return (
-							type === 'video' ? (
-								<NoteContentVideo
-									style={style}
-									key={url}
-									src={url}
-								/>
-							) : (
-								<Image
-									style={style}
-									className={styles.contentImage}
-									key={url}
-									src={url}
-								/>
-							)
-						);
-					})}
+				<div className={classNames(styles.contentMedias, embedded && styles.contentMediasEmbedded)}>
+					{contentMediaLinks.map(({ type, url, style }, index) => type === 'video' ? (
+						<NoteContentVideo
+							style={style}
+							key={url}
+							src={url}
+							onClick={createHandleMediaClick(index)}
+						/>
+					) : (
+						<Image
+							style={style}
+							className={styles.contentImage}
+							key={url}
+							src={url}
+							onClick={createHandleMediaClick(index)}
+						/>
+					))}
 				</div>
 			)}
+
+			<FloatingPortal>
+				{isDialogOpen && (
+					<FloatingOverlay
+						className={styles.contentMediasDialogOverlay}
+					>
+						<FloatingFocusManager context={context}>
+							<div
+								className={styles.contentMediasDialog}
+								ref={refs.setFloating}
+								{...getFloatingProps()}
+							>
+								<div
+									className={styles.contentMediasDialogClose}
+									onClick={handleDialogCloseClick}
+								>
+									<FaTimes />
+								</div>
+
+								<NoteContentMediasDialogContent
+									contentMediaLinks={contentMediaLinks}
+									onClick={handleDialogCloseClick}
+								/>
+							</div>
+						</FloatingFocusManager>
+					</FloatingOverlay>
+				)}
+			</FloatingPortal>
 		</>
 	);
 }
