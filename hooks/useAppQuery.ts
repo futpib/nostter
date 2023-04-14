@@ -39,6 +39,10 @@ export type QueryKeyResource =
 		...rest:
 			| [ subresource: 'metadata' | 'notes' ]
 	]
+	| readonly [
+		resource: 'search',
+		query: string,
+	]
 ;
 
 type ShortQueryKey = readonly [

@@ -25,6 +25,7 @@ export function NoteContentText({
 			references,
 		}, {
 			renderEventReference: () => '',
+
 			renderProfileReference: ({ key, profilePointer }) => (
 				<ProfileMentionNameTextLink
 					key={key}
@@ -32,6 +33,7 @@ export function NoteContentText({
 					pubkeyMetadatas={pubkeyMetadatas}
 				/>
 			),
+
 			renderLink: ({ key, link }) => (
 				contentImageLinks.some(imageLink => imageLink.url === link.href)
 				|| contentVideoLinks.some(videoLink => videoLink.url === link.href)
@@ -42,6 +44,16 @@ export function NoteContentText({
 					href={link.href}
 					target="_blank"
 					rel="noopener noreferrer"
+				>
+					{link.value}
+				</Link>
+			),
+
+			renderHashtag: ({ key, link }) => (
+				<Link
+					key={key}
+					className={styles.link}
+					href={`/search?q=${encodeURIComponent(link.href)}`}
 				>
 					{link.value}
 				</Link>

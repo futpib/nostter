@@ -1,7 +1,7 @@
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ReactNode } from "react";
 import invariant from "invariant";
-import { ContentToken, Reference, getNoteContentTokens } from "./getNoteContentTokens";
+import { ContentToken, ContentTokenHashtag, ContentTokenLink, ContentTokenReference, Reference, getNoteContentTokens } from "./getNoteContentTokens";
 import { Link } from "./findLinks";
 
 export type PubkeyMetadata = {
@@ -45,22 +45,29 @@ export function renderNoteContent<T extends string | ReactNode>({
 	renderEventReference = defaultRender,
 	renderProfileReference = defaultRender,
 	renderLink = defaultRender,
+	renderHashtag = defaultRender,
 }: {
 	renderEventReference?: (props: {
 		key: number | string;
-		token: ContentToken;
+		token: ContentTokenReference;
 		eventPointer: EventPointer;
 	}) => T;
 
 	renderProfileReference?: (props: {
 		key: number | string;
-		token: ContentToken;
+		token: ContentTokenReference;
 		profilePointer: ProfilePointer;
 	}) => T;
 
 	renderLink?: (props: {
 		key: number | string;
-		token: ContentToken;
+		token: ContentTokenLink;
+		link: Link;
+	}) => T;
+
+	renderHashtag?: (props: {
+		key: number | string;
+		token: ContentTokenHashtag;
 		link: Link;
 	}) => T;
 } = {}): {
@@ -78,6 +85,14 @@ export function renderNoteContent<T extends string | ReactNode>({
 			const { link } = token;
 
 			contentChildren.push(renderLink({
+				key: link.start,
+				token,
+				link,
+			}));
+		} else if (token.type === 'hashtag') {
+			const { link } = token;
+
+			contentChildren.push(renderHashtag({
 				key: link.start,
 				token,
 				link,

@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { Event, nip19, parseReferences } from 'nostr-tools';
+import { Event, parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { renderNoteContent } from '@/utils/renderNoteContent';

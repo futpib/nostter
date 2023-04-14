@@ -6,7 +6,6 @@ import { MouseEvent, useMemo } from "react";
 import { Note } from "./Note";
 import { NoteChildNotes } from "./NoteChildNotes";
 import { NoteParentNotes } from "./NoteParentNotes";
-import { nip19 } from "nostr-tools";
 import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { getThread } from "@/utils/getThread";
 import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";

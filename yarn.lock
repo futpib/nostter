@@ -880,6 +880,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linkify-plugin-hashtag@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "linkify-plugin-hashtag@npm:4.1.1"
+  peerDependencies:
+    linkifyjs: ^4.0.0
+  checksum: 99802d11d3bacf1794b240f1d43ac716974f5ba00fc87ce1aad5725224fc1fccb5e972c5ed6d7285163ef9bff888916fc66e8a0a74925716757eb5843cc6334c
+  languageName: node
+  linkType: hard
+
 "linkifyjs@npm:^4.1.1":
   version: 4.1.1
   resolution: "linkifyjs@npm:4.1.1"
@@ -1269,6 +1278,7 @@ __metadata:
     dexie: ^3.2.3
     invariant: ^2.2.4
     isomorphic-ws: ^5.0.0
+    linkify-plugin-hashtag: ^4.1.1
     linkifyjs: ^4.1.1
     luxon: ^3.3.0
     mem: ^9.0.2

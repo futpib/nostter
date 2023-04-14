@@ -18,6 +18,8 @@
 	white-space: initial;
 	cursor: initial;
 
+	word-break: break-word;
+
 	display: flex;
 	flex-direction: column;
 	gap: 12px;

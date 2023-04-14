@@ -8,6 +8,7 @@ import invariant from "invariant";
 import { Event, Filter, SimplePool } from "nostr-tools";
 import { PrehashedQueryKey, unprehashQueryKey } from "./prehashQueryKey";
 import { debugExtend } from "@/utils/debugExtend";
+import { findLinks } from "@/utils/findLinks";
 
 const log = debugExtend('clients', 'queryFn');
 
@@ -155,6 +156,17 @@ function getPoolQueryFilter(
 
 			return filter;
 		}
+	}
+
+	if (resourceType === 'search' && typeof resourceId === 'string') {
+		const links = findLinks(resourceId);
+		const hashtags = links.filter(link => link.type === 'hashtag');
+
+		filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
+		filter.limit = 32;
+		filter['#t'] = hashtags.map(hashtag => hashtag.value.replace('#', ''));
+
+		return filter;
 	}
 
 	invariant(false, 'getPoolQueryFilter cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
@@ -316,6 +328,25 @@ async function queryLocalRelayDexie(
 
 			return query.toArray();
 		}
+	}
+
+	if (resourceType === 'search' && typeof resourceId === 'string') {
+		const links = findLinks(resourceId);
+		const hashtags = links.filter(link => link.type === 'hashtag');
+
+		const tags = await localRelayDexie.tags.where({
+			_0: 't',
+			_1: hashtags.map(hashtag => hashtag.value.replace('#', '')),
+		}).toArray();
+
+		if (abortSignal.aborted) {
+			return [];
+		}
+
+		return localRelayDexie.events.where({
+			tagIds: tags.map(tag => tag.id),
+			kind: EVENT_KIND_SHORT_TEXT_NOTE,
+		}).limit(32).toArray();
 	}
 
 	invariant(false, 'localQueryFn cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);

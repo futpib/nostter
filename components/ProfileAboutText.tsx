@@ -26,6 +26,16 @@ export function ProfileAboutText({
 					{link.value}
 				</Link>
 			),
+
+			renderHashtag: ({ key, link }) => (
+				<Link
+					key={key}
+					className={styles.link}
+					href={`/search?q=${encodeURIComponent(link.href)}`}
+				>
+					{link.value}
+				</Link>
+			),
 		});
 	}, [content]);
 

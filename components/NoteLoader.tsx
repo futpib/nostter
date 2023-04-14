@@ -6,7 +6,6 @@ import { EmbeddedNote } from "./EmbeddedNote";
 import { useMemo } from "react";
 import { Event, parseReferences } from "nostr-tools";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
-import { renderNoteContent } from "@/utils/renderNoteContent";
 import { getContentImageLinks } from "@/utils/getContentImageLinks";
 import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { EmbeddedNoteSkeleton } from "./EmbeddedNoteSkeleton";
@@ -25,6 +24,7 @@ import { TimelineNoteLink } from "./TimelineNoteLink";
 import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
 import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
 import { useAppQueries } from "@/hooks/useAppQuery";
+import { getNoteContentTokens } from "@/utils/getNoteContentTokens";
 
 const components = {
 	NotePage,
@@ -121,14 +121,9 @@ export function NoteLoader({
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
 
-	const { contentTokens } = useMemo(() => {
-		const references = noteEvent ? parseReferences(noteEvent) : [];
+	const references = noteEvent ? parseReferences(noteEvent) : undefined;
 
-		return renderNoteContent({
-			content: noteEvent?.content || '',
-			references,
-		});
-	}, [noteEvent?.content, pubkeyMetadatas]);
+	const contentTokens = useMemo(() => getNoteContentTokens(noteEvent?.content || '', references ?? []), [noteEvent?.content, references]);
 
 	const contentImageLinks = useMemo(() => {
 		return getContentImageLinks(contentTokens);
@@ -147,8 +142,6 @@ export function NoteLoader({
 	}, [
 		contentTokens,
 	]);
-
-	const references = noteEvent ? parseReferences(noteEvent) : undefined;
 
 	return overallLoading ? (
 		<SkeletonComponent

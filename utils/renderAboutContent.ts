@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import invariant from "invariant";
-import { ContentToken, getNoteContentTokens } from "./getNoteContentTokens";
+import { ContentToken, ContentTokenHashtag, ContentTokenLink, getNoteContentTokens } from "./getNoteContentTokens";
 import { Link } from "./findLinks";
 import { defaultRender, isRenderedChildEmpty } from "./renderNoteContent";
 
@@ -10,10 +10,17 @@ export function renderAboutContent<T extends string | ReactNode>({
 	content: string;
 }, {
 	renderLink = defaultRender,
+	renderHashtag = defaultRender,
 }: {
 	renderLink?: (props: {
 		key: number | string;
-		token: ContentToken;
+		token: ContentTokenLink;
+		link: Link;
+	}) => T;
+
+	renderHashtag?: (props: {
+		key: number | string;
+		token: ContentTokenHashtag;
 		link: Link;
 	}) => T;
 } = {}): {
@@ -31,6 +38,14 @@ export function renderAboutContent<T extends string | ReactNode>({
 			const { link } = token;
 
 			contentChildren.push(renderLink({
+				key: link.start,
+				token,
+				link,
+			}));
+		} else if (token.type === 'hashtag') {
+			const { link } = token;
+
+			contentChildren.push(renderHashtag({
 				key: link.start,
 				token,
 				link,

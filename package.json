@@ -22,6 +22,7 @@
     "dexie": "^3.2.3",
     "invariant": "^2.2.4",
     "isomorphic-ws": "^5.0.0",
+    "linkify-plugin-hashtag": "^4.1.1",
     "linkifyjs": "^4.1.1",
     "luxon": "^3.3.0",
     "mem": "^9.0.2",

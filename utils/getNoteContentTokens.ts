@@ -9,19 +9,36 @@ export type Reference = {
 	address?: AddressPointer;
 };
 
-export type ContentToken = {
+export type ContentTokenString = {
 	type: 'string';
 	string: string;
-} | {
+};
+
+export type ContentTokenReference = {
 	type: 'reference';
 	string: string;
 	reference: Reference;
-} | {
+};
+
+export type ContentTokenLink = {
 	type: 'link';
 	string: string;
 	link: Link;
 	mimeType?: | string;
 };
+
+export type ContentTokenHashtag = {
+	type: 'hashtag';
+	string: string;
+	link: Link;
+};
+
+export type ContentToken =
+	| ContentTokenString
+	| ContentTokenReference
+	| ContentTokenLink
+	| ContentTokenHashtag
+;
 
 export function getNoteContentTokens(content: string, references: Reference[]): ContentToken[] {
 	const tokens: ContentToken[] = [];
@@ -51,14 +68,22 @@ export function getNoteContentTokens(content: string, references: Reference[]): 
 				string: beforeLink,
 			});
 
-			const mimeType = guessMimeType(link.href);
+			if (link.type === 'hashtag') {
+				tokens.push({
+					type: 'hashtag',
+					string: link.value,
+					link,
+				});
+			} else {
+				const mimeType = guessMimeType(link.href);
 
-			tokens.push({
-				type: 'link',
-				string: link.value,
-				link,
-				mimeType: mimeType || undefined,
-			});
+				tokens.push({
+					type: 'link',
+					string: link.value,
+					link,
+					mimeType: mimeType || undefined,
+				});
+			}
 
 			unparsedBeforeReference = afterLink.join(link.value);
 			link = unparsedLinks.shift();
