@@ -24,6 +24,7 @@ import { ProfileNotes } from '@/components/ProfileNotes';
 import { getProfileDisplayNameText } from '@/utils/getProfileDisplayNameText';
 import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
 import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
+import { createTRPCCaller } from '@/trpc/caller';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -83,17 +84,11 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 }
 
 async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer }) {
-	const { publicUrl } = getPublicRuntimeConfig();
+	const trpcCaller = await createTRPCCaller();
 
-	const t0 = performance.now();
-	const eventResponse = await fetch(`${publicUrl}/api/event/${eventPointer.id}`);
-	log('fetch event', performance.now() - t0);
+	const noteEventSet = await trpcCaller.nostr.event({ id: eventPointer.id });
 
-	if (eventResponse.status === 404) {
-		notFound();
-	}
-
-	const { event: noteEvent }: { event: Event } = await eventResponse.json();
+	const noteEvent = noteEventSet.toEvent();
 
 	if (!noteEvent) {
 		notFound();

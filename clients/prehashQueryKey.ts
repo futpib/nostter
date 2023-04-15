@@ -1,5 +1,6 @@
 import { FullQueryKey, QueryKeyParameters, QueryKeyPreferences, QueryKeyResource } from "@/hooks/useAppQuery";
 import invariant from "invariant";
+import { PartialDeep } from "type-fest";
 
 export type PrehashedQueryKey = readonly [ json: string ];
 
@@ -49,8 +50,43 @@ export function unprehashQueryKey(prehashedQueryKey: PrehashedQueryKey): FullQue
 	return [preferences, mode, backend, network, parameters, ...resource];
 }
 
-export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
-	const [ json ] = prehashedQueryKey;
+const knownOptions = new Set([
+	'id',
+	'author',
+	'relays',
+]);
 
-	return json;
+export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
+	if (prehashedQueryKey.length === 1) {
+		const [ json ] = prehashedQueryKey;
+
+		return json;
+	}
+
+	const trpcQueryKey = prehashedQueryKey as unknown as [ string[], PartialDeep<{
+		input: {
+			id: string;
+			author: string;
+			relays: string[];
+		};
+		type: string,
+	}> ];
+
+	const trpcQueryKeyOptions = trpcQueryKey[1];
+
+	for (const key of Object.keys(trpcQueryKeyOptions.input ?? {})) {
+		invariant(knownOptions.has(key), 'Uknown query option %s', key);
+	}
+
+	return [
+		[
+			trpcQueryKeyOptions.type,
+			trpcQueryKey[0].join('.'),
+		].join(' '),
+		[
+			trpcQueryKeyOptions.input?.id,
+			trpcQueryKeyOptions.input?.author,
+			trpcQueryKeyOptions.input?.relays?.join(),
+		].join(),
+	].join('\n');
 }

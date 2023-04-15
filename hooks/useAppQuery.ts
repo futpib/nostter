@@ -23,7 +23,6 @@ export type QueryKeyResource =
 			| readonly [
 				id: undefined | string,
 				...rest:
-					| readonly []
 					| [ subresource: 'descendants' | 'reposts' | 'reactions' ]
 				,
 			]

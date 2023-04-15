@@ -1,5 +1,6 @@
 import { EventPointer } from "nostr-tools/lib/nip19";
-import { UseAppQueryOptions, useAppQuery } from "./useAppQuery";
+import { trpcReact } from "@/clients/trpc";
+import { EventSet } from "@/nostr/EventSet";
 
 export function useNoteEventQuery(
 	{
@@ -7,17 +8,19 @@ export function useNoteEventQuery(
 	}: {
 		eventPointer: undefined | EventPointer;
 	},
-	options?: UseAppQueryOptions,
+	options?: {
+		enabled?: boolean;
+		onSuccess?: (data: EventSet) => void;
+	},
 ) {
-	return useAppQuery([
-		'finite',
-		'auto',
-		'nostr',
-		eventPointer,
-		'event',
-		eventPointer?.id,
-	], {
+	const { id, author, relays } = eventPointer ?? {};
+
+	return trpcReact.nostr.event.useQuery({
+		id: id ?? "",
+		author,
+		relays: relays?.sort(),
+	}, {
 		...options,
-		enabled: Boolean(eventPointer) && options?.enabled !== false,
+		enabled: Boolean(id) && options?.enabled !== false,
 	});
 }

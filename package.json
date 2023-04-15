@@ -12,6 +12,9 @@
     "@floating-ui/react": "^0.22.3",
     "@tanstack/react-query": "^4.28.0",
     "@tanstack/react-query-devtools": "^4.29.0",
+    "@trpc/client": "^10.20.0",
+    "@trpc/react-query": "^10.20.0",
+    "@trpc/server": "^10.20.0",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
@@ -35,11 +38,13 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "react-remove-scroll": "^2.5.5",
+    "superjson": "^1.12.2",
     "supports-color": "^8.1.1",
     "type-fest": "^3.8.0",
     "typescript": "5.0.4",
     "utf-8-validate": "^6.0.3",
-    "ws": "^8.13.0"
+    "ws": "^8.13.0",
+    "zod": "^3.21.4"
   },
   "packageManager": "yarn@3.5.0",
   "devDependencies": {

@@ -1,3 +1,4 @@
+import invariant from "invariant";
 import { Event } from "nostr-tools";
 
 function uniqueSortedArrayBinarySearchInsert(array: number[], value: number) {
@@ -57,6 +58,37 @@ export class EventSet {
 		}
 
 		return clone;
+	}
+
+	toJSON() {
+		return this._createdAtOrder.map(createdAt => {
+			const events = this._eventsByCreatedAt.get(createdAt);
+
+			invariant(
+				events,
+				"No events in `_eventsByRcreatedAt` at `createdAt === %s` which is in the `_createdAtOrder`.",
+				createdAt,
+			);
+
+			return events;
+		});
+	}
+
+	static fromJSON(json: any) {
+		const eventSet = new EventSet();
+
+		for (const eventGroup of json) {
+			for (const event of eventGroup) {
+				eventSet._events.set(event.id, event);
+			}
+
+			const firstEvent = eventGroup[0];
+
+			eventSet._eventsByCreatedAt.set(firstEvent.created_at, eventGroup);
+			eventSet._createdAtOrder.push(firstEvent.created_at);
+		}
+
+		return eventSet;
 	}
 
 	add(event: Event) {

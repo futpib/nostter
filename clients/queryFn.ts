@@ -221,13 +221,6 @@ async function queryLocalRelayDexie(
 	pageParam: PageParam,
 ): Promise<Event[]> {
 	if (resourceType === 'event') {
-		if (!subresource) {
-			return localRelayDexie.events.where({
-				id: resourceId,
-				kind: EVENT_KIND_SHORT_TEXT_NOTE,
-			}).toArray();
-		}
-
 		if (subresource === 'descendants') {
 			const tags = await localRelayDexie.tags.where({
 				_0: 'e',

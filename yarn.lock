@@ -259,6 +259,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trpc/client@npm:^10.20.0":
+  version: 10.20.0
+  resolution: "@trpc/client@npm:10.20.0"
+  peerDependencies:
+    "@trpc/server": 10.20.0
+  checksum: 28e576f8752c35fec038772cfda33c8c1e83735bb41711df1164ba5ca7fe7f8cad12a791c8ce3f9d9a6b19cf603791e35a7fab2e5bdb0a196a85fa0d2fbddec6
+  languageName: node
+  linkType: hard
+
+"@trpc/react-query@npm:^10.20.0":
+  version: 10.20.0
+  resolution: "@trpc/react-query@npm:10.20.0"
+  peerDependencies:
+    "@tanstack/react-query": ^4.18.0
+    "@trpc/client": 10.20.0
+    "@trpc/server": 10.20.0
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 5d5c981e4a13d00a98d58c1632fbf688c57e9ce4e5c396bf9add690e33bdc974842c0817dd7491b4ecd8f738c3c71a9e775b510295a84a96894eded8ce31eb3e
+  languageName: node
+  linkType: hard
+
+"@trpc/server@npm:^10.20.0":
+  version: 10.20.0
+  resolution: "@trpc/server@npm:10.20.0"
+  checksum: a06b8053cbd6340fb3bffbcd1ae70fa8b7ec4e162be4dafbefe545362f9232e282949c938503b5b497a06ae91243fa347cb3207e3d7373da90be4bae858aa4a6
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.1.7":
   version: 4.1.7
   resolution: "@types/debug@npm:4.1.7"
@@ -1263,6 +1292,9 @@ __metadata:
     "@floating-ui/react": ^0.22.3
     "@tanstack/react-query": ^4.28.0
     "@tanstack/react-query-devtools": ^4.29.0
+    "@trpc/client": ^10.20.0
+    "@trpc/react-query": ^10.20.0
+    "@trpc/server": ^10.20.0
     "@types/debug": ^4.1.7
     "@types/deepmerge": ^2.2.0
     "@types/invariant": ^2.2.35
@@ -1291,11 +1323,13 @@ __metadata:
     react-dom: 18.2.0
     react-icons: ^4.8.0
     react-remove-scroll: ^2.5.5
+    superjson: ^1.12.2
     supports-color: ^8.1.1
     type-fest: ^3.8.0
     typescript: 5.0.4
     utf-8-validate: ^6.0.3
     ws: ^8.13.0
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -1649,7 +1683,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superjson@npm:^1.10.0":
+"superjson@npm:^1.10.0, superjson@npm:^1.12.2":
   version: 1.12.2
   resolution: "superjson@npm:1.12.2"
   dependencies:
@@ -1843,5 +1877,12 @@ __metadata:
   version: 4.0.0
   resolution: "yallist@npm:4.0.0"
   checksum: 343617202af32df2a15a3be36a5a8c0c8545208f3d3dfbc6bb7c3e3b7e8c6f8e7485432e4f3b88da3031a6e20afa7c711eded32ddfb122896ac5d914e75848d5
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.21.4":
+  version: 3.21.4
+  resolution: "zod@npm:3.21.4"
+  checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
   languageName: node
   linkType: hard

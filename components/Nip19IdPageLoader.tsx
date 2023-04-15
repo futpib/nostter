@@ -31,7 +31,11 @@ function Nip19IdProfilePageLoader({ profilePointer }: {
 export function Nip19IdPageLoader() {
 	const pathname = usePathname();
 
-	const [ _1, nip19IdParam ] = pathname.split('/');
+	const [ _1, nip19IdParam ] = pathname?.split('/') ?? [];
+
+	if (!nip19IdParam) {
+		notFound();
+	}
 
 	const nip19DecodeResult = nip19Decode(nip19IdParam);
 
