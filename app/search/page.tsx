@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { NextSeo } from 'next-seo';
 import { SearchPageLoader } from '@/components/SearchPageLoader';
 import { SearchNotes } from '@/components/SearchNotes';
+import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
 
 async function SearchPageServer({ query }: { query: string }) {
 	return (
@@ -19,7 +20,13 @@ async function SearchPageServer({ query }: { query: string }) {
 	);
 }
 
-export default async function SearchPage({ searchParams: { q } }: { searchParams: { q: unknown } }) {
+export default async function SearchPage({
+	searchParams,
+}: {
+	searchParams: Record<string, unknown>;
+}) {
+	const { q } = searchParams;
+
 	if (typeof q !== 'string') {
 		return notFound();
 	}
@@ -30,9 +37,7 @@ export default async function SearchPage({ searchParams: { q } }: { searchParams
 		return redirect('/');
 	}
 
-	const headerList = headers();
-
-	if (headerList.has('referer')) {
+	if (shouldSkipServerRendering(headers(), searchParams)) {
 		return (
 			<SearchPageLoader
 				query={query}

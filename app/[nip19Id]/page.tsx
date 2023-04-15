@@ -23,6 +23,7 @@ import { Profile } from '@/components/Profile';
 import { ProfileNotes } from '@/components/ProfileNotes';
 import { getProfileDisplayNameText } from '@/utils/getProfileDisplayNameText';
 import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
+import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -197,10 +198,14 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 	);
 }
 
-export default async function Nip19IdPage({ params: { nip19Id: nip19IdParam } }: { params: { nip19Id: unknown } }) {
-	const headerList = headers();
-
-	if (headerList.has('referer')) {
+export default async function Nip19IdPage({
+	params: { nip19Id: nip19IdParam },
+	searchParams,
+}: {
+	params: { nip19Id: unknown };
+	searchParams: Record<string, unknown>;
+}) {
+	if (shouldSkipServerRendering(headers(), searchParams)) {
 		return (
 			<Nip19IdPageLoader />
 		);
