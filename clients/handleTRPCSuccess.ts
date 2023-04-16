@@ -4,6 +4,7 @@ import invariant from "invariant";
 import { handleSuccess } from "./handleSuccess";
 import { trpcRouter } from "@/trpc/router";
 import { TRPCMeta, TRPCMetaCacheControl } from "@/trpc/meta";
+import { Event } from "nostr-tools";
 
 function setCacheTimeFromMeta(query: Query, queryKey: QueryKey, data: EventSet) {
 	const path = queryKey[0] as string[];
@@ -51,4 +52,20 @@ export function handleTRPCSuccess(query: Query, queryKey: QueryKey, data: unknow
 	setCacheTimeFromMeta(query, queryKey, data);
 
 	handleSuccess(data);
+}
+
+export function handleTRPCSubscriptionData(data: unknown) {
+	invariant(
+		typeof data === 'object'
+			&& data
+			&& 'id' in data
+			&& typeof data.id === 'string',
+		'data does not have a string id',
+	);
+
+	const eventSet = new EventSet();
+
+	eventSet.add(data as Event);
+
+	handleSuccess(eventSet);
 }

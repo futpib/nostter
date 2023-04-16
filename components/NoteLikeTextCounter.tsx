@@ -1,29 +1,27 @@
 import { NoteTextCounter } from "./NoteTextCounter";
 import { EventPointer } from 'nostr-tools/lib/nip19';
-import { useReactionsQuery } from '@/hooks/useReactionsQuery';
 import { POSITIVE_REACTIONS } from "@/constants/positiveReactions";
-import { useMemo } from 'react';
+import { useState } from 'react';
+import { trpcReact } from "@/clients/trpc";
 
 export function NoteLikeTextCounter({
 	noteEventPointer,
 }: {
 	noteEventPointer: EventPointer;
 }) {
-	const reactionsQuery = useReactionsQuery({ eventPointer: noteEventPointer });
+	const [ positiveReactionsCount, setPositiveReactionsCount ] = useState(0);
 
-	const likeReactionsCount = useMemo(() => {
-		return (reactionsQuery.data?.events ?? []).reduce((likeCount, event) => {
+	trpcReact.nostr.eventReactionEventsSubscription.useSubscription(noteEventPointer, {
+		onData(event) {
 			if (POSITIVE_REACTIONS.has(event.content)) {
-				return likeCount + 1;
+				setPositiveReactionsCount(positiveReactionsCount => positiveReactionsCount + 1);
 			}
+		},
+	});
 
-			return likeCount;
-		}, 0);
-	}, [reactionsQuery.data?.events]);
-
-	return likeReactionsCount > 0 ? (
+	return positiveReactionsCount > 0 ? (
 		<NoteTextCounter
-			value={likeReactionsCount}
+			value={positiveReactionsCount}
 			label="Likes"
 		/>
 	) : null;

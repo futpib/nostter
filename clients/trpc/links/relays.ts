@@ -4,41 +4,31 @@ import { defaultRelays } from "@/constants/defaultRelays";
 import { TRPCContext } from "@/trpc/context";
 import { trpcRouter } from "@/trpc/router";
 import { simplePool } from "@/utils/simplePool";
-import { observable } from '@trpc/server/observable';
+import { callerLink } from './caller';
+import { handleTRPCSubscriptionData } from '@/clients/handleTRPCSuccess';
+import { Event } from 'nostr-tools';
 import invariant from 'invariant';
 
 const createRelaysTRPCContext = (): TRPCContext => ({
 	defaultRelays,
+	combinedRelays: defaultRelays,
 	relayPool: simplePool,
 });
 
 const relaysTRPCCaller = trpcRouter.createCaller(createRelaysTRPCContext());
 
-export const relaysLink = (): TRPCLink<TRPCRouter> => {
-	return (runtime) => {
-		return (props) => {
-			if (props.op.type === 'query') {
-				return observable((observer) => {
-					let handler: any = relaysTRPCCaller;
+export const relaysLink = (): TRPCLink<TRPCRouter> => callerLink({
+	caller: relaysTRPCCaller,
 
-					for (const segment of props.op.path.split('.')) {
-						handler = handler[segment];
-					}
+	onSubscriptionData(data: unknown) {
+		invariant(
+			typeof data === 'object'
+				&& data
+				&& 'id' in data
+				&& typeof data.id === 'string',
+			'data does not have a string id',
+		);
 
-					const promise = handler(props.op.input);
-
-					promise.then((data: unknown) => {
-						observer.next({
-							result: { data },
-						});
-						observer.complete();
-					}).catch((error: unknown) => {
-						observer.error(error as any);
-					});
-				});
-			}
-
-			invariant(false, 'not implemented');
-		};
-	};
-};
+		handleTRPCSubscriptionData(data as Event);
+	}
+});

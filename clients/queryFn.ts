@@ -1,5 +1,5 @@
 import { EVENT_KIND_METADATA, EVENT_KIND_REACTION, EVENT_KIND_REPOST, EVENT_KIND_SHORT_TEXT_NOTE } from "@/constants/eventKinds";
-import { localRelayDexie } from "@/dexie/localRelay";
+import { getLocalRelayDexie } from "@/dexie/localRelay";
 import { FullQueryKey } from "@/hooks/useAppQuery";
 import { EventSet } from "@/nostr/EventSet";
 import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
@@ -220,6 +220,8 @@ async function queryLocalRelayDexie(
 	subresource: unknown,
 	pageParam: PageParam,
 ): Promise<Event[]> {
+	const localRelayDexie = await getLocalRelayDexie();
+
 	if (resourceType === 'event') {
 		if (subresource === 'descendants') {
 			const tags = await localRelayDexie.tags.where({

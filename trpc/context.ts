@@ -5,6 +5,8 @@ import { TRPCMeta } from './meta';
 
 export type TRPCContext = {
 	defaultRelays: string[];
+	combinedRelays: string[];
+
 	relayPool: SimplePool;
 
 	combinedMeta?: TRPCMeta;
@@ -13,6 +15,7 @@ export type TRPCContext = {
 export async function createTRPCContext(): Promise<TRPCContext> {
 	return {
 		defaultRelays,
+		combinedRelays: defaultRelays,
 		relayPool: simplePool,
 	};
 }
