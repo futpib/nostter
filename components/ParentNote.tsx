@@ -10,10 +10,10 @@ import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteCounters } from './NoteCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
-import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
 import { Reference } from '@/utils/getNoteContentTokens';
 import { ProfileLink } from './ProfileLink';
+import { SmallAvatarImage } from './SmallAvatarImage';
 
 export function ParentNote({
 	id,
@@ -58,7 +58,7 @@ export function ParentNote({
 					unstyled
 					pubkey={pubkey}
 				>
-					<Image
+					<SmallAvatarImage
 						className={styles.avatar}
 						src={pubkeyMetadata?.picture}
 					/>

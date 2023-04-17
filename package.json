@@ -38,6 +38,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "react-remove-scroll": "^2.5.5",
+    "sharp": "^0.32.0",
     "superjson": "^1.12.2",
     "supports-color": "^8.1.1",
     "type-fest": "^3.8.0",

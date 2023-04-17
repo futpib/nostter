@@ -6,12 +6,12 @@ import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { CreatedAtLink } from './CreatedAtLink';
-import { Image } from './Image';
 import { NoteTextCounters } from './NoteTextCounters';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
 import { ProfileLink } from './ProfileLink';
 import { Reference } from '@/utils/getNoteContentTokens';
+import { SmallAvatarImage } from './SmallAvatarImage';
 
 export function Note({
 	id,
@@ -49,7 +49,7 @@ export function Note({
 					unstyled
 					pubkey={pubkey}
 				>
-					<Image
+					<SmallAvatarImage
 						className={styles.avatar}
 						src={pubkeyMetadata?.picture}
 					/>

@@ -1,5 +1,4 @@
 import styles from './EmbeddedNote.module.css';
-import { nip19 } from 'nostr-tools';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentMedias } from './NoteContentMedias';
 import { NoteContentText } from './NoteContentText';
@@ -8,10 +7,10 @@ import { MouseEvent } from 'react';
 import { CreatedAtLink } from './CreatedAtLink';
 import { NoteRepliedProfiles } from './NoteRepliedProfiles';
 import { ProfilePointer } from 'nostr-tools/lib/nip19';
-import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
 import { ProfileLink } from './ProfileLink';
 import { Reference } from '@/utils/getNoteContentTokens';
+import { SmallAvatarImage } from './SmallAvatarImage';
 
 export function EmbeddedNote({
 	id,
@@ -53,7 +52,7 @@ export function EmbeddedNote({
 					unstyled
 					pubkey={pubkey}
 				>
-					<Image
+					<SmallAvatarImage
 						className={styles.avatar}
 						src={pubkeyMetadata?.picture}
 					/>
