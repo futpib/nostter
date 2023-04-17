@@ -2,7 +2,7 @@ import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import styles from "./ProfileTooltipContent.module.css";
 import { ProfileMentionNameText } from "./ProfileMentionNameText";
 import { ProfileAboutText } from "./ProfileAboutText";
-import { SmallAvatarImage } from "./SmallAvatarImage";
+import { Image } from "./Image";
 
 export function ProfileTooltipContent({
 	pubkey,
@@ -13,8 +13,8 @@ export function ProfileTooltipContent({
 }) {
 	return (
 		<>
-			<SmallAvatarImage
-				className={styles.avatarImage}
+			<Image
+				className={styles.avatar}
 				src={pubkeyMetadata?.picture}
 			/>
 

@@ -20,7 +20,7 @@ export function Profile({
 
 			<div className={styles.profileInfo}>
 				<Image
-					className={styles.avatarImage}
+					className={styles.avatar}
 					src={pubkeyMetadata?.picture}
 				/>
 
