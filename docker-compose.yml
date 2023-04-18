@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15.2-alpine
+    ports:
+      - '5434:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data:cached
+    environment:
+      POSTGRES_DB: 'nostter'
+      POSTGRES_USER: 'nostter'
+      POSTGRES_PASSWORD: 'nostter'
+
+volumes:
+  postgres:
