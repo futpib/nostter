@@ -2,24 +2,111 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-	provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-	provider = "postgresql"
-	url = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UnitType {
+  UnitValue
 }
 
 model Relay {
-	url String @id
+  url String @id
+
+  EventReferenceRelation EventReferenceRelation[]
 }
 
 model Event {
-	id String @id
-	sig String
-	pubkey String
-	kind Int
-	tags Json
-	content String
-	createdAt DateTime
+  id        String   @id
+  sig       String
+  pubkey    String
+  kind      BigInt
+  tags      Json
+  content   String
+  createdAt DateTime
+
+  referrerEvents EventReferenceRelation[] @relation("EventReferenceRelation_referrer")
+  refereeEvents  EventReferenceRelation[] @relation("EventReferenceRelation_referee")
+
+  deleterEvents EventDeletionRelation[] @relation("EventDeletionRelation_deleter")
+  deleteeEvents EventDeletionRelation[] @relation("EventDeletionRelation_deletee")
+
+  reacterEvents EventReactionRelation[] @relation("EventReactionRelation_reacter")
+  reacteeEvents EventReactionRelation[] @relation("EventReactionRelation_reactee")
+
+  height BigInt @unique @default(autoincrement())
+
+  eventReactionCountState EventReactionCountState?
+}
+
+model EventReferenceRelation {
+  referrerEventId String
+  refereeEventId  String
+
+  referrerEvent Event @relation("EventReferenceRelation_referrer", fields: [referrerEventId], references: [id])
+  refereeEvent  Event @relation("EventReferenceRelation_referee", fields: [refereeEventId], references: [id])
+
+  recommendedRelayUrl String?
+  recommendedRelay    Relay?  @relation(fields: [recommendedRelayUrl], references: [url])
+
+  @@id([referrerEventId, refereeEventId])
+}
+
+model EventDeletionRelation {
+  deleterEventId String
+  deleteeEventId String
+
+  deleterEvent Event @relation("EventDeletionRelation_deleter", fields: [deleterEventId], references: [id])
+  deleteeEvent Event @relation("EventDeletionRelation_deletee", fields: [deleteeEventId], references: [id])
+
+  @@id([deleterEventId, deleteeEventId])
+}
+
+model EventReactionRelation {
+  reacterEventId String
+  reacteeEventId String
+
+  reacterEvent Event @relation("EventReactionRelation_reacter", fields: [reacterEventId], references: [id])
+  reacteeEvent Event @relation("EventReactionRelation_reactee", fields: [reacteeEventId], references: [id])
+
+  @@id([reacterEventId, reacteeEventId])
+}
+
+model EventResolveEventPointersState {
+  id UnitType @id
+
+  height BigInt
+}
+
+model EventReferenceRelationState {
+  id UnitType @id
+
+  height BigInt
+}
+
+model EventDeletionRelationState {
+  id UnitType @id
+
+  height BigInt
+}
+
+model EventReactionRelationState {
+  id UnitType @id
+
+  height BigInt
+}
+
+model EventReactionCountState {
+  id String @id @default(uuid())
+
+  eventId String @unique
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  height BigInt
+
+  reactionCounts Json
 }

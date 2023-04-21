@@ -14,7 +14,7 @@ export class EventDatabaseCacheService {
 	async getById(id: string): Promise<NostrEvent | null> {
 		const eventFromDb = await this._eventService.getById(id);
 
-		if (eventFromDb) {
+		if (eventFromDb && !EventService.isEventPointer(eventFromDb)) {
 			return EventService.databaseEventToNostrEvent(eventFromDb);
 		}
 

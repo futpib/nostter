@@ -18,6 +18,8 @@ export class RelayPoolService {
 	public async get(filter: Filter) {
 		const relays = await this._relayService.getConnectionRelayUrls();
 
+		invariant(relays.length > 0, 'No relays available');
+
 		return this._simplePool.get(
 			relays,
 			filter,
