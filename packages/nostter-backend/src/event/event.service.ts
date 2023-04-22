@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Event as DatabaseEvent, EventReactionRelation, EventReferenceRelation } from '@prisma/client';
 import invariant from 'invariant';
 import { DateTime } from 'luxon';
@@ -29,6 +29,8 @@ type GetManyByHeightRangeOptions = {
 
 @Injectable()
 export class EventService implements OnApplicationBootstrap {
+	private _logger = new Logger(EventService.name);
+
 	constructor(
 		private _prisma: PrismaService,
 		private _taskSchedulerService: TaskSchedulerService,
@@ -117,6 +119,22 @@ export class EventService implements OnApplicationBootstrap {
 
 			firstDeleterEventId: null,
 		};
+	}
+
+	private async _withIgnoreUpsertConflictError(f: () => Promise<void>) {
+		try {
+			await f();
+		} catch (error) {
+			if (error instanceof Error) {
+				if (error.message.includes('Unique constraint failed on the fields:')) {
+					this._logger.warn('Ignoring upsert conflict error: %s', error);
+
+					return;
+				}
+			}
+
+			throw error;
+		}
 	}
 
 	async getById(id: string): Promise<ValidatedDatabaseEvent | null> {
@@ -306,13 +324,13 @@ export class EventService implements OnApplicationBootstrap {
 	}
 
 	async addEventPointers(eventPointers: Omit<ValidatedDatabaseEvent, 'height'>[]) {
-		await this._prisma.$transaction(eventPointers.map((eventPointer) => (
-			this._prisma.event.upsert({
+		for (const eventPointer of eventPointers) {
+			await this._prisma.event.upsert({
 				where: { id: eventPointer.id },
 				update: {},
 				create: eventPointer,
-			})
-		)));
+			});
+		}
 
 		const targetHeight = await this.getMaxHeight();
 
@@ -324,48 +342,50 @@ export class EventService implements OnApplicationBootstrap {
 		refereeEventId: string;
 		recommendedRelayUrl: undefined | string;
 	}[]) {
-		await this._prisma.$transaction(referenceRelations.map((referenceRelation) => (
-			this._prisma.eventReferenceRelation.upsert({
-				where: {
-					referrerEventId_refereeEventId: {
-						referrerEventId: referenceRelation.referrerEventId,
-						refereeEventId: referenceRelation.refereeEventId,
+		for (const referenceRelation of referenceRelations) {
+			await this._withIgnoreUpsertConflictError(async () => {
+				await this._prisma.eventReferenceRelation.upsert({
+					where: {
+						referrerEventId_refereeEventId: {
+							referrerEventId: referenceRelation.referrerEventId,
+							refereeEventId: referenceRelation.refereeEventId,
+						},
 					},
-				},
-				update: {
-					recommendedRelayUrl: referenceRelation.recommendedRelayUrl,
-				},
-				create: referenceRelation,
-			})
-		)), {
-			isolationLevel: 'RepeatableRead',
-		});
+					update: {
+						recommendedRelayUrl: referenceRelation.recommendedRelayUrl,
+					},
+					create: referenceRelation,
+				});
+			});
+		}
 	}
 
 	async addDeletionRelations(deletionRelations: {
 		deleterEventId: string;
 		deleteeEventId: string;
 	}[]) {
-		await this._prisma.$transaction(deletionRelations.map((deletionRelation) => (
-			this._prisma.eventDeletionRelation.upsert({
-				where: {
-					deleterEventId_deleteeEventId: {
-						deleterEventId: deletionRelation.deleterEventId,
-						deleteeEventId: deletionRelation.deleteeEventId,
+		for (const deletionRelation of deletionRelations) {
+			await this._withIgnoreUpsertConflictError(async () => {
+				await this._prisma.eventDeletionRelation.upsert({
+					where: {
+						deleterEventId_deleteeEventId: {
+							deleterEventId: deletionRelation.deleterEventId,
+							deleteeEventId: deletionRelation.deleteeEventId,
+						},
 					},
-				},
-				update: {},
-				create: deletionRelation,
-			})
-		)));
+					update: {},
+					create: deletionRelation,
+				});
+			});
+		}
 	}
 
 	async addFirstDeletionRelations(firstDeletionRelations: {
 		deleterEventId: string;
 		deleteeEventId: string;
 	}[]) {
-		await this._prisma.$transaction(firstDeletionRelations.map((firstDeletionRelation) => (
-			this._prisma.event.updateMany({
+		for (const firstDeletionRelation of firstDeletionRelations) {
+			await this._prisma.event.updateMany({
 				where: {
 					id: firstDeletionRelation.deleteeEventId,
 					firstDeleterEventId: null,
@@ -373,26 +393,28 @@ export class EventService implements OnApplicationBootstrap {
 				data: {
 					firstDeleterEventId: firstDeletionRelation.deleterEventId,
 				},
-			})
-		)));
+			});
+		}
 	}
 
 	async addReactionRelations(reactionRelations: {
 		reacterEventId: string;
 		reacteeEventId: string;
 	}[]) {
-		await this._prisma.$transaction(reactionRelations.map((reactionRelation) => (
-			this._prisma.eventReactionRelation.upsert({
-				where: {
-					reacterEventId_reacteeEventId: {
-						reacterEventId: reactionRelation.reacterEventId,
-						reacteeEventId: reactionRelation.reacteeEventId,
+		for (const reactionRelation of reactionRelations) {
+			await this._withIgnoreUpsertConflictError(async () => {
+				await this._prisma.eventReactionRelation.upsert({
+					where: {
+						reacterEventId_reacteeEventId: {
+							reacterEventId: reactionRelation.reacterEventId,
+							reacteeEventId: reactionRelation.reacteeEventId,
+						},
 					},
-				},
-				update: {},
-				create: reactionRelation,
-			})
-		)));
+					update: {},
+					create: reactionRelation,
+				});
+			});
+		}
 	}
 
 	async onApplicationBootstrap() {
