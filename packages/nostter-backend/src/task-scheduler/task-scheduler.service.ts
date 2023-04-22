@@ -8,6 +8,7 @@ import { UpdateEventDeletionStateTaskPayload } from '@/update-event-deletion-sta
 import { UpdateEventReferenceStateTaskPayload } from '@/update-event-reference-state/update-event-reference-state.task';
 import { ResolveEventPointersTaskPayload } from '@/resolve-event-pointers/resolve-event-pointers.task';
 import { Interval } from '@nestjs/schedule';
+import { UpdateEventReactionStateTaskPayload } from '@/update-event-reaction-state/update-event-reaction-state.task';
 
 type Tasks = {
 	GetReferrerEvents: {
@@ -24,6 +25,10 @@ type Tasks = {
 
 	UpdateEventDeletionState: {
 		payload: UpdateEventDeletionStateTaskPayload;
+	};
+
+	UpdateEventReactionState: {
+		payload: UpdateEventReactionStateTaskPayload;
 	};
 };
 
@@ -89,6 +94,11 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 
 		await this._addJob('UpdateEventDeletionState', {}, {
 			jobKey: 'UpdateEventDeletionState',
+			priority: TaskPriority.Default,
+		});
+
+		await this._addJob('UpdateEventReactionState', {}, {
+			jobKey: 'UpdateEventReactionState',
 			priority: TaskPriority.Default,
 		});
 	}

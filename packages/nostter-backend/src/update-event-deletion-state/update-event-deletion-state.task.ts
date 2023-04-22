@@ -51,7 +51,6 @@ export class UpdateEventDeletionStateTask {
 				kind: BigInt(Kind.EventDeletion),
 			},
 			include: {
-				refereeEvents: true,
 				referrerEvents: true,
 			},
 		});

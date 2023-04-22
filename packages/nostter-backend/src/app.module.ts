@@ -21,6 +21,8 @@ import { EventResolveEventPointersStateService } from './event-resolve-event-poi
 import { GetReferrerEventsTask } from './get-referrer-events/get-referrer-events.task';
 import { AppConfigModule } from './app-config/app-config.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { EventReactionRelationStateService } from './event-reaction-relation-state/event-reaction-relation-state.service';
+import { UpdateEventReactionStateTask } from './update-event-reaction-state/update-event-reaction-state.task';
 
 @Module({
 	imports: [
@@ -63,6 +65,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 		ResolveEventPointersTask,
 		EventResolveEventPointersStateService,
 		GetReferrerEventsTask,
+		EventReactionRelationStateService,
+		UpdateEventReactionStateTask,
 	],
 })
 export class AppModule {}

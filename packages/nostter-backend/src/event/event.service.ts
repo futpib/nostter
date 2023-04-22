@@ -19,7 +19,9 @@ export type {
 
 type GetManyByHeightRangeOptions = {
 	where?: {
-		kind?: bigint;
+		kind?: bigint | {
+			in?: bigint[];
+		};
 	};
 	include?: {
 		refereeEvents?: boolean;
@@ -264,6 +266,24 @@ export class EventService implements OnApplicationBootstrap {
 				},
 				update: {},
 				create: deletionRelation,
+			})
+		)));
+	}
+
+	async addReactionRelations(reactionRelations: {
+		reacterEventId: string;
+		reacteeEventId: string;
+	}[]) {
+		await this._prisma.$transaction(reactionRelations.map((reactionRelation) => (
+			this._prisma.eventReactionRelation.upsert({
+				where: {
+					reacterEventId_reacteeEventId: {
+						reacterEventId: reactionRelation.reacterEventId,
+						reacteeEventId: reactionRelation.reacteeEventId,
+					},
+				},
+				update: {},
+				create: reactionRelation,
 			})
 		)));
 	}
