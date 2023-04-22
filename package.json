@@ -1,5 +1,8 @@
 {
   "private": true,
+  "resolutions": {
+    "@nestjs/cli/typescript": "^5.0.4"
+  },
   "workspaces": [
     "packages/*"
   ]

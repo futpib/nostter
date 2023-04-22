@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { EventReactionCountStateService } from 'src/event-reaction-count-state/event-reaction-count-state.service';
+import { EventReactionCountStateService } from '@/event-reaction-count-state/event-reaction-count-state.service';
 
 @Controller('events/:eventId/reactionCounts')
 export class EventReactionCountsController {

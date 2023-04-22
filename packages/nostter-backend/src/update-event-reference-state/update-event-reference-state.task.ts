@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Helpers } from 'graphile-worker';
 import { Task, TaskHandler } from 'nestjs-graphile-worker';
-import { EventReferenceRelationStateService } from 'src/event-reference-relation-state/event-reference-relation-state.service';
-import { EventService, ValidatedDatabaseEvent } from 'src/event/event.service';
-import { RelayService } from 'src/relay/relay.service';
-import { StateHeightHelpers } from 'src/state-height-helpers';
+import { EventReferenceRelationStateService } from '@/event-reference-relation-state/event-reference-relation-state.service';
+import { EventService, ValidatedDatabaseEvent } from '@/event/event.service';
+import { RelayService } from '@/relay/relay.service';
+import { BigIntMath } from '@/big-int-math/big-int-math';
+import { EventResolveEventPointersStateService } from '@/event-resolve-event-pointers-state/event-resolve-event-pointers-state.service';
 
-export type UpdateEventReferenceStateTaskPayload = {
-	targetHeightString: string;
-};
+export type UpdateEventReferenceStateTaskPayload = {};
 
 function isValidRelayURL(x: unknown): x is string {
 	try {
@@ -22,24 +21,38 @@ function isValidRelayURL(x: unknown): x is string {
 @Injectable()
 @Task('UpdateEventReferenceState')
 export class UpdateEventReferenceStateTask {
+	private _logger = new Logger(UpdateEventReferenceStateTask.name);
+
 	constructor(
 		private _eventService: EventService,
 		private _relayService: RelayService,
 		private _eventReferenceRelationStateService: EventReferenceRelationStateService,
+		private _eventResolveEventPointersStateService: EventResolveEventPointersStateService,
 	) {}
 
-	@TaskHandler()
-	async handler(payload: UpdateEventReferenceStateTaskPayload, _helpers: Helpers) {
-		const height = await this._eventReferenceRelationStateService.getHeight();
-		const targetHeight = BigInt(payload.targetHeightString);
+	private async _getStartInclusive(): Promise<bigint> {
+		return this._eventReferenceRelationStateService.getHeight();
+	}
 
-		const {
-			reached: reachedHeight,
-			range: heightRange,
-		} = StateHeightHelpers.getTaskEventHeightRange({
-			current: height,
-			target: targetHeight,
-		});
+	private async _getEndInclusive(): Promise<bigint> {
+		return this._eventResolveEventPointersStateService.getHeight();
+	}
+
+	private async _getHeightRange(): Promise<[bigint, bigint]> {
+		const start = await this._getStartInclusive();
+		const end = await this._getEndInclusive();
+
+		return [
+			start,
+			BigIntMath.max(start, BigIntMath.min(end, start + 64n)),
+		];
+	}
+
+	@TaskHandler()
+	async handler(_payload: UpdateEventReferenceStateTaskPayload, _helpers: Helpers) {
+		const heightRange = await this._getHeightRange();
+
+		this._logger.log(`Updating event reference state in range [${heightRange[0]}, ${heightRange[1]}]`);
 
 		const events = await this._eventService.getManyByHeightRange(heightRange);
 
@@ -89,6 +102,6 @@ export class UpdateEventReferenceStateTask {
 				})))
 		);
 
-		await this._eventReferenceRelationStateService.setHeight(reachedHeight);
+		await this._eventReferenceRelationStateService.setHeight(heightRange[1]);
 	}
 }

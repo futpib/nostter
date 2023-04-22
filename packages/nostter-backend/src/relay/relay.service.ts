@@ -1,6 +1,5 @@
-import { CacheTTL, Injectable } from '@nestjs/common';
-import { Duration } from 'luxon';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RelayService {
@@ -12,7 +11,6 @@ export class RelayService {
 		return await this._prisma.relay.findMany();
 	}
 
-	@CacheTTL(Duration.fromObject({ minutes: 1 }).as('milliseconds'))
 	async getConnectionRelayUrls() {
 		const relays = await this.getConnectionRelays();
 		return relays.map((relay) => relay.url).sort();

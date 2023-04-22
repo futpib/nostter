@@ -1,7 +1,6 @@
-import { CacheTTL, Injectable } from '@nestjs/common';
-import { Duration } from 'luxon';
-import { EventService, NostrEvent } from 'src/event/event.service';
-import { RelayPoolService } from 'src/relay-pool/relay-pool.service';
+import { Injectable } from '@nestjs/common';
+import { EventService, NostrEvent } from '@/event/event.service';
+import { RelayPoolService } from '@/relay-pool/relay-pool.service';
 
 @Injectable()
 export class EventDatabaseCacheService {
@@ -10,7 +9,6 @@ export class EventDatabaseCacheService {
 		private readonly _relayPoolService: RelayPoolService,
 	) {}
 
-	@CacheTTL(Duration.fromObject({ hours: 1 }).as('milliseconds'))
 	async getById(id: string): Promise<NostrEvent | null> {
 		const eventFromDb = await this._eventService.getById(id);
 

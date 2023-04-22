@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { EventDatabaseCacheService } from 'src/event-database-cache/event-database-cache.service';
-import { NostrEvent } from 'src/event/event.service';
+import { EventDatabaseCacheService } from '@/event-database-cache/event-database-cache.service';
+import { NostrEvent } from '@/event/event.service';
 
 @Controller('events')
 export class EventsController {

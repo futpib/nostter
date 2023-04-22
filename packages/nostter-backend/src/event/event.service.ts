@@ -3,9 +3,8 @@ import { Event as DatabaseEvent } from '@prisma/client';
 import invariant from 'invariant';
 import { DateTime } from 'luxon';
 import { Event as NostrEvent } from 'nostr-tools';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { HeightRange } from 'src/state-height-helpers';
-import { TaskSchedulerService } from 'src/task-scheduler/task-scheduler.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { TaskSchedulerService } from '@/task-scheduler/task-scheduler.service';
 
 export const DATABASE_EVENT_KIND_EVENT_POINTER = -0xDEADBEEFn as const;
 
@@ -17,6 +16,16 @@ export type {
 	DatabaseEvent,
 	NostrEvent,
 };
+
+type GetManyByHeightRangeOptions = {
+	where?: {
+		kind?: bigint;
+	};
+	include?: {
+		refereeEvents?: boolean;
+		referrerEvents?: boolean;
+	};
+}
 
 @Injectable()
 export class EventService implements OnApplicationBootstrap {
@@ -132,23 +141,33 @@ export class EventService implements OnApplicationBootstrap {
 		return maxEvent?.height ?? -1n;
 	}
 
-	async getManyByHeightRange([ startInclusive, endExclusive ]: HeightRange, {
+	async getManyByIds(ids: string[]): Promise<ValidatedDatabaseEvent[]> {
+		const databaseEvents = await this._prisma.event.findMany({
+			where: {
+				id: {
+					in: ids,
+				},
+			},
+		});
+
+		return databaseEvents.map(EventService.validateDatabaseEvent);
+	}
+
+	async getManyByHeightRange([ startInclusive, endInclusive ]: [ bigint, bigint ], {
 		where: optionsWhere = {},
-	}: {
-		where?: {
-			kind?: bigint;
-		};
-	} = {}): Promise<ValidatedDatabaseEvent[]> {
+		include,
+	}: GetManyByHeightRangeOptions = {}): Promise<ValidatedDatabaseEvent[]> {
 		const where = {
 			...optionsWhere,
 			height: {
 				gte: startInclusive,
-				lt: endExclusive,
+				lte: endInclusive,
 			},
 		};
 
 		const databaseEvents = await this._prisma.event.findMany({
 			where,
+			include,
 			orderBy: {
 				height: 'asc',
 			},
@@ -188,6 +207,12 @@ export class EventService implements OnApplicationBootstrap {
 		await this._taskSchedulerService.handleEventUpsert(event);
 	}
 
+	async addNostrEvents(nostrEvents: NostrEvent[]) {
+		for (const nostrEvent of nostrEvents) {
+			await this.addNostrEvent(nostrEvent);
+		}
+	}
+
 	async addEventPointers(eventPointers: Omit<ValidatedDatabaseEvent, 'height'>[]) {
 		await this._prisma.$transaction(eventPointers.map((eventPointer) => (
 			this._prisma.event.upsert({
@@ -196,6 +221,10 @@ export class EventService implements OnApplicationBootstrap {
 				create: eventPointer,
 			})
 		)));
+
+		const targetHeight = await this.getMaxHeight();
+
+		await this._taskSchedulerService.handleEventPointersUpsert(targetHeight);
 	}
 
 	async addReferenceRelations(referenceRelations: {
@@ -215,6 +244,26 @@ export class EventService implements OnApplicationBootstrap {
 					recommendedRelayUrl: referenceRelation.recommendedRelayUrl,
 				},
 				create: referenceRelation,
+			})
+		)), {
+			isolationLevel: 'RepeatableRead',
+		});
+	}
+
+	async addDeletionRelations(deletionRelations: {
+		deleterEventId: string;
+		deleteeEventId: string;
+	}[]) {
+		await this._prisma.$transaction(deletionRelations.map((deletionRelation) => (
+			this._prisma.eventDeletionRelation.upsert({
+				where: {
+					deleterEventId_deleteeEventId: {
+						deleterEventId: deletionRelation.deleterEventId,
+						deleteeEventId: deletionRelation.deleteeEventId,
+					},
+				},
+				update: {},
+				create: deletionRelation,
 			})
 		)));
 	}

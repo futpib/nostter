@@ -1,5 +1,4 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -19,24 +18,27 @@ import { UpdateEventReferenceStateTask } from './update-event-reference-state/up
 import { EventReferenceRelationStateService } from './event-reference-relation-state/event-reference-relation-state.service';
 import { ResolveEventPointersTask } from './resolve-event-pointers/resolve-event-pointers.task';
 import { EventResolveEventPointersStateService } from './event-resolve-event-pointers-state/event-resolve-event-pointers-state.service';
+import { GetReferrerEventsTask } from './get-referrer-events/get-referrer-events.task';
+import { AppConfigModule } from './app-config/app-config.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({
-			validate(config) {
-				return AppConfigService.validate(config);
-			},
-		}),
+		AppConfigModule,
 
 		GraphileWorkerModule.forRootAsync({
-			imports: [ConfigModule],
-			inject: [ConfigService],
-			useFactory: (config: ConfigService) => ({
-				connectionString: config.get('DATABASE_URL'),
+			imports: [AppConfigModule],
+			inject: [AppConfigService],
+			useFactory: (config: AppConfigService) => ({
+				connectionString: config.databaseUrl,
+				concurrency: config.graphileWorkerConcurrency,
+				pollInterval: config.graphileWorkerPollInterval,
 			}),
 		}),
 
 		CacheModule.register(),
+
+		ScheduleModule.forRoot(),
 	],
 
 	controllers: [
@@ -55,12 +57,12 @@ import { EventResolveEventPointersStateService } from './event-resolve-event-poi
 		UpdateEventDeletionStateTask,
 		TaskSchedulerService,
 		EventReactionCountStateService,
-		AppConfigService,
 		EventDeletionRelationStateService,
 		UpdateEventReferenceStateTask,
 		EventReferenceRelationStateService,
 		ResolveEventPointersTask,
 		EventResolveEventPointersStateService,
+		GetReferrerEventsTask,
 	],
 })
 export class AppModule {}

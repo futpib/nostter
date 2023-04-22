@@ -1,36 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Helpers } from 'graphile-worker';
 import { Task, TaskHandler } from 'nestjs-graphile-worker';
-import { EventDatabaseCacheService } from 'src/event-database-cache/event-database-cache.service';
-import { EventResolveEventPointersStateService } from 'src/event-resolve-event-pointers-state/event-resolve-event-pointers-state.service';
-import { DATABASE_EVENT_KIND_EVENT_POINTER, EventService } from 'src/event/event.service';
-import { StateHeightHelpers } from 'src/state-height-helpers';
+import { EventDatabaseCacheService } from '@/event-database-cache/event-database-cache.service';
+import { EventResolveEventPointersStateService } from '@/event-resolve-event-pointers-state/event-resolve-event-pointers-state.service';
+import { DATABASE_EVENT_KIND_EVENT_POINTER, EventService } from '@/event/event.service';
+import { BigIntMath } from '@/big-int-math/big-int-math';
 
-export type ResolveEventPointersTaskPayload = {
-	targetHeightString: string;
-};
+export type ResolveEventPointersTaskPayload = {};
 
 @Injectable()
 @Task('ResolveEventPointers')
 export class ResolveEventPointersTask {
+	private _logger = new Logger(ResolveEventPointersTask.name);
+
 	constructor(
 		private _eventService: EventService,
 		private _eventDatabaseCacheService: EventDatabaseCacheService,
 		private _eventResolveEventPointersStateService: EventResolveEventPointersStateService,
 	) {}
 
-	@TaskHandler()
-	async handler(payload: ResolveEventPointersTaskPayload, _helpers: Helpers) {
-		const height = await this._eventResolveEventPointersStateService.getHeight();
-		const targetHeight = BigInt(payload.targetHeightString);
+	private async _getStartInclusive(): Promise<bigint> {
+		return this._eventResolveEventPointersStateService.getHeight();
+	}
 
-		const {
-			reached: reachedHeight,
-			range: heightRange,
-		} = StateHeightHelpers.getTaskEventHeightRange({
-			current: height,
-			target: targetHeight,
-		});
+	private async _getEndInclusive(): Promise<bigint> {
+		return this._eventService.getMaxHeight();
+	}
+
+	private async _getHeightRange(): Promise<[bigint, bigint]> {
+		const start = await this._getStartInclusive();
+		const end = await this._getEndInclusive();
+
+		return [
+			start,
+			BigIntMath.max(start, BigIntMath.min(end, start + 64n)),
+		];
+	}
+
+	@TaskHandler()
+	async handler(_payload: ResolveEventPointersTaskPayload, _helpers: Helpers) {
+		const heightRange = await this._getHeightRange();
+
+		this._logger.log(`Resolving event pointers in range [${heightRange[0]}, ${heightRange[1]})`);
 
 		const eventPointers = await this._eventService.getManyByHeightRange(heightRange, {
 			where: {
@@ -42,6 +53,6 @@ export class ResolveEventPointersTask {
 			await this._eventDatabaseCacheService.getById(eventPointer.id);
 		}
 
-		await this._eventResolveEventPointersStateService.setHeight(reachedHeight);
+		await this._eventResolveEventPointersStateService.setHeight(heightRange[1]);
 	}
 }

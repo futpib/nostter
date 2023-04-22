@@ -1,6 +1,6 @@
+import { AbstractStateService } from '@/abstract-state-service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { AbstractStateService } from 'src/abstract-state-service';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class EventDeletionRelationStateService extends AbstractStateService {
