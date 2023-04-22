@@ -2,9 +2,8 @@ version: "3.9"
 
 services:
   postgres:
+    restart: unless-stopped
     image: postgres:15.2-alpine
-    ports:
-      - '5434:5432'
     volumes:
       - postgres:/var/lib/postgresql/data:cached
     environment:
@@ -13,6 +12,7 @@ services:
       POSTGRES_PASSWORD: 'nostter'
 
   nostter-backend:
+    restart: unless-stopped
     build:
       context: ./
       dockerfile: ./Dockerfile.nostter-backend

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "rimraf dist && prisma generate && nest build",
     "dev": "nest start --watch",
-    "start": "node dist/src/main"
+    "start": "prisma migrate deploy && node dist/src/main"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
