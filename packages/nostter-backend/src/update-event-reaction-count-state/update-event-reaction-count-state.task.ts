@@ -71,7 +71,7 @@ export class UpdateEventReactionCountStateTask {
 
 		for (const deletionEvent of deletionEvents) {
 			const deletedReaction = deletionEvent.firstDeleteeEvents.find((firstDeleteeEvent) => (
-				firstDeleteeEvent.reacterEvents.some(reactionRelation => reactionRelation.reacteeEventId === eventId)
+				firstDeleteeEvent.reactionRelations_reacter.some(reactionRelation => reactionRelation.reacteeEventId === eventId)
 			));
 
 			if (!deletedReaction) {

@@ -46,26 +46,19 @@ export class UpdateEventDeletionStateTask {
 
 		this._logger.log(`Updating event deletion state in range [${heightRange[0]}, ${heightRange[1]}]`);
 
-		const events = await this._eventService.getManyByHeightRange(heightRange, {
+		const events = await this._eventService.getManyReferencesByHeightRange(heightRange, {
 			where: {
 				kind: BigInt(Kind.EventDeletion),
-			},
-			include: {
-				referrerEvents: true,
 			},
 		});
 
 		const deleterToDeletee = new Map<string, { deleteeEventId: string; deleterEventPubkey: string; invalid?: boolean; }[]>();
 		const deleteeEventIds = new Set<string>();
 
-		for (const event_ of events) {
-			const event = event_ as ValidatedDatabaseEvent & {
-				referrerEvents: EventReferenceRelation[];
-			};
-
+		for (const event of events) {
 			invariant(Number(event.kind) === Kind.EventDeletion, 'Expected event deletion');
 
-			for (const referenceRelation of event.referrerEvents) {
+			for (const referenceRelation of event.referenceRelations_referrer) {
 				const deleterEventId = referenceRelation.referrerEventId;
 				const deleteeEventId = referenceRelation.refereeEventId;
 

@@ -1,5 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Event as DatabaseEvent, EventReactionRelation } from '@prisma/client';
+import { Event as DatabaseEvent, EventReactionRelation, EventReferenceRelation } from '@prisma/client';
 import invariant from 'invariant';
 import { DateTime } from 'luxon';
 import { Event as NostrEvent, Kind } from 'nostr-tools';
@@ -24,10 +24,6 @@ type GetManyByHeightRangeOptions = {
 		kind?: bigint | {
 			in?: bigint[];
 		};
-	};
-	include?: {
-		refereeEvents?: boolean;
-		referrerEvents?: boolean;
 	};
 }
 
@@ -161,10 +157,12 @@ export class EventService implements OnApplicationBootstrap {
 		return databaseEvents.map(EventService.validateDatabaseEvent);
 	}
 
-	async getManyByHeightRange([ startInclusive, endInclusive ]: [ bigint, bigint ], {
-		where: optionsWhere = {},
-		include,
-	}: GetManyByHeightRangeOptions = {}): Promise<ValidatedDatabaseEvent[]> {
+	async getManyByHeightRange(
+		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		{
+			where: optionsWhere = {},
+		}: GetManyByHeightRangeOptions = {},
+	): Promise<ValidatedDatabaseEvent[]> {
 		const where = {
 			...optionsWhere,
 			height: {
@@ -175,7 +173,35 @@ export class EventService implements OnApplicationBootstrap {
 
 		const databaseEvents = await this._prisma.event.findMany({
 			where,
-			include,
+			orderBy: {
+				height: 'asc',
+			},
+		});
+
+		return databaseEvents.map(EventService.validateDatabaseEvent);
+	}
+
+	async getManyReferencesByHeightRange(
+		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		{
+			where: optionsWhere = {},
+		}: GetManyByHeightRangeOptions = {},
+	): Promise<(ValidatedDatabaseEvent & {
+		referenceRelations_referrer: EventReferenceRelation[];
+	})[]> {
+		const where = {
+			...optionsWhere,
+			height: {
+				gte: startInclusive,
+				lte: endInclusive,
+			},
+		};
+
+		const databaseEvents = await this._prisma.event.findMany({
+			where,
+			include: {
+				referenceRelations_referrer: true,
+			},
 			orderBy: {
 				height: 'asc',
 			},
@@ -195,7 +221,7 @@ export class EventService implements OnApplicationBootstrap {
 					lte: endInclusive,
 				},
 				kind: BigInt(Kind.Reaction),
-				reacterEvents: {
+				reactionRelations_reacter: {
 					some: {
 						reacteeEventId,
 					},
@@ -213,7 +239,7 @@ export class EventService implements OnApplicationBootstrap {
 		[ startInclusive, endInclusive ]: [ bigint, bigint ],
 	): Promise<(ValidatedDatabaseEvent & {
 		firstDeleteeEvents: (ValidatedDatabaseEvent & {
-			reacterEvents: EventReactionRelation[];
+			reactionRelations_reacter: EventReactionRelation[];
 		})[];
 	})[]> {
 		const databaseEvents = await this._prisma.event.findMany({
@@ -227,7 +253,7 @@ export class EventService implements OnApplicationBootstrap {
 			include: {
 				firstDeleteeEvents: {
 					include: {
-						reacterEvents: true,
+						reactionRelations_reacter: true,
 					},
 				},
 			},

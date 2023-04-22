@@ -29,18 +29,18 @@ model Event {
   content   String
   createdAt DateTime
 
-  referrerEvents EventReferenceRelation[] @relation("EventReferenceRelation_referrer")
-  refereeEvents  EventReferenceRelation[] @relation("EventReferenceRelation_referee")
+  referenceRelations_referrer EventReferenceRelation[] @relation("EventReferenceRelation_referrer")
+  referenceRelations_referee  EventReferenceRelation[] @relation("EventReferenceRelation_referee")
 
-  deleterEvents EventDeletionRelation[] @relation("EventDeletionRelation_deleter")
-  deleteeEvents EventDeletionRelation[] @relation("EventDeletionRelation_deletee")
+  deletionRelations_deleter EventDeletionRelation[] @relation("EventDeletionRelation_deleter")
+  deletionRealtions_deletee EventDeletionRelation[] @relation("EventDeletionRelation_deletee")
 
   firstDeleterEventId String?
   firstDeleterEvent   Event?  @relation("EventFirstDeletionRelation", fields: [firstDeleterEventId], references: [id])
   firstDeleteeEvents  Event[] @relation("EventFirstDeletionRelation")
 
-  reacterEvents EventReactionRelation[] @relation("EventReactionRelation_reacter")
-  reacteeEvents EventReactionRelation[] @relation("EventReactionRelation_reactee")
+  reactionRelations_reacter EventReactionRelation[] @relation("EventReactionRelation_reacter")
+  reactionRelations_reactee EventReactionRelation[] @relation("EventReactionRelation_reactee")
 
   height BigInt @unique @default(autoincrement())
 

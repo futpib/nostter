@@ -50,23 +50,16 @@ export class UpdateEventReactionStateTask {
 
 		this._logger.log(`Updating event reaction state in range [${heightRange[0]}, ${heightRange[1]}]`);
 
-		const events = await this._eventService.getManyByHeightRange(heightRange, {
+		const events = await this._eventService.getManyReferencesByHeightRange(heightRange, {
 			where: {
 				kind: BigInt(Kind.Reaction),
-			},
-			include: {
-				referrerEvents: true,
 			},
 		});
 
 		const reacterToReactee = new Map<string, string>();
 
-		for (const event_ of events) {
-			const event = event_ as ValidatedDatabaseEvent & {
-				referrerEvents: EventReferenceRelation[];
-			};
-
-			for (const referenceRelation of event.referrerEvents.slice(0, 1)) {
+		for (const event of events) {
+			for (const referenceRelation of event.referenceRelations_referrer.slice(0, 1)) {
 				const reacterEventId = referenceRelation.referrerEventId;
 				const reacteeEventId = referenceRelation.refereeEventId;
 
