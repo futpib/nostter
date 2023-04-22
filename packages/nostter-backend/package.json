@@ -6,10 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "rimraf dist && prisma generate && nest build",
     "dev": "nest start --watch",
-    "start": "node dist/main"
+    "start": "node dist/src/main"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -19,14 +18,14 @@
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/schedule": "^2.2.1",
-    "@prisma/client": "^4.12.0",
+    "@prisma/client": "^4.13.0",
     "cache-manager": "^5.2.0",
     "graphile-worker": "^0.13.0",
     "invariant": "^2.2.4",
     "isomorphic-ws": "^5.0.0",
     "luxon": "^3.3.0",
     "nestjs-graphile-worker": "^0.3.1",
-    "nostr-tools": "^1.9.0",
+    "nostr-tools": "^1.10.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
@@ -39,7 +38,7 @@
     "@types/express": "^4.17.13",
     "@types/node": "^16.0.0",
     "@types/supertest": "^2.0.11",
-    "prisma": "^4.12.0",
+    "prisma": "^4.13.0",
     "source-map-support": "^0.5.20",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",

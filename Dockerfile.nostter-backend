@@ -1,0 +1,12 @@
+FROM node:19.9.0-alpine
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY . /usr/src/app/
+RUN yarn --immutable
+
+WORKDIR /usr/src/app/packages/nostter-backend
+run yarn build
+
+CMD yarn start

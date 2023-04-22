@@ -12,5 +12,16 @@ services:
       POSTGRES_USER: 'nostter'
       POSTGRES_PASSWORD: 'nostter'
 
+  nostter-backend:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.nostter-backend
+    ports:
+      - '3003:3003'
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: 'postgresql://nostter:nostter@postgres:5432/nostter?schema=public'
+
 volumes:
   postgres:

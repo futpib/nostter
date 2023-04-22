@@ -1,6 +1,6 @@
 import { isIndexedTagKey, getLocalRelayDexie } from "@/dexie/localRelay";
 import invariant from "invariant";
-import { Event, Filter, Sub, SubscriptionOptions } from "nostr-tools";
+import { CountPayload, Event, Filter, Sub, SubscriptionOptions } from "nostr-tools";
 
 type EqualityCriterias = Partial<{
 	id: string;
@@ -77,6 +77,7 @@ function filterToEqualityCriterias(filter: Filter): EqualityCriterias {
 
 type SubEvent = {
 	event: (event: Event) => void | Promise<void>;
+	count: (payload: CountPayload) => void | Promise<void>;
 	eose: () => void | Promise<void>;
 }
 
@@ -127,23 +128,23 @@ export class LocalPool {
 		})();
 
 		return {
-			on<K extends keyof SubEvent>(event: K, callback: SubEvent[K]): void {
+			on<T extends keyof SubEvent, U extends SubEvent[T]>(event: T, listener: U): void {
 				if (event === 'event') {
-					eventListeners.add(callback);
+					eventListeners.add(listener as (event: Event) => void);
 				}
 
 				if (event === 'eose') {
-					eoseListeners.add(callback as () => void);
+					eoseListeners.add(listener as () => void);
 				}
 			},
 
-			off<K extends keyof SubEvent>(event: K, callback: SubEvent[K]): void {
+			off<T extends keyof SubEvent, U extends SubEvent[T]>(event: T, listener: U): void {
 				if (event === 'event') {
-					eventListeners.delete(callback);
+					eventListeners.delete(listener as (event: Event) => void);
 				}
 
 				if (event === 'eose') {
-					eoseListeners.delete(callback as () => void);
+					eoseListeners.delete(listener as () => void);
 				}
 			},
 
