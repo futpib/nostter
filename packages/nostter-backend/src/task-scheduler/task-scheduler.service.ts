@@ -9,6 +9,7 @@ import { UpdateEventReferenceStateTaskPayload } from '@/update-event-reference-s
 import { ResolveEventPointersTaskPayload } from '@/resolve-event-pointers/resolve-event-pointers.task';
 import { Interval } from '@nestjs/schedule';
 import { UpdateEventReactionStateTaskPayload } from '@/update-event-reaction-state/update-event-reaction-state.task';
+import { UpdateEventReactionCountStateTaskPayload } from '@/update-event-reaction-count-state/update-event-reaction-count-state.task';
 
 type Tasks = {
 	GetReferrerEvents: {
@@ -29,6 +30,10 @@ type Tasks = {
 
 	UpdateEventReactionState: {
 		payload: UpdateEventReactionStateTaskPayload;
+	};
+
+	UpdateEventReactionCountState: {
+		payload: UpdateEventReactionCountStateTaskPayload;
 	};
 };
 
@@ -81,6 +86,18 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 	public async handleEventPointersUpsert(targetHeight: bigint) {
 		await this._addJob('ResolveEventPointers', {}, {
 			jobKey: 'ResolveEventPointers',
+			priority: TaskPriority.Default,
+		});
+	}
+
+	public async handleEventReactionsRequest(eventId: string) {
+		await this._addJob('UpdateEventReactionCountState', {
+			eventId,
+		}, {
+			jobKey: [
+				'UpdateEventReactionCountState',
+				eventId,
+			].join(':'),
 			priority: TaskPriority.Default,
 		});
 	}

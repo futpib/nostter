@@ -23,6 +23,7 @@ import { AppConfigModule } from './app-config/app-config.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventReactionRelationStateService } from './event-reaction-relation-state/event-reaction-relation-state.service';
 import { UpdateEventReactionStateTask } from './update-event-reaction-state/update-event-reaction-state.task';
+import { UpdateEventReactionCountStateTask } from './update-event-reaction-count-state/update-event-reaction-count-state.task';
 
 @Module({
 	imports: [
@@ -67,6 +68,7 @@ import { UpdateEventReactionStateTask } from './update-event-reaction-state/upda
 		GetReferrerEventsTask,
 		EventReactionRelationStateService,
 		UpdateEventReactionStateTask,
+		UpdateEventReactionCountStateTask,
 	],
 })
 export class AppModule {}

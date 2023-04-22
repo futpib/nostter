@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Event as DatabaseEvent } from '@prisma/client';
+import { Event as DatabaseEvent, EventReactionRelation } from '@prisma/client';
 import invariant from 'invariant';
 import { DateTime } from 'luxon';
-import { Event as NostrEvent } from 'nostr-tools';
+import { Event as NostrEvent, Kind } from 'nostr-tools';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TaskSchedulerService } from '@/task-scheduler/task-scheduler.service';
 
@@ -11,6 +11,8 @@ export const DATABASE_EVENT_KIND_EVENT_POINTER = -0xDEADBEEFn as const;
 export interface ValidatedDatabaseEvent extends DatabaseEvent {
 	tags: string[][];
 }
+
+export type ValidatedDatabaseEventOf<E extends DatabaseEvent> = E & ValidatedDatabaseEvent;
 
 export type {
 	DatabaseEvent,
@@ -33,7 +35,7 @@ type GetManyByHeightRangeOptions = {
 export class EventService implements OnApplicationBootstrap {
 	constructor(
 		private _prisma: PrismaService,
-		private _taskSchedulerService: TaskSchedulerService
+		private _taskSchedulerService: TaskSchedulerService,
 	) {}
 
 	static nostrEventToDatabaseEvent(event: NostrEvent): Omit<ValidatedDatabaseEvent, 'height'> {
@@ -90,7 +92,7 @@ export class EventService implements OnApplicationBootstrap {
 		return nostrEvent;
 	}
 
-	static validateDatabaseEvent(event: DatabaseEvent): ValidatedDatabaseEvent {
+	static validateDatabaseEvent<E extends DatabaseEvent>(event: E): ValidatedDatabaseEventOf<E> {
 		const { tags } = event;
 		invariant(
 			(
@@ -104,7 +106,7 @@ export class EventService implements OnApplicationBootstrap {
 			typeof tags,
 		);
 
-		return event as ValidatedDatabaseEvent;
+		return event as any;
 	}
 
 	static createEventPointer(id: string): Omit<ValidatedDatabaseEvent, 'height'> {
@@ -182,6 +184,64 @@ export class EventService implements OnApplicationBootstrap {
 		return databaseEvents.map(EventService.validateDatabaseEvent);
 	}
 
+	async getManyReactionsByHeightRange(
+		reacteeEventId: string,
+		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+	): Promise<ValidatedDatabaseEvent[]> {
+		const databaseEvents = await this._prisma.event.findMany({
+			where: {
+				height: {
+					gte: startInclusive,
+					lte: endInclusive,
+				},
+				kind: BigInt(Kind.Reaction),
+				reacterEvents: {
+					some: {
+						reacteeEventId,
+					},
+				},
+			},
+			orderBy: {
+				height: 'asc',
+			},
+		});
+
+		return databaseEvents.map(EventService.validateDatabaseEvent);
+	}
+
+	async getManyFirstDeletionsByHeightRange(
+		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+	): Promise<(ValidatedDatabaseEvent & {
+		firstDeleteeEvents: (ValidatedDatabaseEvent & {
+			reacterEvents: EventReactionRelation[];
+		})[];
+	})[]> {
+		const databaseEvents = await this._prisma.event.findMany({
+			where: {
+				height: {
+					gte: startInclusive,
+					lte: endInclusive,
+				},
+				kind: BigInt(Kind.EventDeletion),
+			},
+			include: {
+				firstDeleteeEvents: {
+					include: {
+						reacterEvents: true,
+					},
+				},
+			},
+			orderBy: {
+				height: 'asc',
+			},
+		});
+
+		return databaseEvents.map(databaseEvent => ({
+			...EventService.validateDatabaseEvent(databaseEvent),
+			firstDeleteeEvents: databaseEvent.firstDeleteeEvents.map(EventService.validateDatabaseEvent),
+		}));
+	}
+
 	async addNostrEvent(nostrEvent: NostrEvent) {
 		const databaseEvent = EventService.nostrEventToDatabaseEvent(nostrEvent);
 
@@ -204,7 +264,7 @@ export class EventService implements OnApplicationBootstrap {
 				UPDATE "Event"
 				SET
 					kind = ${databaseEvent.kind}
-					, height = nextval(format('%I', 'Event_height_seq'))
+					, height = nextval('"Event_height_seq"')
 				WHERE
 					id = ${event.id}
 			`;

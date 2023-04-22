@@ -11,6 +11,8 @@ export class EventReactionCountsController {
 	async getReactions(@Param('eventId') eventId: string) {
 		const eventReactionState = await this._eventReactionCountStateService.getByEventId(eventId);
 
+		await this._eventReactionCountStateService.handleEventReactionsRequest(eventId);
+
 		const reactionCounts = eventReactionState?.reactionCounts ?? {};
 
 		return { reactionCounts };
