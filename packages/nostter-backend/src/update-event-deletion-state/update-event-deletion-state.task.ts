@@ -97,7 +97,7 @@ export class UpdateEventDeletionStateTask {
 			}
 		}
 
-		await this._eventService.addDeletionRelations(
+		const deletionRelations = (
 			[...deleterToDeletee.entries()]
 				.flatMap(([ deleterEventId, deletees ]) => deletees.flatMap(deletee => {
 					if (deletee.invalid) {
@@ -110,8 +110,11 @@ export class UpdateEventDeletionStateTask {
 							deleteeEventId: deletee.deleteeEventId,
 						},
 					];
-				})),
+				}))
 		);
+
+		await this._eventService.addDeletionRelations(deletionRelations);
+		await this._eventService.addFirstDeletionRelations(deletionRelations);
 
 		await this._eventDeletionRelationStateService.setHeight(heightRange[1]);
 	}

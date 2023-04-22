@@ -35,6 +35,10 @@ model Event {
   deleterEvents EventDeletionRelation[] @relation("EventDeletionRelation_deleter")
   deleteeEvents EventDeletionRelation[] @relation("EventDeletionRelation_deletee")
 
+  firstDeleterEventId String?
+  firstDeleterEvent   Event?  @relation("EventFirstDeletionRelation", fields: [firstDeleterEventId], references: [id])
+  firstDeleteeEvents  Event[] @relation("EventFirstDeletionRelation")
+
   reacterEvents EventReactionRelation[] @relation("EventReactionRelation_reacter")
   reacteeEvents EventReactionRelation[] @relation("EventReactionRelation_reactee")
 

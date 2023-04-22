@@ -45,6 +45,8 @@ export class EventService implements OnApplicationBootstrap {
 			content: event.content,
 			kind: BigInt(event.kind),
 			createdAt: DateTime.fromSeconds(event.created_at).toJSDate(),
+
+			firstDeleterEventId: null,
 		};
 
 		delete databaseEvent.created_at;
@@ -114,6 +116,8 @@ export class EventService implements OnApplicationBootstrap {
 			tags: [],
 			content: '',
 			createdAt: new Date(0),
+
+			firstDeleterEventId: null,
 		};
 	}
 
@@ -181,7 +185,7 @@ export class EventService implements OnApplicationBootstrap {
 	async addNostrEvent(nostrEvent: NostrEvent) {
 		const databaseEvent = EventService.nostrEventToDatabaseEvent(nostrEvent);
 
-		const update: Omit<ValidatedDatabaseEvent, 'kind' | 'id' | 'height'> = {
+		const update: Omit<ValidatedDatabaseEvent, 'kind' | 'id' | 'height' | 'firstDeleterEventId'> = {
 			sig: databaseEvent.sig,
 			pubkey: databaseEvent.pubkey,
 			tags: databaseEvent.tags,
@@ -266,6 +270,23 @@ export class EventService implements OnApplicationBootstrap {
 				},
 				update: {},
 				create: deletionRelation,
+			})
+		)));
+	}
+
+	async addFirstDeletionRelations(firstDeletionRelations: {
+		deleterEventId: string;
+		deleteeEventId: string;
+	}[]) {
+		await this._prisma.$transaction(firstDeletionRelations.map((firstDeletionRelation) => (
+			this._prisma.event.updateMany({
+				where: {
+					id: firstDeletionRelation.deleteeEventId,
+					firstDeleterEventId: null,
+				},
+				data: {
+					firstDeleterEventId: firstDeletionRelation.deleterEventId,
+				},
 			})
 		)));
 	}
