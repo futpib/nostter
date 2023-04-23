@@ -176,7 +176,7 @@ export class EventService implements OnApplicationBootstrap {
 	}
 
 	async getManyByHeightRange(
-		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		[ startExclusive, endInclusive ]: [ bigint, bigint ],
 		{
 			where: optionsWhere = {},
 		}: GetManyByHeightRangeOptions = {},
@@ -184,7 +184,7 @@ export class EventService implements OnApplicationBootstrap {
 		const where = {
 			...optionsWhere,
 			height: {
-				gte: startInclusive,
+				gt: startExclusive,
 				lte: endInclusive,
 			},
 		};
@@ -200,7 +200,7 @@ export class EventService implements OnApplicationBootstrap {
 	}
 
 	async getManyReferencesByHeightRange(
-		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		[ startExclusive, endInclusive ]: [ bigint, bigint ],
 		{
 			where: optionsWhere = {},
 		}: GetManyByHeightRangeOptions = {},
@@ -210,7 +210,7 @@ export class EventService implements OnApplicationBootstrap {
 		const where = {
 			...optionsWhere,
 			height: {
-				gte: startInclusive,
+				gt: startExclusive,
 				lte: endInclusive,
 			},
 		};
@@ -230,12 +230,12 @@ export class EventService implements OnApplicationBootstrap {
 
 	async getManyReactionsByHeightRange(
 		reacteeEventId: string,
-		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		[ startExclusive, endInclusive ]: [ bigint, bigint ],
 	): Promise<ValidatedDatabaseEvent[]> {
 		const databaseEvents = await this._prisma.event.findMany({
 			where: {
 				height: {
-					gte: startInclusive,
+					gt: startExclusive,
 					lte: endInclusive,
 				},
 				kind: BigInt(Kind.Reaction),
@@ -254,7 +254,7 @@ export class EventService implements OnApplicationBootstrap {
 	}
 
 	async getManyFirstDeletionsByHeightRange(
-		[ startInclusive, endInclusive ]: [ bigint, bigint ],
+		[ startExclusive, endInclusive ]: [ bigint, bigint ],
 	): Promise<(ValidatedDatabaseEvent & {
 		firstDeleteeEvents: (ValidatedDatabaseEvent & {
 			reactionRelations_reacter: EventReactionRelation[];
@@ -263,7 +263,7 @@ export class EventService implements OnApplicationBootstrap {
 		const databaseEvents = await this._prisma.event.findMany({
 			where: {
 				height: {
-					gte: startInclusive,
+					gt: startExclusive,
 					lte: endInclusive,
 				},
 				kind: BigInt(Kind.EventDeletion),
@@ -288,6 +288,16 @@ export class EventService implements OnApplicationBootstrap {
 
 	async addNostrEvent(nostrEvent: NostrEvent) {
 		const databaseEvent = EventService.nostrEventToDatabaseEvent(nostrEvent);
+
+		const existingEvent = await this._prisma.event.findUnique({
+			where: {
+				id: databaseEvent.id,
+			},
+		});
+
+		if (existingEvent) {
+			return;
+		}
 
 		const update: Omit<ValidatedDatabaseEvent, 'kind' | 'id' | 'height' | 'firstDeleterEventId'> = {
 			sig: databaseEvent.sig,

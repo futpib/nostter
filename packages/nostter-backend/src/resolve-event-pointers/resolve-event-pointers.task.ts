@@ -19,7 +19,7 @@ export class ResolveEventPointersTask {
 		private _eventResolveEventPointersStateService: EventResolveEventPointersStateService,
 	) {}
 
-	private async _getStartInclusive(): Promise<bigint> {
+	private async _getStartExclusive(): Promise<bigint> {
 		return this._eventResolveEventPointersStateService.getHeight();
 	}
 
@@ -28,7 +28,7 @@ export class ResolveEventPointersTask {
 	}
 
 	private async _getHeightRange(): Promise<[bigint, bigint]> {
-		const start = await this._getStartInclusive();
+		const start = await this._getStartExclusive();
 		const end = await this._getEndInclusive();
 
 		return [

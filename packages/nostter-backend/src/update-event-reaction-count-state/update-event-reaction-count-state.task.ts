@@ -2,9 +2,8 @@ import { BigIntMath } from '@/big-int-math/big-int-math';
 import { EventReactionCountStateService, ReactionCounts } from '@/event-reaction-count-state/event-reaction-count-state.service';
 import { EventReactionRelationStateService } from '@/event-reaction-relation-state/event-reaction-relation-state.service';
 import { EventService } from '@/event/event.service';
+import { TaskSchedulerService } from '@/task-scheduler/task-scheduler.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { Helpers } from 'graphile-worker';
-import invariant from 'invariant';
 import { Task, TaskHandler } from 'nestjs-graphile-worker';
 
 export type UpdateEventReactionCountStateTaskPayload = {
@@ -20,9 +19,10 @@ export class UpdateEventReactionCountStateTask {
 		private _eventService: EventService,
 		private _eventReactionCountStateService: EventReactionCountStateService,
 		private _eventReactionRelationStateService: EventReactionRelationStateService,
+		private _taskSchedulerService: TaskSchedulerService
 	) {}
 
-	private async _getStartInclusiveByEventId(eventId: string): Promise<bigint> {
+	private async _getStartExclusiveByEventId(eventId: string): Promise<bigint> {
 		return this._eventReactionCountStateService.getHeightByEventId(eventId);
 	}
 
@@ -33,7 +33,7 @@ export class UpdateEventReactionCountStateTask {
 	private async _getHeightRangeByEventId(
 		eventId: string,
 	): Promise<[bigint, bigint]> {
-		const start = await this._getStartInclusiveByEventId(eventId);
+		const start = await this._getStartExclusiveByEventId(eventId);
 		const end = await this._getEndInclusive();
 
 		return [
@@ -42,8 +42,14 @@ export class UpdateEventReactionCountStateTask {
 		];
 	}
 
+	async canProgressByEventId(eventId: string): Promise<boolean> {
+		const [ startExclusive, endInclusive ] = await this._getHeightRangeByEventId(eventId);
+
+		return startExclusive < endInclusive;
+	}
+
 	@TaskHandler()
-	async handler(payload: UpdateEventReactionCountStateTaskPayload, _helpers: Helpers) {
+	async handler(payload: UpdateEventReactionCountStateTaskPayload) {
 		const { eventId } = payload;
 		const heightRange = await this._getHeightRangeByEventId(eventId);
 
@@ -92,5 +98,9 @@ export class UpdateEventReactionCountStateTask {
 		});
 
 		await this._eventReactionCountStateService.setHeightAndReactionCountsByEventId(eventId, heightRange[1], reactionCounts);
+
+		if (await this.canProgressByEventId(eventId)) {
+			await this._taskSchedulerService.handleUpdateEventReactionCountStateCanProgress(eventId);
+		}
 	}
 }

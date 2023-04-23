@@ -23,7 +23,7 @@ export class UpdateEventReactionStateTask {
 		private _eventReferenceRelationStateService: EventReferenceRelationStateService,
 	) {}
 
-	private async _getStartInclusive(): Promise<bigint> {
+	private async _getStartExclusive(): Promise<bigint> {
 		return this._eventReactionRelationStateService.getHeight();
 	}
 
@@ -35,13 +35,19 @@ export class UpdateEventReactionStateTask {
 	}
 
 	private async _getHeightRange(): Promise<[bigint, bigint]> {
-		const start = await this._getStartInclusive();
+		const start = await this._getStartExclusive();
 		const end = await this._getEndInclusive();
 
 		return [
 			start,
 			BigIntMath.max(start, BigIntMath.min(end, start + 64n)),
 		];
+	}
+
+	async canProgress(): Promise<boolean> {
+		const [ startExclusive, endInclusive ] = await this._getHeightRange();
+
+		return startExclusive < endInclusive;
 	}
 
 	@TaskHandler()
@@ -59,12 +65,18 @@ export class UpdateEventReactionStateTask {
 		const reacterToReactee = new Map<string, string>();
 
 		for (const event of events) {
-			for (const referenceRelation of event.referenceRelations_referrer.slice(0, 1)) {
-				const reacterEventId = referenceRelation.referrerEventId;
-				const reacteeEventId = referenceRelation.refereeEventId;
+			const lastETag = event.tags.findLast(([ tagKind ]) => tagKind === 'e');
 
-				reacterToReactee.set(reacterEventId, reacteeEventId);
+			if (!lastETag) {
+				continue;
 			}
+
+			const lastETagValue = lastETag[1];
+
+			const reacterEventId = event.id;
+			const reacteeEventId = lastETagValue;
+
+			reacterToReactee.set(reacterEventId, reacteeEventId);
 		}
 
 		await this._eventService.addReactionRelations(

@@ -30,7 +30,7 @@ export class UpdateEventReferenceStateTask {
 		private _eventResolveEventPointersStateService: EventResolveEventPointersStateService,
 	) {}
 
-	private async _getStartInclusive(): Promise<bigint> {
+	private async _getStartExclusive(): Promise<bigint> {
 		return this._eventReferenceRelationStateService.getHeight();
 	}
 
@@ -39,13 +39,19 @@ export class UpdateEventReferenceStateTask {
 	}
 
 	private async _getHeightRange(): Promise<[bigint, bigint]> {
-		const start = await this._getStartInclusive();
+		const start = await this._getStartExclusive();
 		const end = await this._getEndInclusive();
 
 		return [
 			start,
 			BigIntMath.max(start, BigIntMath.min(end, start + 64n)),
 		];
+	}
+
+	async canProgress(): Promise<boolean> {
+		const [ startExclusive, endInclusive ] = await this._getHeightRange();
+
+		return startExclusive < endInclusive;
 	}
 
 	@TaskHandler()

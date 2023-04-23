@@ -44,6 +44,7 @@ enum TaskPriority {
 }
 
 interface TaskSpec extends BaseTaskSpec {
+	flags: string[];
 	jobKey: string;
 	priority: TaskPriority;
 }
@@ -64,6 +65,9 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 
 	public async handleEventUpsert(event: DatabaseEvent) {
 		await this._addJob('UpdateEventReferenceState', {}, {
+			flags: [
+				'EventUpsert',
+			],
 			jobKey: 'UpdateEventReferenceState',
 			priority: TaskPriority.Default,
 		});
@@ -71,6 +75,9 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 		await this._addJob('GetReferrerEvents', {
 			refereeEventId: event.id,
 		}, {
+			flags: [
+				'EventUpsert',
+			],
 			jobKey: [
 				'GetReferrerEvents',
 				event.id,
@@ -85,8 +92,26 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 
 	public async handleEventPointersUpsert(targetHeight: bigint) {
 		await this._addJob('ResolveEventPointers', {}, {
+			flags: [
+				'EventPointersUpsert',
+			],
 			jobKey: 'ResolveEventPointers',
 			priority: TaskPriority.Default,
+		});
+	}
+
+	public async handleEventRequest(eventId: string) {
+		await this._addJob('GetReferrerEvents', {
+			refereeEventId: eventId,
+		}, {
+			flags: [
+				'EventRequest',
+			],
+			jobKey: [
+				'GetReferrerEvents',
+				eventId,
+			].join(':'),
+			priority: TaskPriority.Low,
 		});
 	}
 
@@ -94,6 +119,9 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 		await this._addJob('UpdateEventReactionCountState', {
 			eventId,
 		}, {
+			flags: [
+				'EventReactionsRequest',
+			],
 			jobKey: [
 				'UpdateEventReactionCountState',
 				eventId,
@@ -102,31 +130,62 @@ export class TaskSchedulerService implements OnApplicationBootstrap {
 		});
 	}
 
+	public async handleUpdateEventReactionCountStateCanProgress(eventId: string) {
+		await this._addJob('UpdateEventReactionCountState', {
+			eventId,
+		}, {
+			flags: [
+				'UpdateEventReactionCountStateCanProgress',
+			],
+			jobKey: [
+				'UpdateEventReactionCountState',
+				eventId,
+			].join(':'),
+			priority: TaskPriority.Low,
+		});
+	}
+
 	@Interval(1000)
 	private async handleInterval() {
 		await this._addJob('UpdateEventReferenceState', {}, {
+			flags: [
+				'Interval',
+			],
 			jobKey: 'UpdateEventReferenceState',
-			priority: TaskPriority.Default,
+			priority: TaskPriority.Low,
 		});
 
 		await this._addJob('UpdateEventDeletionState', {}, {
+			flags: [
+				'Interval',
+			],
 			jobKey: 'UpdateEventDeletionState',
-			priority: TaskPriority.Default,
+			priority: TaskPriority.Low,
 		});
 
 		await this._addJob('UpdateEventReactionState', {}, {
+			flags: [
+				'Interval',
+			],
 			jobKey: 'UpdateEventReactionState',
+			priority: TaskPriority.Low,
+		});
+	}
+
+	private async _handleUpdateEventReferenceStateJobSuccess() {
+		await this._addJob('UpdateEventDeletionState', {}, {
+			flags: [
+				'UpdateEventReferenceStateJobSuccess',
+			],
+			jobKey: 'UpdateEventDeletionState',
 			priority: TaskPriority.Default,
 		});
 	}
 
 	@OnWorkerEvent('job:success')
-	private async onJobSuccess({ job }: WorkerEventMap['job:success']) {
+	private async _handleJobSuccess({ job }: WorkerEventMap['job:success']) {
 		if (job.task_identifier === 'UpdateEventReferenceState') {
-			await this._addJob('UpdateEventDeletionState', {}, {
-				jobKey: 'UpdateEventDeletionState',
-				priority: TaskPriority.Default,
-			});
+			this._handleUpdateEventReferenceStateJobSuccess();
 		}
 	}
 

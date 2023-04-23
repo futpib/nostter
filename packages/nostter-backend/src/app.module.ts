@@ -24,6 +24,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EventReactionRelationStateService } from './event-reaction-relation-state/event-reaction-relation-state.service';
 import { UpdateEventReactionStateTask } from './update-event-reaction-state/update-event-reaction-state.task';
 import { UpdateEventReactionCountStateTask } from './update-event-reaction-count-state/update-event-reaction-count-state.task';
+import { DebugController } from './debug/debug.controller';
 
 @Module({
 	imports: [
@@ -48,6 +49,7 @@ import { UpdateEventReactionCountStateTask } from './update-event-reaction-count
 		AppController,
 		EventsController,
 		EventReactionCountsController,
+		DebugController,
 	],
 
 	providers: [

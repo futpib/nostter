@@ -22,7 +22,7 @@ export class UpdateEventDeletionStateTask {
 		private _eventReferenceRelationStateService: EventReferenceRelationStateService,
 	) {}
 
-	private async _getStartInclusive(): Promise<bigint> {
+	private async _getStartExclusive(): Promise<bigint> {
 		return this._eventDeletionRelationStateService.getHeight();
 	}
 
@@ -31,13 +31,19 @@ export class UpdateEventDeletionStateTask {
 	}
 
 	private async _getHeightRange(): Promise<[bigint, bigint]> {
-		const start = await this._getStartInclusive();
+		const start = await this._getStartExclusive();
 		const end = await this._getEndInclusive();
 
 		return [
 			start,
 			BigIntMath.max(start, BigIntMath.min(end, start + 1024n)),
 		];
+	}
+
+	async canProgress(): Promise<boolean> {
+		const [ startExclusive, endInclusive ] = await this._getHeightRange();
+
+		return startExclusive < endInclusive;
 	}
 
 	@TaskHandler()
