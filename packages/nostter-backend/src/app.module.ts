@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -37,10 +37,9 @@ import { DebugController } from './debug/debug.controller';
 				connectionString: config.databaseUrl,
 				concurrency: config.graphileWorkerConcurrency,
 				pollInterval: config.graphileWorkerPollInterval,
+				maxPoolSize: config.graphileWorkerMaxPoolSize,
 			}),
 		}),
-
-		CacheModule.register(),
 
 		ScheduleModule.forRoot(),
 	],

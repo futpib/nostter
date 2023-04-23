@@ -33,7 +33,7 @@ export class AppConfigService {
 			DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres',
 			GRAPHILE_WORKER_CONCURRENCY: '128',
 			GRAPHILE_WORKER_POLL_INTERVAL: '100',
-			GRAPHILE_WORKER_MAX_POOL_SIZE: '1',
+			GRAPHILE_WORKER_MAX_POOL_SIZE: '4',
 		};
 	}
 
@@ -58,5 +58,9 @@ export class AppConfigService {
 
 	get graphileWorkerPollInterval(): number {
 		return Number(this._configService.get('GRAPHILE_WORKER_POLL_INTERVAL'));
+	}
+
+	get graphileWorkerMaxPoolSize(): number {
+		return Number(this._configService.get('GRAPHILE_WORKER_MAX_POOL_SIZE'));
 	}
 }
