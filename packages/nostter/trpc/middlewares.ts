@@ -14,14 +14,24 @@ export const combineRelaysMiddleware = trpcServer.middleware(({ input, rawInput,
 	});
 });
 
-export const combineMetaMiddleware = trpcServer.middleware(({ meta, ctx, next }) => {
-	if (!ctx.combinedMeta) {
-		return next({
-			ctx: {
-				combinedMeta: meta,
-			},
-		});
-	}
+export const ensureRelaysMiddleware = trpcServer.middleware(async ({ ctx, next }) => {
+	await Promise.all(ctx.combinedRelays.map(async relay => {
+		try {
+			await ctx.relayPool.ensureRelay(relay);
+		} catch (error) {
+			console.warn('Error ensuring relay', relay, error);
+		}
+	}));
 
-	invariant(false, "meta already set, batching not supported");
+	return next();
+});
+
+export const combineMetaMiddleware = trpcServer.middleware(({ meta, ctx, next }) => {
+	invariant(!ctx.combinedMeta, "meta already set");
+
+	return next({
+		ctx: {
+			combinedMeta: meta,
+		},
+	});
 });

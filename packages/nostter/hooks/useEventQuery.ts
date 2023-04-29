@@ -2,7 +2,7 @@ import { EventPointer } from "nostr-tools/lib/nip19";
 import { trpcReact } from "@/clients/trpc";
 import { EventSet } from "@/nostr/EventSet";
 
-export function useNoteEventQuery(
+export function useEventQuery(
 	{
 		eventPointer,
 	}: {
@@ -11,6 +11,7 @@ export function useNoteEventQuery(
 	options?: {
 		enabled?: boolean;
 		onSuccess?: (data: EventSet) => void;
+		initialData?: EventSet;
 	},
 ) {
 	const { id, author, relays } = eventPointer ?? {};

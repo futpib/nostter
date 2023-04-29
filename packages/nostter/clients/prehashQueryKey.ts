@@ -52,7 +52,9 @@ export function unprehashQueryKey(prehashedQueryKey: PrehashedQueryKey): FullQue
 
 const knownOptions = new Set([
 	'id',
+	'kinds',
 	'author',
+	'authors',
 	'relays',
 ]);
 
@@ -66,7 +68,9 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 	const trpcQueryKey = prehashedQueryKey as unknown as [ string[], PartialDeep<{
 		input: {
 			id: string;
+			kinds: string[];
 			author: string;
+			authors: string[];
 			relays: string[];
 		};
 		type: string,
@@ -75,7 +79,7 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 	const trpcQueryKeyOptions = trpcQueryKey[1];
 
 	for (const key of Object.keys(trpcQueryKeyOptions.input ?? {})) {
-		invariant(knownOptions.has(key), 'Uknown query option %s', key);
+		invariant(knownOptions.has(key), 'Uknown trpc query option %s', key);
 	}
 
 	return [
@@ -85,8 +89,10 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 		].join(' '),
 		[
 			trpcQueryKeyOptions.input?.id,
+			trpcQueryKeyOptions.input?.kinds?.join(),
 			trpcQueryKeyOptions.input?.author,
+			trpcQueryKeyOptions.input?.authors?.join(),
 			trpcQueryKeyOptions.input?.relays?.join(),
-		].join(),
+		].join(';'),
 	].join('\n');
 }

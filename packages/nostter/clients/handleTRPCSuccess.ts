@@ -15,11 +15,11 @@ function setCacheTimeFromMeta(query: Query, queryKey: QueryKey, data: EventSet) 
 		router = router[segment];
 	}
 
-	const meta = router.meta as TRPCMeta;
+	const meta = router.meta as undefined | TRPCMeta;
 
 	let cacheTime: undefined | number = undefined;
 
-	if (meta.cacheControl) {
+	if (meta?.cacheControl) {
 		if ('empty' in meta.cacheControl || 'nonEmpty' in meta.cacheControl) {
 			const { empty, nonEmpty } = meta.cacheControl;
 
@@ -47,6 +47,18 @@ function setCacheTimeFromMeta(query: Query, queryKey: QueryKey, data: EventSet) 
 }
 
 export function handleTRPCSuccess(query: Query, queryKey: QueryKey, data: unknown) {
+	if (data && typeof data === 'object' && 'pages' in data) {
+		const pages = (data as any).pages as { eventSet: EventSet }[];
+
+		for (const page of pages) {
+			invariant(page.eventSet instanceof EventSet, "page.eventSet must be an EventSet");
+
+			setCacheTimeFromMeta(query, queryKey, page.eventSet);
+		}
+
+		return;
+	}
+
 	invariant(data instanceof EventSet, "data must be an EventSet");
 
 	setCacheTimeFromMeta(query, queryKey, data);

@@ -19,6 +19,15 @@ const nextConfig = {
 			},
 		]
 	},
+
+	async rewrites() {
+		return [
+			{
+				source: '/:nip19Id/:tab',
+				destination: '/:nip19Id',
+			},
+		]
+	},
 };
 
 module.exports = nextConfig;

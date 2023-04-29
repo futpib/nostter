@@ -1,0 +1,16 @@
+
+.timelineRepostHeaderIcon {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: right;
+
+	width: 48px;
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.timelineRepostHeaderLink {
+	font-weight: 700;
+	font-size: 0.86em;
+	color: rgb(var(--foreground-secondary-rgb));
+}

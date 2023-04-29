@@ -3,10 +3,20 @@ import debug from 'debug';
 
 const debugLog = debug('nostter');
 
+const defautNamespaces = [
+	'nostter:*',
+	'-nostter:components:QueryClientProvider',
+	'-nostter:clients:queryFn',
+].join();
+
 if (typeof window !== 'undefined') {
 	(window as any).debug = debug;
 
-	const namespaces = process.env.NEXT_PUBLIC_DEBUG;
+	let namespaces = process.env.NEXT_PUBLIC_DEBUG;
+
+	if (namespaces === 'true') {
+		namespaces = defautNamespaces;
+	}
 
 	if (namespaces) {
 		debug.enable(namespaces);

@@ -3,6 +3,7 @@ import { Image } from './Image';
 import styles from "./Profile.module.css";
 import { ProfileMentionNameText } from "./ProfileMentionNameText";
 import { ProfileAboutText } from "./ProfileAboutText";
+import { ProfileTabs } from "./ProfileTabs";
 
 export function Profile({
 	pubkey,
@@ -46,6 +47,8 @@ export function Profile({
 					content={pubkeyMetadata?.about ?? ''}
 				/>
 			</div>
+			{/*
+				<ProfileTabs /> */}
 		</div>
 	);
 }

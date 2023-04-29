@@ -1,6 +1,5 @@
 "use client";
 
-import { handleSuccess } from "@/clients/handleSuccess";
 import { handleTRPCSuccess } from "@/clients/handleTRPCSuccess";
 import { queryKeyHashFn } from "@/clients/prehashQueryKey";
 import { queryFn } from "@/clients/queryFn";

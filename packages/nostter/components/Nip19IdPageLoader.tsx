@@ -5,6 +5,7 @@ import { notFound, redirect, usePathname } from "next/navigation";
 import { nip19Decode } from "@/utils/nip19Decode";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ProfileLoader } from "./ProfileLoader";
+import { DateTime } from "luxon";
 
 function Nip19IdNotePageLoader({ eventPointer }: {
 	eventPointer: EventPointer;
@@ -17,13 +18,18 @@ function Nip19IdNotePageLoader({ eventPointer }: {
 	);
 }
 
-function Nip19IdProfilePageLoader({ profilePointer }: {
+function Nip19IdProfilePageLoader({
+	profilePointer,
+	now,
+}: {
 	profilePointer: ProfilePointer;
+	now?: DateTime;
 }) {
 	return (
 		<ProfileLoader
 			componentKey="ProfilePage"
 			profilePointer={profilePointer}
+			now={now}
 		/>
 	);
 }
@@ -50,8 +56,16 @@ export function Nip19IdPageLoader() {
 	}
 
 	if (decoded.type === 'profilePointer') {
-		return Nip19IdProfilePageLoader({ profilePointer: decoded.profilePointer });
+		return (
+			<Nip19IdProfilePageLoader
+				profilePointer={decoded.profilePointer}
+			/>
+		);
 	}
 
-	return Nip19IdNotePageLoader({ eventPointer: decoded.eventPointer });
+	return (
+		<Nip19IdNotePageLoader
+			eventPointer={decoded.eventPointer}
+		/>
+	);
 }

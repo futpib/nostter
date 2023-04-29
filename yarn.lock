@@ -3814,6 +3814,7 @@ __metadata:
     react-content-loader: ^6.2.1
     react-dom: 18.2.0
     react-icons: ^4.8.0
+    react-intersection-observer-hook: ^2.1.1
     react-remove-scroll: ^2.5.5
     sharp: ^0.32.0
     superjson: ^1.12.2
@@ -4334,6 +4335,15 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 4dbba7ad989c295b410e19b2a702722dae44368cb04b6515f9471353552f31ac80bd350f121d5bff79f81504b84039ede44d09e9f035f48bb1032e6eace126c4
+  languageName: node
+  linkType: hard
+
+"react-intersection-observer-hook@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "react-intersection-observer-hook@npm:2.1.1"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 47b2317cf71d7b7a557bce73cf7b5a9456c964c44e52ca45ea2f7d7a509ecf128d83bcdfe86ac280f4c7d3b438639a28ec8912013ea9ce372b2c8e8b6ed1f711
   languageName: node
   linkType: hard
 

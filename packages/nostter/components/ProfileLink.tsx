@@ -5,15 +5,17 @@ import { ReactNode, useCallback, useState } from "react";
 import { nip19 } from "nostr-tools";
 import styles from "./ProfileLink.module.css";
 import { autoPlacement, offset, useFloating, useHover, useInteractions } from "@floating-ui/react";
-import { ProfileTooltipContent } from "./ProfileTooltipContent";
 import { ProfileLoader } from "./ProfileLoader";
+import classNames from "classnames";
 
 export function ProfileLink({
 	unstyled = false,
+	className,
 	pubkey,
 	children,
 }: {
 	unstyled?: boolean;
+	className?: string;
 	pubkey: string;
 	children?: ReactNode;
 }) {
@@ -45,7 +47,10 @@ export function ProfileLink({
 		<>
 			<Link
 				ref={refs.setReference}
-				className={unstyled ? undefined : styles.profileLink}
+				className={classNames(
+					unstyled ? undefined : styles.profileLink,
+					className,
+				)}
 				href={`/${nip19.npubEncode(pubkey)}`}
 				onClick={handleProfileLinkClick}
 				onAuxClick={handleProfileLinkClick}

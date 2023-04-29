@@ -103,6 +103,10 @@ export class EventSet {
 		}
 	}
 
+	has(id: string) {
+		return this._events.has(id);
+	}
+
 	get(id: string) {
 		return this._events.get(id);
 	}

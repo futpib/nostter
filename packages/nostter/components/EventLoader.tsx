@@ -3,7 +3,7 @@
 import { Note } from "./Note";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { EmbeddedNote } from "./EmbeddedNote";
-import { ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import { Event, parseReferences } from "nostr-tools";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { getContentImageLinks } from "@/utils/getContentImageLinks";
@@ -26,31 +26,14 @@ import { useEventQuery } from "@/hooks/useEventQuery";
 import { useAppQueries } from "@/hooks/useAppQuery";
 import { getNoteContentTokens } from "@/utils/getNoteContentTokens";
 import { EventSet } from "@/nostr/EventSet";
+import { TimelineEvent } from "./TimelineEvent";
 
 const components = {
-	NotePage,
-	Note,
-	ParentNote,
-	ParentNoteLink,
-	EmbeddedNote,
-	EmbeddedNoteLink,
-	ChildNote,
-	ChildNoteLink,
-	TimelineNote,
-	TimelineNoteLink,
+	TimelineEvent,
 };
 
 const skeletonComponents = {
-	NotePage: NoteSkeleton,
-	Note: NoteSkeleton,
-	ParentNote: ParentNoteSkeleton,
-	ParentNoteLink: ParentNoteSkeleton,
-	EmbeddedNote: EmbeddedNoteSkeleton,
-	EmbeddedNoteLink: EmbeddedNoteSkeleton,
-	ChildNote: ChildNoteSkeleton,
-	ChildNoteLink: ChildNoteSkeleton,
-	TimelineNote: ParentNoteSkeleton,
-	TimelineNoteLink: ParentNoteSkeleton,
+	TimelineEvent: ParentNoteSkeleton,
 };
 
 const NoteNotFound = () => (
@@ -61,30 +44,20 @@ const NoteNotFound = () => (
 
 const notFoundComponents = {
 	// TODO
-	NotePage: NoteNotFound,
-	Note: NoteNotFound,
-	ParentNote: NoteNotFound,
-	ParentNoteLink: NoteNotFound,
-	EmbeddedNote: NoteNotFound,
-	EmbeddedNoteLink: NoteNotFound,
-	ChildNote: NoteNotFound,
-	ChildNoteLink: NoteNotFound,
-	TimelineNote: NoteNotFound,
-	TimelineNoteLink: NoteNotFound,
+	TimelineEvent: NoteNotFound,
+	TimelineEventLink: NoteNotFound,
 };
 
-export function NoteLoader({
+export function EventLoader({
 	componentKey,
 	eventPointer,
 	event: initialDataEvent,
 	onEventQuerySuccess,
-	repostHeaderChildren,
 }: {
 	componentKey: keyof typeof components;
 	eventPointer: EventPointer;
 	event?: Event;
 	onEventQuerySuccess?: (data: { event?: Event }) => void;
-	repostHeaderChildren?: ReactNode;
 }) {
 	const eventQuery = useEventQuery({
 		eventPointer,
@@ -103,16 +76,16 @@ export function NoteLoader({
 	const SkeletonComponent = skeletonComponents[componentKey];
 	const NotFoundComponent = notFoundComponents[componentKey];
 
-	const noteEvent = eventQuery.data?.toEvent();
+	const event = eventQuery.data?.toEvent();
 
-	const noteEventProfilePointer: undefined | ProfilePointer = noteEvent ? {
-		pubkey: noteEvent.pubkey,
+	const eventProfilePointer: undefined | ProfilePointer = event ? {
+		pubkey: event.pubkey,
 	} : undefined;
 
-	const { profilePointers = [], repliedProfilePointers = [] } = noteEvent ? getReferencedProfiles(noteEvent) : {};
+	const { profilePointers = [], repliedProfilePointers = [] } = event ? getReferencedProfiles(event) : {};
 
 	const pubkeyMetadataEventQueries = useAppQueries({
-		queries: [ noteEventProfilePointer, ...profilePointers ].flatMap(profilePointer => profilePointer ? [
+		queries: [ eventProfilePointer, ...profilePointers ].flatMap(profilePointer => profilePointer ? [
 			{
 				queryKey: [
 					'finite',
@@ -131,9 +104,9 @@ export function NoteLoader({
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
 
-	const references = noteEvent ? parseReferences(noteEvent) : undefined;
+	const references = event ? parseReferences(event) : undefined;
 
-	const contentTokens = useMemo(() => getNoteContentTokens(noteEvent?.content || '', references ?? []), [noteEvent?.content, references]);
+	const contentTokens = useMemo(() => getNoteContentTokens(event?.content || '', references ?? []), [event?.content, references]);
 
 	const contentImageLinks = useMemo(() => {
 		return getContentImageLinks(contentTokens);
@@ -158,19 +131,19 @@ export function NoteLoader({
 			id={eventPointer.id}
 		/>
 	) : (
-		(noteEvent && references) ? (
+		(event && references) ? (
 			<Component
-				id={noteEvent.id}
-				pubkey={noteEvent.pubkey}
-				content={noteEvent.content}
+				id={event.id}
+				kind={event.kind}
+				pubkey={event.pubkey}
+				content={event.content}
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
 				contentReferencedEvents={contentReferencedEvents}
-				createdAt={noteEvent.created_at}
+				createdAt={event.created_at}
 				references={references}
 				repliedProfilePointers={repliedProfilePointers}
 				pubkeyMetadatas={pubkeyMetadatas}
-				repostHeaderChildren={repostHeaderChildren}
 			/>
 		) : (
 			<NotFoundComponent />

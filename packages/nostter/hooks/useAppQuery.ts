@@ -160,6 +160,9 @@ type UseAppQueryError = unknown;
 
 export type UseAppQueryOptions = Omit<UseQueryOptions<EventSet, UseAppQueryError, EventSet, ShortQueryKey>, 'queryKey' | 'queryFn'>;
 
+/**
+ * @deprecated Use trpc instead
+ */
 export function useAppQuery(
 	shortQueryKey: ShortQueryKey,
 	options?: UseAppQueryOptions,
@@ -183,6 +186,9 @@ export function useAppQuery(
 	return useMergeAppQueryResults(queryResults)
 }
 
+/**
+ * @deprecated Use trpc instead
+ */
 export function useAppQueries<
 	T extends any[],
 	TError = unknown,
@@ -227,6 +233,11 @@ type UseAppInfiniteQueryResult = {
 
 export type UseAppInfiniteQueryOptions = Omit<UseInfiniteQueryOptions<EventSet, UseAppQueryError, EventSet, EventSet, PrehashedQueryKey>, 'queryKey' | 'queryFn'>;
 
+const seenEventSets = new WeakSet<EventSet>();
+
+/**
+ * @deprecated Use trpc instead
+ */
 export function useAppInfiniteQuery(
 	shortQueryKey: ShortQueryKey,
 	options?: UseAppInfiniteQueryOptions,
@@ -259,7 +270,13 @@ export function useAppInfiniteQuery(
 
 		onSuccess(infiniteData) {
 			for (const eventSet of infiniteData.pages) {
+				if (seenEventSets.has(eventSet)) {
+					continue;
+				}
+
 				handleSuccess(eventSet);
+
+				seenEventSets.add(eventSet);
 			}
 
 			return options?.onSuccess?.(infiniteData);

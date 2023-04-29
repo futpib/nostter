@@ -1,4 +1,5 @@
-import { isIndexedTagKey, getLocalRelayDexie } from "@/dexie/localRelay";
+import { isIndexedTagKey, getLocalRelayDexie, EventRecord } from "@/dexie/localRelay";
+import { Collection, IndexableType, Table } from "dexie";
 import invariant from "invariant";
 import { CountPayload, Event, Filter, Sub, SubscriptionOptions } from "nostr-tools";
 
@@ -20,8 +21,18 @@ type EqualityCriterias = Partial<{
 	tTag1s: string[];
 }>;
 
-function filterToEqualityCriterias(filter: Filter): EqualityCriterias {
+type DexieQuery = {
+	equalityCriterias: EqualityCriterias;
+	filter?: (event: Event) => boolean;
+	limit?: number;
+};
+
+function filterToDexieQuery(filter: Filter): DexieQuery {
 	const equalityCriterias: EqualityCriterias = {};
+
+	let until: number | undefined;
+	let limit: number | undefined;
+	let multipleKinds: undefined | number[];
 
 	for (const [ key, value ] of Object.entries(filter)) {
 		if (value === undefined) {
@@ -47,10 +58,16 @@ function filterToEqualityCriterias(filter: Filter): EqualityCriterias {
 		}
 
 		if (key === "kinds") {
-			invariant(arrayValue.length === 1, 'TODO: Support multiple kinds');
-			invariant(typeof firstValue === 'number', 'kind must be a number');
-			equalityCriterias.kind = firstValue;
-			continue;
+			if (arrayValue.length === 1) {
+				invariant(typeof firstValue === 'number', 'kind must be a number');
+				equalityCriterias.kind = firstValue;
+				continue;
+			} else if (arrayValue.length > 1) {
+				multipleKinds = arrayValue as number[];
+				continue;
+			} else {
+				invariant(false, 'kinds must not be empty');
+			}
 		}
 
 		if (key === 'authors') {
@@ -69,10 +86,65 @@ function filterToEqualityCriterias(filter: Filter): EqualityCriterias {
 			}
 		}
 
+		if (key === 'until') {
+			if (!firstValue) {
+				continue;
+			}
+
+			until = firstValue as number;
+			continue;
+		}
+
+		if (key === 'limit') {
+			if (!firstValue) {
+				continue;
+			}
+
+			limit = firstValue as number;
+			continue;
+		}
+
 		invariant(false, `FIXME: Unsupported filter key: ${key}`);
 	}
 
-	return equalityCriterias;
+	return {
+		equalityCriterias,
+		filter: (until || multipleKinds) ? (event) => {
+			let allPass = true;
+
+			if (until !== undefined) {
+				allPass &&= event.created_at <= until;
+			}
+
+			if (multipleKinds !== undefined) {
+				allPass &&= multipleKinds.includes(event.kind);
+			}
+
+			return allPass;
+		} : undefined,
+		limit,
+	};
+}
+
+function applyDexieQuery(
+	table: Table<EventRecord, IndexableType>,
+	{
+		equalityCriterias,
+		filter,
+		limit,
+	}: DexieQuery,
+): Collection<EventRecord, IndexableType> {
+	let result = table.where(equalityCriterias);
+
+	if (filter) {
+		result = result.filter(filter);
+	}
+
+	if (limit) {
+		result = result.limit(limit);
+	}
+
+	return result;
 }
 
 type SubEvent = {
@@ -83,13 +155,25 @@ type SubEvent = {
 
 export class LocalPool {
 	async get(_relays: string[], filter: Filter): Promise<Event | null> {
-		const equalityCriterias = filterToEqualityCriterias(filter);
+		const dexieQuery = filterToDexieQuery(filter);
 
 		const localRelayDexie = await getLocalRelayDexie();
 
-		const result = await localRelayDexie.events.where(equalityCriterias).first();
+		const result = await applyDexieQuery(localRelayDexie.events, dexieQuery).first();
 
 		return result ?? null;
+	}
+
+	async list(_relays: string[], filters: Filter[]): Promise<Event[]> {
+		const dexieQueries = filters.map(filterToDexieQuery);
+
+		const localRelayDexie = await getLocalRelayDexie();
+
+		const queryResults = await Promise.all(dexieQueries.map(dexieQuery => {
+			return applyDexieQuery(localRelayDexie.events, dexieQuery).toArray();
+		}));
+
+		return queryResults.flat();
 	}
 
 	sub(_relays: string[], filters: Filter[]): Sub {
@@ -101,13 +185,12 @@ export class LocalPool {
 		let cancelled = false;
 
 		(async () => {
-			const equalityCriterias = filters.map(filterToEqualityCriterias);
+			const dexieQueries = filters.map(filterToDexieQuery);
 
 			const localRelayDexie = await getLocalRelayDexie();
 
-			await Promise.all(equalityCriterias.map(equalityCriterias => {
-				return localRelayDexie.events
-					.where(equalityCriterias)
+			await Promise.all(dexieQueries.map(dexieQuery => {
+				return applyDexieQuery(localRelayDexie.events, dexieQuery)
 					.until(() => cancelled)
 					.each((event) => {
 						if (seenEventIds.has(event.id)) {
@@ -157,4 +240,6 @@ export class LocalPool {
 			},
 		};
 	}
+
+	async ensureRelay(_relay: string) {}
 }

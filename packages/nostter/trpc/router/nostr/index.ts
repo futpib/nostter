@@ -3,9 +3,10 @@ import { trpcServer } from "@/trpc/server";
 import { EVENT_KIND_REACTION, EVENT_KIND_SHORT_TEXT_NOTE } from '@/constants/eventKinds';
 import { EventSet } from '@/nostr/EventSet';
 import { maxCacheTime } from '@/utils/setCacheControlHeader';
-import { combineMetaMiddleware, combineRelaysMiddleware } from '@/trpc/middlewares';
+import { combineMetaMiddleware, combineRelaysMiddleware, ensureRelaysMiddleware } from '@/trpc/middlewares';
 import { observable } from '@trpc/server/observable';
 import { Event } from 'nostr-tools';
+import invariant from 'invariant';
 
 const eventPointerSchema = z.object({
 	id: z.string(),
@@ -13,10 +14,27 @@ const eventPointerSchema = z.object({
 	author: z.string().optional(),
 });
 
+const cursorSchema = z.object({
+	since: z.number().optional(),
+	until: z.number().optional(),
+	limit: z.number().optional(),
+});
+
+export type Cursor = z.infer<typeof cursorSchema>;
+
+function cursorEquals(a: Cursor, b: Cursor) {
+	return (
+		a.since === b.since &&
+			a.until === b.until &&
+			a.limit === b.limit
+	);
+}
+
 export const trpcNostrRouter = trpcServer.router({
 	event: trpcServer.procedure
 		.use(combineMetaMiddleware)
 		.use(combineRelaysMiddleware)
+		.use(ensureRelaysMiddleware)
 		.meta({
 			cacheControl: {
 				nonEmpty: {
@@ -43,6 +61,86 @@ export const trpcNostrRouter = trpcServer.router({
 			}
 
 			return eventSet;
+		}),
+
+	infiniteEvents: trpcServer.procedure
+		.use(combineMetaMiddleware)
+		.use(combineRelaysMiddleware)
+		.use(ensureRelaysMiddleware)
+		.input(z.object({
+			kinds: z.array(z.number()).optional(),
+			authors: z.array(z.string()).optional(),
+			cursor: cursorSchema.optional(),
+		}))
+		.query(async ({ input: { kinds, authors, cursor }, ctx }) => {
+			const cursorDuration = (
+				cursor?.since && cursor?.until
+					? cursor.until - cursor.since
+					: undefined
+			);
+
+			const filter = {
+				kinds,
+				authors,
+				since: cursor?.since,
+				until: cursor?.until,
+				limit: cursor?.limit,
+			};
+
+			const events = await ctx.relayPool.list(ctx.combinedRelays, [ filter ]);
+
+			const eventSet = new EventSet();
+
+			for (const event of events) {
+				if (filter.since && event.created_at < filter.since) {
+					continue;
+				}
+
+				if (filter.until && event.created_at > filter.until) {
+					continue;
+				}
+
+				eventSet.add(event);
+			}
+
+			const oldestEvent = eventSet.getOldestEvent();
+
+			const nextCursorUntil = (
+				cursor?.limit
+					? (
+						oldestEvent
+							? oldestEvent.created_at
+							: cursor.until
+					)
+					: (
+						cursorDuration
+							? cursor!.until! - Math.round(cursorDuration / 2)
+							: undefined
+					)
+			);
+
+			const nextCursor: Cursor = {
+				until: nextCursorUntil,
+				since: (
+					cursorDuration
+						? (
+							nextCursorUntil
+								? nextCursorUntil - cursorDuration
+								: invariant(false, 'nextCursorUntil is undefined when cursorDuration is defined')
+						)
+						: undefined
+				),
+				limit: cursor?.limit,
+			};
+
+			return {
+				eventSet,
+				nextCursor : (
+					(cursor && cursorEquals(cursor, nextCursor))
+						? undefined
+						: nextCursor
+				),
+			};
 		}),
 
 	eventReactionEventsSubscription: trpcServer.procedure

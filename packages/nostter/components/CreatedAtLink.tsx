@@ -6,6 +6,7 @@ import { nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
 import styles from "./CreatedAtLink.module.css";
 import { useFloating, useHover, useInteractions, offset } from "@floating-ui/react";
+import { useNow } from "@/hooks/useNow";
 
 export function CreatedAtLink({
 	long,
@@ -20,6 +21,10 @@ export function CreatedAtLink({
 		return DateTime.fromSeconds(createdAt).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 	}, [createdAt]);
 
+	const liveNow = useNow({
+		live: true,
+	});
+
 	const text = useMemo(() => {
 		const createdAtDateTime = DateTime.fromSeconds(createdAt);
 
@@ -27,8 +32,7 @@ export function CreatedAtLink({
 			return createdAtDateTime.toLocaleString(DateTime.DATETIME_MED);
 		}
 
-		const now = DateTime.local();
-		const age = now.diff(createdAtDateTime);
+		const age = liveNow.diff(createdAtDateTime);
 
 		if (age.as("hour") < 1) {
 			return age.toFormat("m") + "m";
@@ -36,7 +40,7 @@ export function CreatedAtLink({
 			return age.toFormat("h") + "h";
 		}
 
-		if (createdAtDateTime.year === now.year) {
+		if (createdAtDateTime.year === liveNow.year) {
 			return createdAtDateTime.toLocaleString({
 				month: "short",
 				day: "2-digit",

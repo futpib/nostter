@@ -6,6 +6,7 @@ import { useAppQuery } from "@/hooks/useAppQuery";
 import { Profile } from "./Profile";
 import { ProfilePage } from "./ProfilePage";
 import { ProfileTooltipContent } from "./ProfileTooltipContent";
+import { DateTime } from "luxon";
 
 const components = {
 	ProfilePage,
@@ -38,9 +39,11 @@ export function ProfileLoader({
 	componentKey,
 	profilePointer,
 	onProfileQuerySuccess,
+	now,
 }: {
 	componentKey: keyof typeof components;
 	profilePointer: ProfilePointer;
+	now?: DateTime;
 	onProfileQuerySuccess?: () => void;
 }) {
 	const pubkeyMetadataEventQuery = useAppQuery([
@@ -74,6 +77,7 @@ export function ProfileLoader({
 			<Component
 				pubkey={profilePointer.pubkey}
 				pubkeyMetadata={pubkeyMetadata}
+				now={now}
 			/>
 		) : (
 			<NotFoundComponent />

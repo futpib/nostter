@@ -25,10 +25,17 @@ import { getProfileDisplayNameText } from '@/utils/getProfileDisplayNameText';
 import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
 import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
 import { createTRPCCaller } from '@/trpc/caller';
+import { DateTime } from 'luxon';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
-async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfilePointer }) {
+async function Nip19IdProfilePage({
+	profilePointer,
+	now,
+}: {
+	profilePointer: ProfilePointer,
+	now?: DateTime,
+}) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
 	const t0 = performance.now();
@@ -78,6 +85,7 @@ async function Nip19IdProfilePage({ profilePointer }: { profilePointer: ProfileP
 
 			<ProfileNotes
 				pubkey={profilePointer.pubkey}
+				now={now?.toISO() ?? undefined}
 			/>
 		</>
 	);
@@ -218,8 +226,19 @@ export default async function Nip19IdPage({
 		redirect(`/${normalizedNip19Id}`);
 	}
 
+	const now = (() => {
+		const nowParam = typeof searchParams.now === 'string' ? searchParams.now : undefined;
+		const now = DateTime.fromISO(nowParam ?? '');
+
+		if (now.isValid) {
+			return now;
+		}
+
+		return undefined;
+	})();
+
 	if (decoded.type === 'profilePointer') {
-		return Nip19IdProfilePage({ profilePointer: decoded.profilePointer });
+		return Nip19IdProfilePage({ profilePointer: decoded.profilePointer, now });
 	}
 
 	return Nip19IdNotePage({ eventPointer: decoded.eventPointer });

@@ -3,13 +3,16 @@ import { NextSeo } from "next-seo";
 import { Profile } from "./Profile";
 import { ProfileNotes } from "./ProfileNotes";
 import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
+import { DateTime } from "luxon";
 
 export function ProfilePage({
 	pubkey,
 	pubkeyMetadata,
+	now,
 }: {
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
+	now?: DateTime;
 }) {
 	const pubkeyText = getProfileDisplayNameText({
 		pubkey,
@@ -31,6 +34,7 @@ export function ProfilePage({
 
 			<ProfileNotes
 				pubkey={pubkey}
+				now={now}
 			/>
 		</>
 	);

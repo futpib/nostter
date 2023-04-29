@@ -6,7 +6,7 @@ import { MouseEvent, useMemo } from "react";
 import { Note } from "./Note";
 import { NoteChildNotes } from "./NoteChildNotes";
 import { NoteParentNotes } from "./NoteParentNotes";
-import { useNoteEventQuery } from "@/hooks/useNoteEventQuery";
+import { useEventQuery } from "@/hooks/useEventQuery";
 import { getThread } from "@/utils/getThread";
 import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
 import { Reference } from "@/utils/getNoteContentTokens";
@@ -39,7 +39,7 @@ export function NotePage({
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
-	const noteEventQuery = useNoteEventQuery({
+	const noteEventQuery = useEventQuery({
 		eventPointer: { id },
 	});
 

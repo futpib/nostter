@@ -28,7 +28,10 @@ export const callerLink = ({
 
 					promise.then((data: unknown) => {
 						observer.next({
-							result: { data },
+							result: {
+								type: 'data',
+								data,
+							},
 						});
 						observer.complete();
 					}).catch((error: unknown) => {
@@ -59,7 +62,10 @@ export const callerLink = ({
 							next(data: unknown) {
 								onSubscriptionData?.(data);
 								observer.next({
-									result: { data },
+									result: {
+										type: 'data',
+										data,
+									},
 								});
 							},
 
