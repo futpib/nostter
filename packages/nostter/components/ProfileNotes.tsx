@@ -20,8 +20,12 @@ export function ProfileNotes({
 }) {
 	const now = useNow({ propsNow });
 
-	const [ lastEventWrapRef, {
-		isVisible: lastEventWrapVisible,
+	const [ lastPageLastEventWrapRef, {
+		isVisible: lastPageLastEventWrapVisible,
+	}] = useTrackVisibility();
+
+	const [ lastPageFirstEventWrapRef, {
+		isVisible: lastPageFirstEventWrapVisible,
 	}] = useTrackVisibility();
 
 	const input = {
@@ -79,16 +83,15 @@ export function ProfileNotes({
 	});
 
 	useEffect(() => {
-		if (!lastEventWrapVisible) {
-			return;
-		}
-
 		if (!hasNextPage) {
 			return;
 		}
 
-		fetchNextPage();
-	}, [ lastEventWrapVisible, hasNextPage ]);
+		if (lastPageLastEventWrapVisible || lastPageFirstEventWrapVisible) {
+			fetchNextPage();
+		}
+
+	}, [ lastPageLastEventWrapVisible, lastPageFirstEventWrapVisible, hasNextPage ]);
 
 	const pages = useMemo(() => {
 		if (data && data.pages.length > 0) {
@@ -114,7 +117,15 @@ export function ProfileNotes({
 		return pages.findLast(page => page.eventSet.size > 0);
 	}, [ pages ]);
 
-	const lastEvent = useMemo(() => {
+	const lastPageFirstEvent = useMemo(() => {
+		if (!lastNonEmptyPage) {
+			return undefined;
+		}
+
+		return lastNonEmptyPage.eventSet.getLatestEvent();
+	}, [ lastNonEmptyPage ]);
+
+	const lastPageLastEvent = useMemo(() => {
 		if (!lastNonEmptyPage) {
 			return undefined;
 		}
@@ -145,10 +156,10 @@ export function ProfileNotes({
 			) : eventsLatestFirst.map(event => {
 				return (
 					<Fragment key={event.id}>
-						{event.id === lastEvent?.id ? (
+						{event.id === lastPageLastEvent?.id ? (
 							<div
-								ref={lastEventWrapRef}
-								className={styles.lastEventWrap}
+								ref={lastPageLastEventWrapRef}
+								className={styles.lastPageLastEventWrap}
 							>
 								<EventLoader
 									componentKey="TimelineEvent"
@@ -160,6 +171,17 @@ export function ProfileNotes({
 										id={pubkey}
 									/>
 								)}
+							</div>
+						) : event.id === lastPageFirstEvent?.id ? (
+							<div
+								ref={lastPageFirstEventWrapRef}
+								className={styles.lastPageFirstEventWrap}
+							>
+								<EventLoader
+									componentKey="TimelineEvent"
+									eventPointer={event}
+									event={event}
+								/>
 							</div>
 						) : (
 							<>
