@@ -100,7 +100,7 @@ export function EventLoader({
 		] : []),
 	});
 
-	const overallLoading = eventQuery.isInitialLoading || pubkeyMetadataEventQueries.isInitialLoading;
+	const overallLoading = (eventQuery.isInitialLoading && !initialDataEvent) || pubkeyMetadataEventQueries.isInitialLoading;
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
 

@@ -202,10 +202,16 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 }
 
 export default async function Nip19IdPage({
-	params: { nip19Id: nip19IdParam },
+	params: {
+		nip19Id: nip19IdParam,
+		rest: restParams,
+	},
 	searchParams,
 }: {
-	params: { nip19Id: unknown };
+	params: {
+		nip19Id: unknown;
+		rest: unknown;
+	};
 	searchParams: Record<string, unknown>;
 }) {
 	if (shouldSkipServerRendering(headers(), searchParams)) {
@@ -232,6 +238,14 @@ export default async function Nip19IdPage({
 
 		if (now.isValid) {
 			return now;
+		}
+
+		return undefined;
+	})();
+
+	const firstRestParam = (() => {
+		if (Array.isArray(restParams)) {
+			return (restParams as string[]).at(0);
 		}
 
 		return undefined;

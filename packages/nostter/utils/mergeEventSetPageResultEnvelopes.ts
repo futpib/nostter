@@ -40,15 +40,17 @@ export function mergeEventSetPageResultEnvelopes(
 		}
 	}
 
+	const extraEventSet = new EventSet();
+
 	if (latestCursor_?.limit && eventSet.size > latestCursor_.limit) {
 		const limitedEventSet = new EventSet();
 
 		for (const event of eventSet.getEventsLatestFirst()) {
 			if (limitedEventSet.size >= latestCursor_.limit) {
-				break;
+				extraEventSet.add(event);
+			} else {
+				limitedEventSet.add(event);
 			}
-
-			limitedEventSet.add(event);
 		}
 
 		eventSet = limitedEventSet;
@@ -68,6 +70,7 @@ export function mergeEventSetPageResultEnvelopes(
 			type: 'data',
 			data: {
 				eventSet,
+				extraEventSet: extraEventSet.size > 0 ? extraEventSet : undefined,
 				nextCursor: latestCursor_,
 			},
 		},

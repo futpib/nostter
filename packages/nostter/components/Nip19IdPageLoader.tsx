@@ -1,11 +1,12 @@
 'use client';
 
 import { NoteLoader } from "./NoteLoader";
-import { notFound, redirect, usePathname } from "next/navigation";
+import { notFound, redirect, useParams, usePathname } from "next/navigation";
 import { nip19Decode } from "@/utils/nip19Decode";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ProfileLoader } from "./ProfileLoader";
 import { DateTime } from "luxon";
+import { useMemo } from "react";
 
 function Nip19IdNotePageLoader({ eventPointer }: {
 	eventPointer: EventPointer;
@@ -35,13 +36,10 @@ function Nip19IdProfilePageLoader({
 }
 
 export function Nip19IdPageLoader() {
-	const pathname = usePathname();
-
-	const [ _1, nip19IdParam ] = pathname?.split('/') ?? [];
-
-	if (!nip19IdParam) {
-		notFound();
-	}
+	const {
+		nip19Id: nip19IdParam,
+		rest: restParams,
+	} = useParams() ?? {};
 
 	const nip19DecodeResult = nip19Decode(nip19IdParam);
 

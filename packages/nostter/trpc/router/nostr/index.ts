@@ -8,6 +8,10 @@ import { observable } from '@trpc/server/observable';
 import { Event } from 'nostr-tools';
 import invariant from 'invariant';
 
+const commonInputSchema = z.object({
+	cacheKeyNonce: z.string().optional(),
+});
+
 const eventPointerSchema = z.object({
 	id: z.string(),
 	relays: z.array(z.string()).optional(),
@@ -30,6 +34,10 @@ function cursorEquals(a: Cursor, b: Cursor) {
 	);
 }
 
+function compareEventsLatestFirst(a: Event, b: Event) {
+	return b.created_at - a.created_at;
+}
+
 export const trpcNostrRouter = trpcServer.router({
 	event: trpcServer.procedure
 		.use(combineMetaMiddleware)
@@ -44,7 +52,7 @@ export const trpcNostrRouter = trpcServer.router({
 				},
 			},
 		})
-		.input(eventPointerSchema)
+		.input(z.intersection(commonInputSchema, eventPointerSchema))
 		.query(async ({ input: { id, author }, ctx }) => {
 			const filter = {
 				kinds: [ EVENT_KIND_SHORT_TEXT_NOTE ],
@@ -67,11 +75,11 @@ export const trpcNostrRouter = trpcServer.router({
 		.use(combineMetaMiddleware)
 		.use(combineRelaysMiddleware)
 		.use(ensureRelaysMiddleware)
-		.input(z.object({
+		.input(z.intersection(commonInputSchema, z.object({
 			kinds: z.array(z.number()).optional(),
 			authors: z.array(z.string()).optional(),
 			cursor: cursorSchema.optional(),
-		}))
+		})))
 		.query(async ({ input: { kinds, authors, cursor }, ctx }) => {
 			const cursorDuration = (
 				cursor?.since && cursor?.until
@@ -91,13 +99,17 @@ export const trpcNostrRouter = trpcServer.router({
 
 			const eventSet = new EventSet();
 
-			for (const event of events) {
+			for (const event of events.sort(compareEventsLatestFirst)) {
 				if (filter.since && event.created_at < filter.since) {
 					continue;
 				}
 
 				if (filter.until && event.created_at > filter.until) {
 					continue;
+				}
+
+				if (filter.limit && eventSet.size >= filter.limit) {
+					break;
 				}
 
 				eventSet.add(event);
@@ -145,7 +157,7 @@ export const trpcNostrRouter = trpcServer.router({
 
 	eventReactionEventsSubscription: trpcServer.procedure
 		.use(combineRelaysMiddleware)
-		.input(eventPointerSchema)
+		.input(z.intersection(commonInputSchema, eventPointerSchema))
 		.subscription(({ input: { id }, ctx }) => {
 			return observable<Event>(observer => {
 				const subscribtion = ctx.relayPool.sub(ctx.combinedRelays, [ {

@@ -4,6 +4,7 @@ import { OperationResultEnvelope } from "@trpc/client";
 
 export type EventSetPageResult = {
 	eventSet: EventSet;
+	extraEventSet?: EventSet;
 	nextCursor: undefined | Cursor;
 };
 

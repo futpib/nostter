@@ -69,6 +69,10 @@ export const trpcClient = trpcReact.createClient({
 	links: [
 		switchLink({
 			condition(op) {
+				if (op.context.forceLink) {
+					return op.context.forceLink as string;
+				}
+
 				if (op.type === 'subscription') {
 					return 'subscription';
 				}
@@ -88,6 +92,10 @@ export const trpcClient = trpcReact.createClient({
 				single: cacheFirstNonEmptyLink,
 				infinite: forkJoinMergePagesLink,
 				subscription: relaysLink(),
+
+				local: localLink(),
+				backend: backendLink,
+				relays: relaysLink(),
 			},
 		}),
 	],

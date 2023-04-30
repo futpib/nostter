@@ -47,8 +47,8 @@ export function Profile({
 					content={pubkeyMetadata?.about ?? ''}
 				/>
 			</div>
-			{/*
-				<ProfileTabs /> */}
+
+			{/* <ProfileTabs /> */}
 		</div>
 	);
 }
