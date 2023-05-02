@@ -2,14 +2,14 @@ import { EventSet } from "@/nostr/EventSet";
 import { Query, QueryKey } from "@tanstack/react-query";
 import invariant from "invariant";
 import { handleSuccess } from "./handleSuccess";
-import { trpcRouter } from "@/trpc/router";
 import { TRPCMeta, TRPCMetaCacheControl } from "@/trpc/meta";
 import { Event } from "nostr-tools";
+import { trpcUniversalRouter } from "@/trpc/router/universal";
 
 function setCacheTimeFromMeta(query: Query, queryKey: QueryKey, data: EventSet) {
 	const path = queryKey[0] as string[];
 
-	let router: any = trpcRouter;
+	let router: any = trpcUniversalRouter;
 
 	for (const segment of path) {
 		router = router[segment];

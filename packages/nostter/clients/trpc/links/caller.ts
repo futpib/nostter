@@ -1,11 +1,11 @@
 import { TRPCRouter } from '@/trpc/router';
+import { trpcUniversalRouter } from '@/trpc/router/universal';
 import { TRPCLink } from '@trpc/client';
-import { trpcRouter } from "@/trpc/router";
 import { observable } from '@trpc/server/observable';
 import invariant from 'invariant';
 import { ObservableLike, Unsubscribable } from 'type-fest';
 
-type TRPCCaller = ReturnType<typeof trpcRouter.createCaller>;
+type TRPCCaller = ReturnType<typeof trpcUniversalRouter.createCaller>;
 
 export const callerLink = ({
 	caller,

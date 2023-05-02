@@ -1,6 +1,7 @@
 import styles from './TimelineNote.module.css';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentMedias } from './NoteContentMedias';
+import { NoteContentPages } from './NoteContentPages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
@@ -14,6 +15,8 @@ import { ProfileLink } from './ProfileLink';
 import { Reference } from '@/utils/getNoteContentTokens';
 import { SmallAvatarImage } from './SmallAvatarImage';
 import classNames from 'classnames';
+import { PageLink } from '@/utils/getContentPageLinks';
+import { PageLinkMetadata } from './NoteContentPage';
 
 export function TimelineNote({
 	id,
@@ -25,6 +28,8 @@ export function TimelineNote({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 	contentReferencedEvents,
 	onClick,
 	onAuxClick,
@@ -39,6 +44,8 @@ export function TimelineNote({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
@@ -129,11 +136,18 @@ export function TimelineNote({
 						pubkeyMetadatas={pubkeyMetadatas}
 						contentImageLinks={contentImageLinks}
 						contentVideoLinks={contentVideoLinks}
+						contentPageLinks={contentPageLinks}
+						pageLinkMetadatas={pageLinkMetadatas}
 					/>
 
 					<NoteContentMedias
 						contentImageLinks={contentImageLinks}
 						contentVideoLinks={contentVideoLinks}
+					/>
+
+					<NoteContentPages
+						contentPageLinks={contentPageLinks}
+						pageLinkMetadatas={pageLinkMetadatas}
 					/>
 
 					<NoteContentNotes

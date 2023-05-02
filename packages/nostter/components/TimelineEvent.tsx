@@ -6,6 +6,8 @@ import { TimelineRepost } from './TimelineRepost';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { TimelineNoteLink } from './TimelineNoteLink';
+import { PageLink } from '@/utils/getContentPageLinks';
+import { PageLinkMetadata } from './NoteContentPage';
 
 export function TimelineEvent({
 	id,
@@ -18,6 +20,8 @@ export function TimelineEvent({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 	contentReferencedEvents,
 	onClick,
 	onAuxClick,
@@ -32,10 +36,13 @@ export function TimelineEvent({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
+
 	return kind === EventKind.Repost ? (
 		<TimelineRepost
 			pubkey={pubkey}
@@ -53,6 +60,8 @@ export function TimelineEvent({
 			pubkeyMetadatas={pubkeyMetadatas}
 			contentImageLinks={contentImageLinks}
 			contentVideoLinks={contentVideoLinks}
+			contentPageLinks={contentPageLinks}
+			pageLinkMetadatas={pageLinkMetadatas}
 			contentReferencedEvents={contentReferencedEvents}
 			onClick={onClick}
 			onAuxClick={onAuxClick}

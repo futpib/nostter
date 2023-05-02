@@ -14,12 +14,12 @@ export function Image({
 	className?: string;
 	src?: string;
 	fallbackSrc?: string;
-	onClick?: () => void;
+	onClick?: (event: MouseEvent<HTMLImageElement>) => void;
 }) {
 	const handleClick = useCallback((event: MouseEvent<HTMLImageElement>) => {
 		event.stopPropagation();
 
-		onClick?.();
+		onClick?.(event);
 	}, [ onClick ]);
 
 	const [ didError, setDidError ] = useState(false);

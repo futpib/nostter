@@ -23,6 +23,8 @@ export const ensureRelaysMiddleware = trpcServer.middleware(async ({ ctx, next }
 		return next();
 	}
 
+	invariant(new Set(ctx.combinedRelays).size === ctx.combinedRelays.length, "Duplicate relays");
+
 	log('Ensuring relays');
 
 	await Promise.all(ctx.combinedRelays.map(async relay => {

@@ -1,4 +1,4 @@
-import { ContentToken } from "./renderNoteContent";
+import { ContentToken } from "./getNoteContentTokens";
 
 export type ImageLink = {
 	url: string;

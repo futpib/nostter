@@ -5,6 +5,8 @@ import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
 import { ProfileMentionNameTextLink } from './ProfileMentionNameTextLink';
 import { Reference } from '@/utils/getNoteContentTokens';
+import { PageLink } from '@/utils/getContentPageLinks';
+import { PageLinkMetadata } from './NoteContentPage';
 
 export function NoteContentText({
 	content,
@@ -12,12 +14,16 @@ export function NoteContentText({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 }: {
 	content: string;
 	references: Reference[];
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 }) {
 	const { contentChildren } = useMemo(() => {
 		return renderNoteContent<ReactNode>({
@@ -37,6 +43,7 @@ export function NoteContentText({
 			renderLink: ({ key, link }) => (
 				contentImageLinks.some(imageLink => imageLink.url === link.href)
 				|| contentVideoLinks.some(videoLink => videoLink.url === link.href)
+				|| contentPageLinks.some(pageLink => pageLink.url === link.href && pageLinkMetadatas.has(pageLink.url))
 			)? null : (
 				<Link
 					key={key}

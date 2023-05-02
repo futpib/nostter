@@ -40,8 +40,12 @@ export type ContentToken =
 	| ContentTokenHashtag
 ;
 
+function isContentTokenEmpty(contentToken: ContentToken) {
+	return contentToken.type === 'string' && contentToken.string.trim() === '';
+}
+
 export function getNoteContentTokens(content: string, references: Reference[]): ContentToken[] {
-	const tokens: ContentToken[] = [];
+	let tokens: ContentToken[] = [];
 
 	const fakeFinalReference = {
 		text: Math.random().toString(),
@@ -110,5 +114,15 @@ export function getNoteContentTokens(content: string, references: Reference[]): 
 		string: unparsedContent,
 	});
 
-	return tokens.filter(token => !(token.type === 'reference' && token.reference === fakeFinalReference));
+	tokens = tokens.filter(token => !(token.type === 'reference' && token.reference === fakeFinalReference));
+
+	while (tokens.length > 0 && isContentTokenEmpty(tokens[0])) {
+		tokens.shift();
+	}
+
+	while (tokens.length > 0 && isContentTokenEmpty(tokens[tokens.length - 1])) {
+		tokens.pop();
+	}
+
+	return tokens;
 }

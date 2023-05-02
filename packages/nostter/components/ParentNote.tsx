@@ -1,6 +1,7 @@
 import styles from './ParentNote.module.css';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { NoteContentMedias } from './NoteContentMedias';
+import { NoteContentPages } from './NoteContentPages';
 import { NoteContentText } from './NoteContentText';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { NoteContentNotes } from './NoteContentNotes';
@@ -14,6 +15,8 @@ import { ProfileMentionNameText } from './ProfileMentionNameText';
 import { Reference } from '@/utils/getNoteContentTokens';
 import { ProfileLink } from './ProfileLink';
 import { SmallAvatarImage } from './SmallAvatarImage';
+import { PageLink } from '@/utils/getContentPageLinks';
+import { PageLinkMetadata } from './NoteContentPage';
 
 export function ParentNote({
 	id,
@@ -25,6 +28,8 @@ export function ParentNote({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 	contentReferencedEvents,
 	onClick,
 	onAuxClick,
@@ -38,6 +43,8 @@ export function ParentNote({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
@@ -118,11 +125,18 @@ export function ParentNote({
 					pubkeyMetadatas={pubkeyMetadatas}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
+					contentPageLinks={contentPageLinks}
+					pageLinkMetadatas={pageLinkMetadatas}
 				/>
 
 				<NoteContentMedias
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
+				/>
+
+				<NoteContentPages
+					contentPageLinks={contentPageLinks}
+					pageLinkMetadatas={pageLinkMetadatas}
 				/>
 
 				<NoteContentNotes

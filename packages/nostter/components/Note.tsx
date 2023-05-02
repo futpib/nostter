@@ -12,6 +12,9 @@ import { ProfileMentionNameText } from './ProfileMentionNameText';
 import { ProfileLink } from './ProfileLink';
 import { Reference } from '@/utils/getNoteContentTokens';
 import { SmallAvatarImage } from './SmallAvatarImage';
+import { PageLink } from '@/utils/getContentPageLinks';
+import { NoteContentPages } from './NoteContentPages';
+import { PageLinkMetadata } from './NoteContentPage';
 
 export function Note({
 	id,
@@ -23,6 +26,8 @@ export function Note({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 	contentReferencedEvents,
 }: {
 	id: string;
@@ -34,6 +39,8 @@ export function Note({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 	contentReferencedEvents: EventPointer[];
 }) {
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
@@ -99,11 +106,18 @@ export function Note({
 				pubkeyMetadatas={pubkeyMetadatas}
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
+				contentPageLinks={contentPageLinks}
+				pageLinkMetadatas={pageLinkMetadatas}
 			/>
 
 			<NoteContentMedias
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
+			/>
+
+			<NoteContentPages
+				contentPageLinks={contentPageLinks}
+				pageLinkMetadatas={pageLinkMetadatas}
 			/>
 
 			<NoteContentNotes

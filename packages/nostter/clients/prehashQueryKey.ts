@@ -58,6 +58,8 @@ const knownOptions = new Set([
 	'author',
 	'authors',
 	'relays',
+
+	'url',
 ]);
 
 export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
@@ -76,6 +78,8 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 			author: string;
 			authors: string[];
 			relays: string[];
+
+			url: string;
 		};
 		type: string,
 	}> ];
@@ -97,6 +101,8 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 			trpcQueryKeyOptions.input?.author,
 			trpcQueryKeyOptions.input?.authors?.join(),
 			trpcQueryKeyOptions.input?.relays?.join(),
+
+			trpcQueryKeyOptions.input?.url,
 		].join(';'),
 		trpcQueryKeyOptions.input?.cacheKeyNonce ?? '',
 	].join('\n');

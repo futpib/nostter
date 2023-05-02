@@ -24,8 +24,13 @@ import { ProfileNotes } from '@/components/ProfileNotes';
 import { getProfileDisplayNameText } from '@/utils/getProfileDisplayNameText';
 import { getProfileMentionNameText } from '@/utils/getProfileMentionNameText';
 import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
-import { createTRPCCaller } from '@/trpc/caller';
 import { DateTime } from 'luxon';
+import { getContentPageLinks } from '@/utils/getContentPageLinks';
+import invariant from 'invariant';
+import { getNoteContentTokens } from '@/utils/getNoteContentTokens';
+import { toEventPointer } from '@/utils/toEventPointer';
+import { parsePageLinkMetadatas } from '@/utils/parsePageLinkMetadatas';
+import { createTRPCCaller } from '@/trpc/backend';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -94,7 +99,7 @@ async function Nip19IdProfilePage({
 async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer }) {
 	const trpcCaller = await createTRPCCaller();
 
-	const noteEventSet = await trpcCaller.nostr.event({ id: eventPointer.id });
+	const noteEventSet = await trpcCaller.nostr.event(toEventPointer(eventPointer));
 
 	const noteEvent = noteEventSet.toEvent();
 
@@ -102,23 +107,45 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		notFound();
 	}
 
-	const pubkeyMetadataEventResponses = await Promise.all(getPubkeyMetadataRequests(noteEvent).map(async (request): Promise<{ event?: Event }> => {
-		const t0 = performance.now();
-		const response = await fetch(request);
-		log('fetch', request, performance.now() - t0);
+	const references = parseReferences(noteEvent);
 
-		if (response.status === 404) {
-			return {};
-		}
+	const contentTokens = getNoteContentTokens(noteEvent.content, references);
 
-		return response.json();
-	}));
+	const contentImageLinks = getContentImageLinks(contentTokens);
+	const contentVideoLinks = getContentVideoLinks(contentTokens);
+	const contentPageLinks = getContentPageLinks(contentTokens);
+
+	invariant(contentPageLinks.length <= 1, 'Only one page link is supported');
+
+	const contentReferencedEvents = getContentReferencedEvents(contentTokens);
+
+	const thread = getThread(noteEvent, {
+		contentReferencedEvents,
+	});
+
+	const [
+		pageLinkMetadataResponses,
+
+		pubkeyMetadataEventResponses,
+	] = await Promise.all([
+		Promise.all(contentPageLinks.map(({ url }) => trpcCaller.page.metadata({ url }))),
+
+		Promise.all(getPubkeyMetadataRequests(noteEvent).map(async (request): Promise<{ event?: Event }> => {
+			const t0 = performance.now();
+			const response = await fetch(request);
+			log('fetch', request, performance.now() - t0);
+
+			if (response.status === 404) {
+				return {};
+			}
+
+			return response.json();
+		})),
+	]);
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventResponses.flatMap(r => r.event ? [ r.event ] : []));
 
-	const references = parseReferences(noteEvent);
-
-	const { contentChildren, contentTokens } = renderNoteContent({
+	const { contentChildren } = renderNoteContent({
 		content: noteEvent.content,
 		references,
 	}, {
@@ -130,16 +157,9 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		renderLink: ({ link }) => link.value,
 	});
 
-	const contentImageLinks = getContentImageLinks(contentTokens);
-	const contentVideoLinks = getContentVideoLinks(contentTokens);
-
-	const contentReferencedEvents = getContentReferencedEvents(contentTokens);
-
 	const contentText = contentChildren.join('');
 
-	const thread = getThread(noteEvent, {
-		contentReferencedEvents,
-	});
+	const pageLinkMetadatas = parsePageLinkMetadatas(pageLinkMetadataResponses);
 
 	const pubkeyText = getProfileDisplayNameText({
 		pubkey: noteEvent.pubkey,
@@ -186,11 +206,13 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 					content={noteEvent.content}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
+					contentPageLinks={contentPageLinks}
 					contentReferencedEvents={contentReferencedEvents}
 					createdAt={noteEvent.created_at}
 					references={references}
 					repliedProfilePointers={repliedProfilePointers}
 					pubkeyMetadatas={pubkeyMetadatas}
+					pageLinkMetadatas={pageLinkMetadatas}
 				/>
 
 				<NoteChildNotes
@@ -238,14 +260,6 @@ export default async function Nip19IdPage({
 
 		if (now.isValid) {
 			return now;
-		}
-
-		return undefined;
-	})();
-
-	const firstRestParam = (() => {
-		if (Array.isArray(restParams)) {
-			return (restParams as string[]).at(0);
 		}
 
 		return undefined;

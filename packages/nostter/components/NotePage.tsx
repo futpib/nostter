@@ -6,11 +6,13 @@ import { MouseEvent, useMemo } from "react";
 import { Note } from "./Note";
 import { NoteChildNotes } from "./NoteChildNotes";
 import { NoteParentNotes } from "./NoteParentNotes";
-import { useEventQuery } from "@/hooks/useEventQuery";
 import { getThread } from "@/utils/getThread";
 import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
 import { Reference } from "@/utils/getNoteContentTokens";
 import { getProfileMentionNameText } from "@/utils/getProfileMentionNameText";
+import { PageLink } from "@/utils/getContentPageLinks";
+import { PageLinkMetadata } from "./NoteContentPage";
+import { trpcReact } from "@/clients/trpc";
 
 export function NotePage({
 	id,
@@ -22,6 +24,8 @@ export function NotePage({
 	pubkeyMetadatas,
 	contentImageLinks,
 	contentVideoLinks,
+	contentPageLinks,
+	pageLinkMetadatas,
 	contentReferencedEvents,
 	onClick,
 	onAuxClick,
@@ -35,13 +39,13 @@ export function NotePage({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
+	contentPageLinks: PageLink[];
+	pageLinkMetadatas: Map<string, PageLinkMetadata>;
 	contentReferencedEvents: EventPointer[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
-	const noteEventQuery = useEventQuery({
-		eventPointer: { id },
-	});
+	const noteEventQuery = trpcReact.nostr.event.useQuery({ id });
 
 	const noteEvent = noteEventQuery.data?.toEvent();
 
@@ -104,11 +108,13 @@ export function NotePage({
 					content={noteEvent.content}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
+					contentPageLinks={contentPageLinks}
 					contentReferencedEvents={contentReferencedEvents}
 					createdAt={noteEvent.created_at}
 					references={references}
 					repliedProfilePointers={repliedProfilePointers}
 					pubkeyMetadatas={pubkeyMetadatas}
+					pageLinkMetadatas={pageLinkMetadatas}
 				/>
 
 				<NoteChildNotes

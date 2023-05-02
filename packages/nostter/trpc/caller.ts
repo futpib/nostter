@@ -1,7 +1,7 @@
 import { createTRPCContext } from "./context";
-import { trpcRouter } from "./router";
+import { trpcUniversalRouter } from "./router/universal";
 
-export async function createTRPCCaller() {
+export async function createUniversalTRPCCaller() {
 	const context = await createTRPCContext();
-	return trpcRouter.createCaller(context);
+	return trpcUniversalRouter.createCaller(context);
 }

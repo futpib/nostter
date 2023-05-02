@@ -2,12 +2,12 @@ import { TRPCRouter } from '@/trpc/router';
 import { TRPCLink } from '@trpc/client';
 import { defaultRelays } from "@/constants/defaultRelays";
 import { TRPCContext } from "@/trpc/context";
-import { trpcRouter } from "@/trpc/router";
 import { simplePool } from "@/utils/simplePool";
 import { callerLink } from './caller';
 import { handleTRPCSubscriptionData } from '@/clients/handleTRPCSuccess';
 import { Event } from 'nostr-tools';
 import invariant from 'invariant';
+import { trpcUniversalRouter } from '@/trpc/router/universal';
 
 const createRelaysTRPCContext = (): TRPCContext => ({
 	defaultRelays,
@@ -15,7 +15,7 @@ const createRelaysTRPCContext = (): TRPCContext => ({
 	relayPool: simplePool,
 });
 
-const relaysTRPCCaller = trpcRouter.createCaller(createRelaysTRPCContext());
+const relaysTRPCCaller = trpcUniversalRouter.createCaller(createRelaysTRPCContext());
 
 export const relaysLink = (): TRPCLink<TRPCRouter> => callerLink({
 	caller: relaysTRPCCaller,

@@ -103,6 +103,8 @@ export function EmbeddedNote({
 				pubkeyMetadatas={pubkeyMetadatas}
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
+				contentPageLinks={[]}
+				pageLinkMetadatas={new Map()}
 			/>
 
 			<NoteContentMedias

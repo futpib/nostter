@@ -1,0 +1,42 @@
+
+.noteContentPage {
+	display: flex;
+	flex-direction: column;
+
+	cursor: pointer;
+
+	border: 1px solid rgb(var(--border-rgb));
+	border-radius: 16px;
+	overflow: hidden;
+
+	transition: background 0.2s ease;
+}
+
+.noteContentPage:hover {
+	background: rgba(var(--background-hover-rgba));
+}
+
+.noteContentPageImage {
+	height: 282px;
+	object-fit: cover;
+
+	border-bottom: 1px solid rgb(var(--border-rgb));
+}
+
+.noteContentPageText {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+
+	padding: 12px;
+
+	font-size: 0.88em;
+}
+
+.noteContentPageSiteName {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.noteContentPageDescription {
+	color: rgb(var(--foreground-secondary-rgb));
+}

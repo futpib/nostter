@@ -85,6 +85,10 @@ export const trpcClient = trpcReact.createClient({
 					return 'infinite';
 				}
 
+				if (op.path === 'page.metadata') {
+					return 'backend';
+				}
+
 				invariant(false, `Unknown path: %s`, op.path);
 			},
 
