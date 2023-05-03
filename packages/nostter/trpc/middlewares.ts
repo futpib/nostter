@@ -45,8 +45,9 @@ export const ensureRelaysMiddleware = trpcServer.middleware(async ({ ctx, next }
 
 export const combineMetaMiddleware = ({ meta: meta_ }: { meta: TRPCMeta }) => {
 	return trpcServer.middleware(({ meta, ctx, next }) => {
-		invariant(!ctx.combinedMeta, "meta already set");
+		// invariant(!ctx.combinedMeta, "meta already set");
 
+		// HACK: `next` does not seem to be overriding the `ctx`
 		ctx.combinedMeta = meta ?? meta_;
 
 		return next();
