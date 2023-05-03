@@ -40,18 +40,19 @@ function compareEventsLatestFirst(a: Event, b: Event) {
 
 export const trpcNostrRouter = trpcServer.router({
 	event: trpcServer.procedure
-		.use(combineMetaMiddleware)
-		.use(combineRelaysMiddleware)
-		.use(ensureRelaysMiddleware)
-		.meta({
-			cacheControl: {
-				nonEmpty: {
-					public: true,
-					immutable: true,
-					maxAge: maxCacheTime,
+		.use(combineMetaMiddleware({
+			meta: {
+				cacheControl: {
+					nonEmpty: {
+						public: true,
+						immutable: true,
+						maxAge: maxCacheTime,
+					},
 				},
 			},
-		})
+		}))
+		.use(combineRelaysMiddleware)
+		.use(ensureRelaysMiddleware)
 		.input(z.intersection(commonInputSchema, eventPointerSchema))
 		.query(async ({ input: { id, author }, ctx }) => {
 			const filter = {
@@ -72,7 +73,15 @@ export const trpcNostrRouter = trpcServer.router({
 		}),
 
 	infiniteEvents: trpcServer.procedure
-		.use(combineMetaMiddleware)
+		.use(combineMetaMiddleware({
+			meta: {
+				cacheControl: {
+					public: true,
+					immutable: true,
+					maxAge: maxCacheTime,
+				},
+			},
+		}))
 		.use(combineRelaysMiddleware)
 		.use(ensureRelaysMiddleware)
 		.input(z.intersection(commonInputSchema, z.object({

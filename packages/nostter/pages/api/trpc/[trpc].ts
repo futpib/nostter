@@ -22,14 +22,14 @@ export default trpcNext.createNextApiHandler({
 		if (ctx?.combinedMeta?.cacheControl) {
 			let cacheControl: string | undefined;
 
-			invariant(
-				(data as any)?.result?.data instanceof EventSet,
-				'cacheControl only supported for EventSet',
-			);
-
-			const eventSet = (data as any).result.data as EventSet;
-
 			if ('empty' in ctx.combinedMeta.cacheControl || 'nonEmpty' in ctx.combinedMeta.cacheControl) {
+				invariant(
+					(data as any)?.result?.data instanceof EventSet,
+					'cacheControl empty/nonEmpty only supported for EventSet',
+				);
+
+				const eventSet = (data as any).result.data as EventSet;
+
 				const { empty, nonEmpty } = ctx.combinedMeta.cacheControl;
 
 				if (eventSet.size === 0) {

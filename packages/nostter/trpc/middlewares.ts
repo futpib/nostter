@@ -1,6 +1,7 @@
 import { LocalPool } from "@/nostr/LocalPool";
 import { debugExtend } from "@/utils/debugExtend";
 import invariant from "invariant";
+import { TRPCMeta } from "./meta";
 import { trpcServer } from "./server";
 
 const log = debugExtend('middlewares');
@@ -13,6 +14,7 @@ export const combineRelaysMiddleware = trpcServer.middleware(({ input, rawInput,
 
 	return next({
 		ctx: {
+			...ctx,
 			combinedRelays,
 		},
 	});
@@ -41,12 +43,12 @@ export const ensureRelaysMiddleware = trpcServer.middleware(async ({ ctx, next }
 	return next();
 });
 
-export const combineMetaMiddleware = trpcServer.middleware(({ meta, ctx, next }) => {
-	invariant(!ctx.combinedMeta, "meta already set");
+export const combineMetaMiddleware = ({ meta: meta_ }: { meta: TRPCMeta }) => {
+	return trpcServer.middleware(({ meta, ctx, next }) => {
+		invariant(!ctx.combinedMeta, "meta already set");
 
-	return next({
-		ctx: {
-			combinedMeta: meta,
-		},
+		ctx.combinedMeta = meta ?? meta_;
+
+		return next();
 	});
-});
+};

@@ -667,32 +667,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trpc/client@npm:^10.20.0":
-  version: 10.20.0
-  resolution: "@trpc/client@npm:10.20.0"
+"@trpc/client@npm:^10.23.1":
+  version: 10.23.1
+  resolution: "@trpc/client@npm:10.23.1"
   peerDependencies:
-    "@trpc/server": 10.20.0
-  checksum: 28e576f8752c35fec038772cfda33c8c1e83735bb41711df1164ba5ca7fe7f8cad12a791c8ce3f9d9a6b19cf603791e35a7fab2e5bdb0a196a85fa0d2fbddec6
+    "@trpc/server": 10.23.1
+  checksum: b14b9d5a4c1e571e4a6b8069a1c26c849b91f2ee643caff49e3cbd5504c48ad48c521e75d404d10b3aeb90688bb376171dadcd6c8f91f423079175258756bd6b
   languageName: node
   linkType: hard
 
-"@trpc/react-query@npm:^10.20.0":
-  version: 10.20.0
-  resolution: "@trpc/react-query@npm:10.20.0"
+"@trpc/react-query@npm:^10.23.1":
+  version: 10.23.1
+  resolution: "@trpc/react-query@npm:10.23.1"
   peerDependencies:
     "@tanstack/react-query": ^4.18.0
-    "@trpc/client": 10.20.0
-    "@trpc/server": 10.20.0
+    "@trpc/client": 10.23.1
+    "@trpc/server": 10.23.1
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 5d5c981e4a13d00a98d58c1632fbf688c57e9ce4e5c396bf9add690e33bdc974842c0817dd7491b4ecd8f738c3c71a9e775b510295a84a96894eded8ce31eb3e
+  checksum: 9b7d6e436a00e60dfe919b7052a07b2a55392a1e4b65af39b61e52b30754b2817e19d1c14911190d9245dad8030e28fbe191420690d4c1993f28dd7efe6ec3a1
   languageName: node
   linkType: hard
 
-"@trpc/server@npm:^10.20.0":
-  version: 10.20.0
-  resolution: "@trpc/server@npm:10.20.0"
-  checksum: a06b8053cbd6340fb3bffbcd1ae70fa8b7ec4e162be4dafbefe545362f9232e282949c938503b5b497a06ae91243fa347cb3207e3d7373da90be4bae858aa4a6
+"@trpc/server@npm:^10.23.1":
+  version: 10.23.1
+  resolution: "@trpc/server@npm:10.23.1"
+  checksum: df16846c5736a198f19652dd188ce8e034dafdf44045e7c4b87a985d029047ccf82a66c34137f77eb2c862ed81bf1600e56e93cf8649f494b18d650c800a755a
   languageName: node
   linkType: hard
 
@@ -3791,9 +3791,9 @@ __metadata:
     "@floating-ui/react": ^0.22.3
     "@tanstack/react-query": ^4.28.0
     "@tanstack/react-query-devtools": ^4.29.0
-    "@trpc/client": ^10.20.0
-    "@trpc/react-query": ^10.20.0
-    "@trpc/server": ^10.20.0
+    "@trpc/client": ^10.23.1
+    "@trpc/react-query": ^10.23.1
+    "@trpc/server": ^10.23.1
     "@types/debug": ^4.1.7
     "@types/deepmerge": ^2.2.0
     "@types/invariant": ^2.2.35

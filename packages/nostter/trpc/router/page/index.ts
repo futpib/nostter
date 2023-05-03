@@ -6,14 +6,15 @@ import { SAXParser } from 'parse5-sax-parser';
 
 export const trpcPageRouter = trpcServer.router({
 	metadata: trpcServer.procedure
-		.use(combineMetaMiddleware)
-		.meta({
-			cacheControl: {
-				public: true,
-				immutable: true,
-				maxAge: maxCacheTime,
+		.use(combineMetaMiddleware({
+			meta: {
+				cacheControl: {
+					public: true,
+					immutable: true,
+					maxAge: maxCacheTime,
+				},
 			},
-		})
+		}))
 		.input(z.object({
 			url: z.string().url(),
 		}))
