@@ -5,6 +5,8 @@ import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { FaRetweet } from 'react-icons/fa';
 import { ProfileLink } from './ProfileLink';
 import { ProfileAnyNameText } from './ProfileAnyNameText';
+import { Event } from 'nostr-tools';
+import { isEvent } from '@/nostr/isEvent';
 
 export function TimelineRepost({
 	pubkey,
@@ -15,13 +17,26 @@ export function TimelineRepost({
 	content: string;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }) {
-	const event = useMemo(() => JSON.parse(content), [content]);
+	const event = useMemo(() => {
+		let event: Partial<Event> | undefined;
+
+		try {
+			event = JSON.parse(content);
+		} catch (error) {
+			console.error(error);
+		}
+
+		return {
+			id: '0'.repeat(64),
+			...event,
+		};
+	}, [content]);
 
 	return (
 		<NoteLoader
 			componentKey="TimelineNoteLink"
 			eventPointer={event}
-			event={event}
+			event={isEvent(event) ? event : undefined}
 			repostHeaderChildren={(
 				<>
 					<div
