@@ -1,0 +1,23 @@
+{
+  "name": "nostter-e2e-tests",
+  "packageManager": "yarn@3.5.0",
+  "ava": {
+    "ignoredByWatcher": [
+      "**/*.{png,json,html}"
+    ],
+    "typescript": {
+      "rewritePaths": {
+        "src/": "build/"
+      },
+      "compile": "tsc"
+    },
+    "timeout": "5m"
+  },
+  "dependencies": {
+    "@ava/typescript": "^4.0.0",
+    "ava": "^5.2.0",
+    "puppeteer": "^20.1.0",
+    "reg-cli": "^0.17.7",
+    "typescript": "^5.0.4"
+  }
+}

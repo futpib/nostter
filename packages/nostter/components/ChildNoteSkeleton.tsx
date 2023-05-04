@@ -7,7 +7,10 @@ export function ChildNoteSkeleton({
 	id: string;
 }) {
 	return (
-		<div className={styles.childNoteSkeleton}>
+		<div
+			className={styles.childNoteSkeleton}
+			data-test-name="ChildNoteSkeleton"
+		>
 			<ContentLoader
 				uniqueKey={id}
 				speed={2}

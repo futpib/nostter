@@ -7,7 +7,10 @@ export function EmbeddedNoteSkeleton({
 	id: string;
 }) {
 	return (
-		<div className={styles.embeddedNoteSkeleton}>
+		<div
+			className={styles.embeddedNoteSkeleton}
+			data-test-name="EmbeddedNoteSkeleton"
+		>
 			<ContentLoader
 				uniqueKey={id}
 				speed={2}

@@ -13,6 +13,7 @@ export function ParentNoteSkeleton({
 		<div
 			ref={handleReflow}
 			className={styles.parentNoteSkeleton}
+			data-test-name="ParentNoteSkeleton"
 		>
 			<ContentLoader
 				uniqueKey={id}
