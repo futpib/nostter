@@ -3004,6 +3004,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-chrome-bin@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "find-chrome-bin@npm:1.0.5"
+  checksum: aad3dd25b4a8975f62a4cc72d929c16bf00dae2b59cd8d5989ca3147b5028671f0806851bbcaac7068a765719b26dc33abe9284796d2b031d6be587db247c1f6
+  languageName: node
+  linkType: hard
+
 "find-up@npm:^1.0.0":
   version: 1.1.2
   resolution: "find-up@npm:1.1.2"
@@ -4852,8 +4859,10 @@ __metadata:
   dependencies:
     "@ava/typescript": ^4.0.0
     ava: ^5.2.0
+    find-chrome-bin: ^1.0.5
     puppeteer: ^20.1.0
     reg-cli: ^0.17.7
+    semaphore-promise: ^1.4.1
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
@@ -6064,6 +6073,13 @@ __metadata:
     ajv: ^6.12.5
     ajv-keywords: ^3.5.2
   checksum: 39683edfe3beff018cdb1ae4fa296fc55cea13a080aa2b4d9351895cd64b22ba4d87e2e548c2a2ac1bc76e60980670adb0f413a58104479f1a0c12e5663cb8ca
+  languageName: node
+  linkType: hard
+
+"semaphore-promise@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "semaphore-promise@npm:1.4.1"
+  checksum: 52177cae7bbbedc6d509d5112325c09b760e6b098edda79a7c7235984f33d385531bb2083cdfe526640ce9e6a351ed14482ac60538c01536f7ae505fe4018456
   languageName: node
   linkType: hard
 
