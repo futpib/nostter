@@ -30,7 +30,7 @@
     "luxon": "^3.3.0",
     "mem": "^9.0.2",
     "mime-types": "^2.1.35",
-    "next": "13.3.2",
+    "next": "13.4.1",
     "next-seo": "^5.15.0",
     "nostr-tools": "npm:@futpib/nostr-tools@^1.10.3",
     "parse5-sax-parser": "^7.0.0",
