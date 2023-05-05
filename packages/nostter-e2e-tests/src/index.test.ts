@@ -204,7 +204,7 @@ const runTestCase = async (
 
 		const screenshotPath = path.join(screenshotDirectory, [
 			url,
-			now,
+			now.replaceAll(':', '_'),
 			skipServerRendering ? 'client' : 'server',
 		].join('.') + '.png');
 
