@@ -4901,6 +4901,7 @@ __metadata:
     next-seo: ^5.15.0
     nostr-tools: "npm:@futpib/nostr-tools@^1.10.3"
     parse5-sax-parser: ^7.0.0
+    plur: ^5.1.0
     react: 18.2.0
     react-content-loader: ^6.2.1
     react-dom: 18.2.0

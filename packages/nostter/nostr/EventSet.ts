@@ -147,7 +147,13 @@ export class EventSet {
 		return this._createdAtOrder
 			.slice()
 			.reverse()
-			.map(createdAt => this._eventsByCreatedAt.get(createdAt)!)
-			.flat();
+			.flatMap(createdAt => this._eventsByCreatedAt.get(createdAt)!)
+		;
+	}
+
+	getEventsOldestFirst() {
+		return this._createdAtOrder
+			.flatMap(createdAt => this._eventsByCreatedAt.get(createdAt)!)
+		;
 	}
 }

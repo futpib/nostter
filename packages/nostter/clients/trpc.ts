@@ -81,7 +81,7 @@ export const trpcClient = trpcReact.createClient({
 					return 'single';
 				}
 
-				if (op.path === 'nostr.infiniteEvents') {
+				if (op.path === 'nostr.eventsInfinite') {
 					return 'infinite';
 				}
 

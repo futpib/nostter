@@ -62,28 +62,24 @@ const knownOptions = new Set([
 	'url',
 ]);
 
-export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
-	if (prehashedQueryKey.length === 1) {
-		const [ json ] = prehashedQueryKey;
+export type TRPCQueryKey = readonly [ string[], PartialDeep<{
+	input: {
+		cacheKeyNonce: string;
 
-		return json;
-	}
+		id: string;
+		kinds: number[];
+		author: string;
+		authors: string[];
+		relays: string[];
 
-	const trpcQueryKey = prehashedQueryKey as unknown as [ string[], PartialDeep<{
-		input: {
-			cacheKeyNonce: string;
+		url: string;
+	};
+	type: string,
+}> ];
 
-			id: string;
-			kinds: string[];
-			author: string;
-			authors: string[];
-			relays: string[];
-
-			url: string;
-		};
-		type: string,
-	}> ];
-
+export function trpcQueryKeyHashFn(
+	trpcQueryKey: TRPCQueryKey
+) {
 	const trpcQueryKeyOptions = trpcQueryKey[1];
 
 	for (const key of Object.keys(trpcQueryKeyOptions.input ?? {})) {
@@ -106,4 +102,14 @@ export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
 		].join(';'),
 		trpcQueryKeyOptions.input?.cacheKeyNonce ?? '',
 	].join('\n');
+}
+
+export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
+	if (prehashedQueryKey.length === 1) {
+		const [ json ] = prehashedQueryKey;
+
+		return json;
+	}
+
+	return trpcQueryKeyHashFn(prehashedQueryKey as any);
 }

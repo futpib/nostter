@@ -34,9 +34,9 @@ export function CreatedAtLink({
 
 		const age = liveNow.diff(createdAtDateTime);
 
-		if (age.as("hour") < 1) {
+		if (Math.abs(age.as("hour")) < 1) {
 			return age.toFormat("m") + "m";
-		} else if (age.as("day") < 1) {
+		} else if (Math.abs(age.as("day")) < 1) {
 			return age.toFormat("h") + "h";
 		}
 

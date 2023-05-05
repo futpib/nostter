@@ -4,6 +4,7 @@ import { nip25 } from 'nostr-tools';
 import { POSITIVE_REACTIONS } from "@/constants/positiveReactions";
 import { useState } from 'react';
 import { trpcReact } from "@/clients/trpc";
+import { EventKind } from "@/nostr/EventKind";
 
 export function NoteLikeTextCounter({
 	noteEventPointer,
@@ -12,7 +13,10 @@ export function NoteLikeTextCounter({
 }) {
 	const [ positiveReactionsCount, setPositiveReactionsCount ] = useState(0);
 
-	trpcReact.nostr.eventReactionEventsSubscription.useSubscription(noteEventPointer, {
+	trpcReact.nostr.eventsSubscription.useSubscription({
+		kinds: [ EventKind.Reaction ],
+		referencedEventIds: [ noteEventPointer.id ],
+	}, {
 		onData(event) {
 			const reactedEventPointer = nip25.getReactedEventPointer(event);
 

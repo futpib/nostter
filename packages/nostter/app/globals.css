@@ -49,7 +49,6 @@
 html,
 body {
 	max-width: 100vw;
-	overflow-x: hidden;
 	font-family: var(--font-noto-sans), var(--font-noto-color-emoji), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 

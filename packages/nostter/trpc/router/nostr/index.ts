@@ -5,7 +5,7 @@ import { EventSet } from '@/nostr/EventSet';
 import { maxCacheTime } from '@/utils/setCacheControlHeader';
 import { combineMetaMiddleware, combineRelaysMiddleware, ensureRelaysMiddleware } from '@/trpc/middlewares';
 import { observable } from '@trpc/server/observable';
-import { Event } from 'nostr-tools';
+import { Event, Filter } from 'nostr-tools';
 import invariant from 'invariant';
 
 const commonInputSchema = z.object({
@@ -22,6 +22,15 @@ const cursorSchema = z.object({
 	since: z.number().optional(),
 	until: z.number().optional(),
 	limit: z.number().optional(),
+});
+
+const eventsInputSchema = z.object({
+	kinds: z.array(z.number()).optional(),
+	authors: z.array(z.string()).optional(),
+
+	referencedEventIds: z.array(z.string()).optional(),
+
+	cursor: cursorSchema.optional(),
 });
 
 export type Cursor = z.infer<typeof cursorSchema>;
@@ -72,7 +81,7 @@ export const trpcNostrRouter = trpcServer.router({
 			return eventSet;
 		}),
 
-	infiniteEvents: trpcServer.procedure
+	eventsInfinite: trpcServer.procedure
 		.use(combineMetaMiddleware({
 			meta: {
 				cacheControl: {
@@ -84,25 +93,35 @@ export const trpcNostrRouter = trpcServer.router({
 		}))
 		.use(combineRelaysMiddleware)
 		.use(ensureRelaysMiddleware)
-		.input(z.intersection(commonInputSchema, z.object({
-			kinds: z.array(z.number()).optional(),
-			authors: z.array(z.string()).optional(),
-			cursor: cursorSchema.optional(),
-		})))
-		.query(async ({ input: { kinds, authors, cursor }, ctx }) => {
+		.input(z.intersection(commonInputSchema, eventsInputSchema))
+		.query(async ({
+			input: {
+				kinds,
+				authors,
+
+				referencedEventIds,
+
+				cursor,
+			},
+			ctx,
+		}) => {
 			const cursorDuration = (
 				cursor?.since && cursor?.until
 					? cursor.until - cursor.since
 					: undefined
 			);
 
-			const filter = {
+			const filter: Filter = {
 				kinds,
 				authors,
 				since: cursor?.since,
 				until: cursor?.until,
 				limit: cursor?.limit,
 			};
+
+			if (referencedEventIds?.length) {
+				filter['#e'] = referencedEventIds;
+			}
 
 			const events = await ctx.relayPool.list(ctx.combinedRelays, [ filter ]);
 
@@ -164,17 +183,44 @@ export const trpcNostrRouter = trpcServer.router({
 			};
 		}),
 
-	eventReactionEventsSubscription: trpcServer.procedure
+	eventsSubscription: trpcServer.procedure
 		.use(combineRelaysMiddleware)
-		.input(z.intersection(commonInputSchema, eventPointerSchema))
-		.subscription(({ input: { id }, ctx }) => {
+		.input(z.intersection(commonInputSchema, eventsInputSchema))
+		.subscription(({
+			input: {
+				kinds,
+				authors,
+
+				referencedEventIds,
+
+				cursor,
+			},
+			ctx,
+		}) => {
 			return observable<Event>(observer => {
-				const subscribtion = ctx.relayPool.sub(ctx.combinedRelays, [ {
-					kinds: [ EVENT_KIND_REACTION ],
-					['#e']: [ id ],
-				} ]);
+				const filter: Filter = {
+					kinds,
+					authors,
+					since: cursor?.since,
+					until: cursor?.until,
+					limit: cursor?.limit,
+				};
+
+				if (referencedEventIds?.length) {
+					filter['#e'] = referencedEventIds;
+				}
+
+				const subscribtion = ctx.relayPool.sub(ctx.combinedRelays, [ filter ]);
 
 				subscribtion.on('event', event => {
+					if (filter.since && event.created_at < filter.since) {
+						return;
+					}
+
+					if (filter.until && event.created_at > filter.until) {
+						return;
+					}
+
 					observer.next(event);
 				});
 
