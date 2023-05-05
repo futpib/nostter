@@ -225,7 +225,7 @@ const testCaseMacro: Macro<[ TestCase, { skipServerRendering: boolean } ], TestC
 		await Promise.all([
 			runTestCase(t, testCase, {
 				screenshotDirectory: actualScreenshotDirectory,
-				baseUrl: 'https://master-nostter-futpib.vercel.app',
+				baseUrl: 'https://nostter-git-master-futpib.vercel.app',
 				skipServerRendering,
 			}),
 			runTestCase(t, testCase, {
