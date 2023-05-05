@@ -12,3 +12,8 @@ jobs:
     - run: yarn --immutable
     - run: yarn ava
       working-directory: packages/nostter-e2e-tests
+    - if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshots
+        path: packages/nostter-e2e-tests/screenshots
