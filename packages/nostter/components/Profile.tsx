@@ -14,7 +14,7 @@ export function Profile({
 }) {
 	return (
 		<div className={styles.profileMetadata}>
-			{pubkeyMetadata?.banner && (
+			{(pubkeyMetadata?.banner || pubkeyMetadata?.picture) && (
 				<Image
 					className={styles.bannerImage}
 					src={pubkeyMetadata?.banner}
