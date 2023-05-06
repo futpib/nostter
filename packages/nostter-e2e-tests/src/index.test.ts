@@ -49,6 +49,10 @@ type TestCase = {
 	now?: string;
 };
 
+function compareByUrl(a: TestCase, b: TestCase) {
+	return a.url.localeCompare(b.url);
+}
+
 const testCases = [
 	{
 		url: 'note1phg7k8mf8rq4e57uazxz26g0gus3qwpuxwhzguf0w787kxy6vnvqay3lna',
@@ -57,10 +61,14 @@ const testCases = [
 	// 	url: 'npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr',
 	// },
 	{
+		title: 'single youtube link in the middle of content',
+		url: 'note1xfkvxpw2yng3ckl239nrm2lj9du5wtx7a0hxcg40lqshksxluefs2d6npw'
+	},
+	{
 		title: 'without profile info',
 		url: 'npub1s7ehx4ynuzvyqm275zsazd9y5y5qdm4sy09wz9pzdcnnva20nxlsgf5s44',
 	},
-];
+].sort(compareByUrl);
 
 test.before(async t => {
 	const testCaseSemaphore = new Semaphore(4, {

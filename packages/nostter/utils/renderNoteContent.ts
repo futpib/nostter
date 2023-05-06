@@ -130,21 +130,6 @@ export function renderNoteContent<T extends string | ReactNode>({
 
 	return {
 		contentTokens: tokens,
-		contentChildren,
+		contentChildren: contentChildren.filter(child => Boolean(child)),
 	};
 }
-
-/**
- * @deprecated Use `Reference` instead
- */
-type DeprecatedExportReference = Reference;
-
-/**
- * @deprecated Use `ContentToken` instead
- */
-type DeprecatedExportContentToken = ContentToken;
-
-export type {
-	DeprecatedExportReference as Reference,
-	DeprecatedExportContentToken as ContentToken,
-};

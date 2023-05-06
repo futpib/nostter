@@ -114,7 +114,30 @@ export function getNoteContentTokens(content: string, references: Reference[]): 
 		string: unparsedContent,
 	});
 
-	tokens = tokens.filter(token => !(token.type === 'reference' && token.reference === fakeFinalReference));
+	tokens = tokens.flatMap(token => {
+		if (token.type === 'reference' && token.reference === fakeFinalReference) {
+			return [];
+		}
+
+		if (token.type === 'string') {
+			const stringTrimmed = token.string.trimEnd();
+
+			if (stringTrimmed !== token.string) {
+				return [
+					{
+						type: 'string',
+						string: stringTrimmed,
+					},
+					{
+						type: 'string',
+						string: token.string.slice(stringTrimmed.length),
+					},
+				];
+			}
+		}
+
+		return [ token ];
+	});
 
 	while (tokens.length > 0 && isContentTokenEmpty(tokens[0])) {
 		tokens.shift();

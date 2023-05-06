@@ -1,5 +1,5 @@
 import { EventPointer } from "nostr-tools/lib/nip19";
-import { ContentToken } from "./renderNoteContent";
+import { ContentToken } from "./getNoteContentTokens";
 
 export function getContentReferencedEvents(contentTokens: ContentToken[]): EventPointer[] {
 	const contentReferencedEvents = contentTokens.flatMap(token => {

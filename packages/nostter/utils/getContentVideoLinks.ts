@@ -1,5 +1,5 @@
 import { ImageLink } from "./getContentImageLinks";
-import { ContentToken } from "./renderNoteContent";
+import { ContentToken } from "./getNoteContentTokens";
 
 export function getContentVideoLinks(contentTokens: ContentToken[]): ImageLink[] {
 	const contentVideoLinks = contentTokens.flatMap(token => {
