@@ -173,7 +173,7 @@ const runTestCase = async (
 		});
 
 		await waitForFunction('no skeletons', page, () => {
-			const skeletons = window.document.querySelectorAll('[date-test-name$="Skeleton"]')
+			const skeletons = window.document.querySelectorAll('[data-test-name$="Skeleton"]');
 
 			return skeletons.length === 0;
 		});
