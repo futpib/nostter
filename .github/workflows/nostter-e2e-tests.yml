@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: yarn --immutable
-    - run: yarn ava
+    - run: yarn test
       working-directory: packages/nostter-e2e-tests
     - if: always()
       uses: actions/upload-artifact@v3

@@ -30,6 +30,7 @@ type TestContext = {
 
 	browser: Browser;
 	browserSemaphore: Semaphore;
+	browserScreenshotSemaphore: Semaphore;
 
 	withPage: (f: (page: Page) => Promise<void>) => Promise<void>;
 
@@ -43,6 +44,7 @@ const test = anyTest as TestFn<TestContext>;
 const defaultNow = '2023-01-01T00:00:00.000Z';
 
 type TestCase = {
+	title?: string;
 	url: string;
 	now?: string;
 };
@@ -76,7 +78,7 @@ test.before(async t => {
 	console.log(chrome);
 
 	const browser = await puppeteer.launch({
-		headless: 'new',
+		headless: process.env.PUPPETEER_HEADED ? false : 'new',
 		executablePath: chrome.executablePath,
 	});
 
@@ -84,9 +86,14 @@ test.before(async t => {
 		name: 'browser',
 	});
 
+	const browserScreenshotSemaphore = new Semaphore(1, {
+		name: 'browserScreenshot',
+	});
+
 	Object.assign(t.context, {
 		browser,
 		browserSemaphore,
+		browserScreenshotSemaphore,
 	});
 });
 
@@ -152,7 +159,7 @@ const runTestCase = async (
 		skipServerRendering: boolean;
 	},
 ) => {
-	const { withPage } = t.context;
+	const { withPage, browserScreenshotSemaphore } = t.context;
 
 	await withPage(async page => {
 		const url_ = new URL(url, baseUrl);
@@ -212,10 +219,17 @@ const runTestCase = async (
 			skipServerRendering ? 'client' : 'server',
 		].join('.') + '.png');
 
-		await page.screenshot({
-			path: screenshotPath,
-			fullPage: true,
-		});
+		const releaseBrowserScreenshotSemaphore = await browserScreenshotSemaphore.acquire();
+
+		try {
+			await page.bringToFront();
+			await page.screenshot({
+				path: screenshotPath,
+				fullPage: true,
+			});
+		} finally {
+			releaseBrowserScreenshotSemaphore();
+		}
 	});
 }
 
@@ -242,8 +256,16 @@ const testCaseMacro: Macro<[ TestCase, { skipServerRendering: boolean } ], TestC
 		t.pass();
 	},
 
-	title(_, { url, now = defaultNow }, { skipServerRendering }) {
-		return `${url} at ${now} (${skipServerRendering ? 'client rendering' : 'server rendering'})`;
+	title(_, { title, url, now = defaultNow }, { skipServerRendering }) {
+		return [
+			title ? title + ': ' : '',
+			url,
+			' at ',
+			now,
+			' (',
+			skipServerRendering ? 'client rendering' : 'server rendering',
+			')',
+		].join('');
 	},
 };
 

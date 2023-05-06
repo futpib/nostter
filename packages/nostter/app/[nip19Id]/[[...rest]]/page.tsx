@@ -43,13 +43,7 @@ async function Nip19IdProfilePage({
 }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
-	const t0 = performance.now();
 	const pubkeyMetadataResponse = await fetch(`${publicUrl}/api/pubkey/${profilePointer.pubkey}/metadata`);
-	log('fetch pubkey metadata', performance.now() - t0);
-
-	if (pubkeyMetadataResponse.status === 404) {
-		notFound();
-	}
 
 	const { event: pubkeyMetadataEvent }: { event: Event } = await pubkeyMetadataResponse.json();
 
