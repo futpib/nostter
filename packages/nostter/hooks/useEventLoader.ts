@@ -6,7 +6,6 @@ import { getContentReferencedEvents } from "@/utils/getContentReferencedEvents";
 import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 import { getNoteContentTokens } from "@/utils/getNoteContentTokens";
 import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
-import { isPageLinkMetadataComplete } from "@/utils/isPageMetadataComplete";
 import { parsePageLinkMetadatas } from "@/utils/parsePageLinkMetadatas";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { toEventPointer } from "@/utils/toEventPointer";
@@ -26,6 +25,8 @@ export function useEventLoader({
 	onEventQuerySuccess?: (data: EventSet) => void;
 }) {
 	const eventQuery = trpcReact.nostr.event.useQuery(toEventPointer(eventPointer), {
+		enabled: initialDataEvent?.id !== eventPointer.id,
+
 		onSuccess: (data) => {
 			onEventQuerySuccess?.(data);
 		},

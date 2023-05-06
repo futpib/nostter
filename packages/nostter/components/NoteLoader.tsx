@@ -103,29 +103,27 @@ export function NoteLoader({
 	const SkeletonComponent = skeletonComponents[componentKey];
 	const NotFoundComponent = notFoundComponents[componentKey];
 
-	return isInitialLoading ? (
+	return (event && references) ? (
+		<Component
+			id={event.id}
+			pubkey={event.pubkey}
+			content={event.content}
+			contentImageLinks={contentImageLinks}
+			contentVideoLinks={contentVideoLinks}
+			contentPageLinks={contentPageLinks}
+			contentReferencedEvents={contentReferencedEvents}
+			createdAt={event.created_at}
+			references={references}
+			repliedProfilePointers={repliedProfilePointers}
+			pubkeyMetadatas={pubkeyMetadatas}
+			pageLinkMetadatas={pageLinkMetadatas}
+			repostHeaderChildren={repostHeaderChildren}
+		/>
+	) : isInitialLoading ? (
 		<SkeletonComponent
 			id={eventPointer.id}
 		/>
 	) : (
-		(event && references) ? (
-			<Component
-				id={event.id}
-				pubkey={event.pubkey}
-				content={event.content}
-				contentImageLinks={contentImageLinks}
-				contentVideoLinks={contentVideoLinks}
-				contentPageLinks={contentPageLinks}
-				contentReferencedEvents={contentReferencedEvents}
-				createdAt={event.created_at}
-				references={references}
-				repliedProfilePointers={repliedProfilePointers}
-				pubkeyMetadatas={pubkeyMetadatas}
-				pageLinkMetadatas={pageLinkMetadatas}
-				repostHeaderChildren={repostHeaderChildren}
-			/>
-		) : (
-			<NotFoundComponent />
-		)
+		<NotFoundComponent />
 	);
 }
