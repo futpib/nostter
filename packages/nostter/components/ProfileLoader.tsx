@@ -62,7 +62,6 @@ export function ProfileLoader({
 
 	const Component = components[componentKey];
 	const SkeletonComponent = skeletonComponents[componentKey];
-	const NotFoundComponent = notFoundComponents[componentKey];
 
 	const pubkeyMetadataEvent = pubkeyMetadataEventQuery.data?.getLatestEvent();
 
@@ -73,14 +72,10 @@ export function ProfileLoader({
 	return pubkeyMetadataEventQuery.isInitialLoading ? (
 		<SkeletonComponent />
 	) : (
-		pubkeyMetadata ? (
-			<Component
-				pubkey={profilePointer.pubkey}
-				pubkeyMetadata={pubkeyMetadata}
-				now={now}
-			/>
-		) : (
-			<NotFoundComponent />
-		)
+		<Component
+			pubkey={profilePointer.pubkey}
+			pubkeyMetadata={pubkeyMetadata}
+			now={now}
+		/>
 	);
 }

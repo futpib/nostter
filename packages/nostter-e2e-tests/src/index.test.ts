@@ -54,6 +54,10 @@ const testCases = [
 	// {
 	// 	url: 'npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr',
 	// },
+	{
+		title: 'without profile info',
+		url: 'npub1s7ehx4ynuzvyqm275zsazd9y5y5qdm4sy09wz9pzdcnnva20nxlsgf5s44',
+	},
 ];
 
 test.before(async t => {

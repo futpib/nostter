@@ -14,23 +14,29 @@ export function Profile({
 }) {
 	return (
 		<div className={styles.profileMetadata}>
-			<Image
-				className={styles.bannerImage}
-				src={pubkeyMetadata?.banner}
-			/>
+			{pubkeyMetadata?.banner && (
+				<Image
+					className={styles.bannerImage}
+					src={pubkeyMetadata?.banner}
+				/>
+			)}
 
 			<div className={styles.profileInfo}>
-				<Image
-					className={styles.avatar}
-					src={pubkeyMetadata?.picture}
-				/>
+				{pubkeyMetadata?.picture && (
+					<Image
+						className={styles.avatar}
+						src={pubkeyMetadata?.picture}
+					/>
+				)}
 
 				<div className={styles.names}>
-					<div
-						className={styles.displayName}
-					>
-						{pubkeyMetadata?.display_name}
-					</div>
+					{pubkeyMetadata?.display_name && (
+						<div
+							className={styles.displayName}
+						>
+							{pubkeyMetadata?.display_name}
+						</div>
+					)}
 
 					<div
 						className={styles.name}

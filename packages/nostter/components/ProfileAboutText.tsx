@@ -39,11 +39,11 @@ export function ProfileAboutText({
 		});
 	}, [content]);
 
-	return (
+	return contentChildren.length > 0 ? (
 		<div
 			className={classNames(styles.content, className)}
 		>
 			{contentChildren}
 		</div>
-	);
+	) : null;
 }
