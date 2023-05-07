@@ -9,6 +9,7 @@ import { Event, Filter, SimplePool } from "nostr-tools";
 import { PrehashedQueryKey, unprehashQueryKey } from "./prehashQueryKey";
 import { debugExtend } from "@/utils/debugExtend";
 import { findLinks } from "@/utils/findLinks";
+import { EventKind } from "@/nostr/EventKind";
 
 const log = debugExtend('clients', 'queryFn');
 
@@ -224,49 +225,22 @@ async function queryLocalRelayDexie(
 
 	if (resourceType === 'event') {
 		if (subresource === 'descendants') {
-			const tags = await localRelayDexie.tags.where({
-				_0: 'e',
-				_1: resourceId,
-			}).toArray();
-
-			if (abortSignal.aborted) {
-				return [];
-			}
-
 			return localRelayDexie.events.where({
-				tagIds: tags.map(tag => tag.id),
-				kind: EVENT_KIND_SHORT_TEXT_NOTE,
+				eTag1s: [ resourceId ],
+				kind: EventKind.Text,
 			}).toArray();
 		}
 
 		if (subresource === 'reposts') {
-			const tags = await localRelayDexie.tags.where({
-				_0: 'e',
-				_1: resourceId,
-			}).toArray();
-
-			if (abortSignal.aborted) {
-				return [];
-			}
-
 			return localRelayDexie.events.where({
-				tagIds: tags.map(tag => tag.id),
+				eTag1s: [ resourceId ],
 				kind: EVENT_KIND_REPOST,
 			}).toArray();
 		}
 
 		if (subresource === 'reactions') {
-			const tags = await localRelayDexie.tags.where({
-				_0: 'e',
-				_1: resourceId,
-			}).toArray();
-
-			if (abortSignal.aborted) {
-				return [];
-			}
-
 			return localRelayDexie.events.where({
-				tagIds: tags.map(tag => tag.id),
+				eTag1s: [ resourceId ],
 				kind: EVENT_KIND_REACTION,
 			}).toArray();
 		}
@@ -329,17 +303,8 @@ async function queryLocalRelayDexie(
 		const links = findLinks(resourceId);
 		const hashtags = links.filter(link => link.type === 'hashtag');
 
-		const tags = await localRelayDexie.tags.where({
-			_0: 't',
-			_1: hashtags.map(hashtag => hashtag.value.replace('#', '')),
-		}).toArray();
-
-		if (abortSignal.aborted) {
-			return [];
-		}
-
 		return localRelayDexie.events.where({
-			tagIds: tags.map(tag => tag.id),
+			tTag1s: hashtags.map(hashtag => hashtag.value.replace('#', '')),
 			kind: EVENT_KIND_SHORT_TEXT_NOTE,
 		}).limit(32).toArray();
 	}
