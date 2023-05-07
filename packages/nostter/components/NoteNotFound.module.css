@@ -1,0 +1,18 @@
+
+.noteNotFound {
+	padding: 12px 16px;
+}
+
+.noteNotFoundInner {
+	padding: 12px 16px;
+
+	border: 1px solid rgb(var(--border-rgb));
+	border-radius: 16px;
+
+	background: rgb(var(--background-secondary-rgb));
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.noteNotFoundLink {
+	color: rgb(var(--foreground-link-rgb));
+}

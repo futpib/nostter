@@ -18,6 +18,7 @@ import { TimelineNote } from "./TimelineNote";
 import { TimelineNoteLink } from "./TimelineNoteLink";
 import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
 import { useEventLoader } from "@/hooks/useEventLoader";
+import { NoteNotFound } from "./NoteNotFound";
 
 const components = {
 	NotePage,
@@ -45,14 +46,7 @@ const skeletonComponents = {
 	TimelineNoteLink: ParentNoteSkeleton,
 };
 
-const NoteNotFound = () => (
-	<div>
-		Note not found
-	</div>
-);
-
 const notFoundComponents = {
-	// TODO
 	NotePage: NoteNotFound,
 	Note: NoteNotFound,
 	ParentNote: NoteNotFound,
@@ -124,6 +118,8 @@ export function NoteLoader({
 			id={eventPointer.id}
 		/>
 	) : (
-		<NotFoundComponent />
+		<NotFoundComponent
+			id={eventPointer.id}
+		/>
 	);
 }

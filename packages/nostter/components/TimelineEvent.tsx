@@ -8,6 +8,8 @@ import { ImageLink } from '@/utils/getContentImageLinks';
 import { TimelineNoteLink } from './TimelineNoteLink';
 import { PageLink } from '@/utils/getContentPageLinks';
 import { PageLinkMetadata } from './NoteContentPage';
+import { Event } from 'nostr-tools';
+import { NoteNotFound } from './NoteNotFound';
 
 export function TimelineEvent({
 	id,
@@ -15,6 +17,8 @@ export function TimelineEvent({
 	pubkey,
 	content,
 	references,
+	repostedEventPointer,
+	repostedEvent,
 	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
@@ -31,6 +35,8 @@ export function TimelineEvent({
 	pubkey: string;
 	content: string;
 	references: Reference[];
+	repostedEventPointer: undefined | EventPointer;
+	repostedEvent: undefined | Event;
 	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
@@ -42,13 +48,19 @@ export function TimelineEvent({
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
 	onAuxClick?: (event: MouseEvent<HTMLElement>) => void;
 }) {
-
 	return kind === EventKind.Repost ? (
-		<TimelineRepost
-			pubkey={pubkey}
-			content={content}
-			pubkeyMetadatas={pubkeyMetadatas}
-		/>
+		repostedEventPointer ? (
+			<TimelineRepost
+				pubkey={pubkey}
+				pubkeyMetadatas={pubkeyMetadatas}
+				repostedEventPointer={repostedEventPointer}
+				repostedEvent={repostedEvent}
+			/>
+		) : (
+			<NoteNotFound
+				id={id}
+			/>
+		)
 	) : (
 		<TimelineNoteLink
 			id={id}

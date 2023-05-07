@@ -10,7 +10,7 @@ import { parsePageLinkMetadatas } from "@/utils/parsePageLinkMetadatas";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { toEventPointer } from "@/utils/toEventPointer";
 import invariant from "invariant";
-import { Event, parseReferences } from "nostr-tools";
+import { Event, parseReferences, nip18 } from "nostr-tools";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { useMemo } from "react";
 import { useAppQueries } from "./useAppQuery";
@@ -46,7 +46,10 @@ export function useEventLoader({
 
 	const { profilePointers = [], repliedProfilePointers = [] } = event ? getReferencedProfiles(event) : {};
 
-	const references = event ? parseReferences(event) : undefined;
+	const repostedEventPointer = useMemo(() => event ? nip18.getRepostedEventPointer(event) : undefined, [event]);
+	const repostedEvent = useMemo(() => event ? nip18.getRepostedEvent(event) : undefined, [event]);
+
+	const references = useMemo(() => event ? parseReferences(event) : undefined, [event]);
 
 	const contentTokens = useMemo(() => getNoteContentTokens(event?.content || '', references ?? []), [event?.content, references]);
 
@@ -113,6 +116,9 @@ export function useEventLoader({
 
 		event,
 		references,
+
+		repostedEventPointer,
+		repostedEvent,
 
 		contentImageLinks,
 		contentVideoLinks,

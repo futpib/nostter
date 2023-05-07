@@ -69,6 +69,11 @@ const testCases = [
 		title: 'without profile info',
 		url: 'npub1s7ehx4ynuzvyqm275zsazd9y5y5qdm4sy09wz9pzdcnnva20nxlsgf5s44',
 	},
+	{
+		title: 'reposts',
+		url: 'npub14ugy9d6t3yqvs88asezpz23qyduuy8m789zh88fnqz302dqsjj4qlu8jay',
+		now: '2023-05-01T00:00:00.000Z',
+	},
 ].sort(compareByUrl);
 
 test.before(async t => {

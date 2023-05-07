@@ -5,6 +5,7 @@ import { Event } from "nostr-tools";
 import { ParentNoteSkeleton } from "./ParentNoteSkeleton";
 import { TimelineEvent } from "./TimelineEvent";
 import { useEventLoader } from "@/hooks/useEventLoader";
+import { NoteNotFound } from "./NoteNotFound";
 
 const components = {
 	TimelineEvent,
@@ -14,14 +15,7 @@ const skeletonComponents = {
 	TimelineEvent: ParentNoteSkeleton,
 };
 
-const NoteNotFound = () => (
-	<div>
-		Note not found
-	</div>
-);
-
 const notFoundComponents = {
-	// TODO
 	TimelineEvent: NoteNotFound,
 	TimelineEventLink: NoteNotFound,
 };
@@ -42,6 +36,9 @@ export function EventLoader({
 
 		event,
 		references,
+
+		repostedEventPointer,
+		repostedEvent,
 
 		contentImageLinks,
 		contentVideoLinks,
@@ -74,6 +71,8 @@ export function EventLoader({
 			contentReferencedEvents={contentReferencedEvents}
 			createdAt={event.created_at}
 			references={references}
+			repostedEventPointer={repostedEventPointer}
+			repostedEvent={repostedEvent}
 			repliedProfilePointers={repliedProfilePointers}
 			pubkeyMetadatas={pubkeyMetadatas}
 			pageLinkMetadatas={pageLinkMetadatas}
@@ -83,6 +82,8 @@ export function EventLoader({
 			id={eventPointer.id}
 		/>
 	) : (
-		<NotFoundComponent />
+		<NotFoundComponent
+			id={eventPointer.id}
+		/>
 	);
 }

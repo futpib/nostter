@@ -1,5 +1,4 @@
 import styles from './TimelineRepost.module.css';
-import { useMemo } from 'react';
 import { NoteLoader } from './NoteLoader';
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import { FaRetweet } from 'react-icons/fa';
@@ -7,36 +6,24 @@ import { ProfileLink } from './ProfileLink';
 import { ProfileAnyNameText } from './ProfileAnyNameText';
 import { Event } from 'nostr-tools';
 import { isEvent } from '@/nostr/isEvent';
+import { EventPointer } from 'nostr-tools/lib/nip19';
 
 export function TimelineRepost({
 	pubkey,
-	content,
 	pubkeyMetadatas,
+	repostedEventPointer,
+	repostedEvent,
 }: {
 	pubkey: string;
-	content: string;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
+	repostedEventPointer: EventPointer;
+	repostedEvent: undefined | Event;
 }) {
-	const event = useMemo(() => {
-		let event: Partial<Event> | undefined;
-
-		try {
-			event = JSON.parse(content);
-		} catch (error) {
-			console.error(error);
-		}
-
-		return {
-			id: '0'.repeat(64),
-			...event,
-		};
-	}, [content]);
-
 	return (
 		<NoteLoader
 			componentKey="TimelineNoteLink"
-			eventPointer={event}
-			event={isEvent(event) ? event : undefined}
+			eventPointer={repostedEventPointer}
+			event={isEvent(repostedEvent) ? repostedEvent : undefined}
 			repostHeaderChildren={(
 				<>
 					<div
