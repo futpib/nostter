@@ -47,7 +47,7 @@ export function NoteContentText({
 				/>
 			),
 
-			renderLink: ({ key, link }) => (
+			renderLink: ({ key, token: { link } }) => (
 				contentImageLinks.some(imageLink => imageLink.url === link.href)
 				|| contentVideoLinks.some(videoLink => videoLink.url === link.href)
 				|| contentPageLinks.some(pageLink => pageLink.url === link.href && pageLinkMetadatas.has(pageLink.url))
@@ -63,7 +63,7 @@ export function NoteContentText({
 				</Link>
 			),
 
-			renderHashtag: ({ key, link }) => (
+			renderHashtag: ({ key, token: { link } }) => (
 				<Link
 					key={key}
 					className={styles.link}

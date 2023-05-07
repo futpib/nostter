@@ -2,7 +2,7 @@ import * as linkify from 'linkifyjs';
 import 'linkify-plugin-hashtag';
 import mem from 'mem';
 
-export type Link = {
+export type LinkifyLink = {
 	type: string;
 	value: string;
 	isLink: boolean;

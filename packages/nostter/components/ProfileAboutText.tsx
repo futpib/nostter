@@ -15,7 +15,7 @@ export function ProfileAboutText({
 		return renderAboutContent<ReactNode>({
 			content,
 		}, {
-			renderLink: ({ key, link }) => (
+			renderLink: ({ key, token: { link } }) => (
 				<Link
 					key={key}
 					className={styles.link}
@@ -27,7 +27,7 @@ export function ProfileAboutText({
 				</Link>
 			),
 
-			renderHashtag: ({ key, link }) => (
+			renderHashtag: ({ key, token: { link } }) => (
 				<Link
 					key={key}
 					className={styles.link}

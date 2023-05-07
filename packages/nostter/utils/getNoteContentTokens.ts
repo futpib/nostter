@@ -1,6 +1,8 @@
 import { AddressPointer, EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { guessMimeType } from "./guessMimeType";
-import { findLinks, Link } from "./findLinks";
+import { findLinks, LinkifyLink } from "./findLinks";
+
+export type Link = Pick<LinkifyLink, 'type' | 'value' | 'href'>;
 
 export type Reference = {
 	text: string;

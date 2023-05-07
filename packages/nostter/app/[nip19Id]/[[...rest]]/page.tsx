@@ -148,7 +148,7 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 			pubkey: profilePointer.pubkey,
 			pubkeyMetadatas,
 		}),
-		renderLink: ({ link }) => link.value,
+		renderLink: ({ token: { link } }) => link.value,
 	});
 
 	const contentText = contentChildren.join('');

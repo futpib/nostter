@@ -2,7 +2,6 @@ import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ReactNode } from "react";
 import invariant from "invariant";
 import { ContentToken, ContentTokenHashtag, ContentTokenLink, ContentTokenReference, Reference, getNoteContentTokens } from "./getNoteContentTokens";
-import { Link } from "./findLinks";
 
 export type PubkeyMetadata = {
 	name?: string;
@@ -62,13 +61,11 @@ export function renderNoteContent<T extends string | ReactNode>({
 	renderLink?: (props: {
 		key: number | string;
 		token: ContentTokenLink;
-		link: Link;
 	}) => T;
 
 	renderHashtag?: (props: {
 		key: number | string;
 		token: ContentTokenHashtag;
-		link: Link;
 	}) => T;
 } = {}): {
 	contentTokens: ContentToken[];
@@ -78,37 +75,33 @@ export function renderNoteContent<T extends string | ReactNode>({
 
 	const contentChildren: T[] = [];
 
+	let key = 0;
+
 	for (const token of tokens) {
 		if (token.type === 'string') {
 			contentChildren.push(token.string as T);
 		} else if (token.type === 'link') {
-			const { link } = token;
-
 			contentChildren.push(renderLink({
-				key: link.start,
+				key: key++,
 				token,
-				link,
 			}));
 		} else if (token.type === 'hashtag') {
-			const { link } = token;
-
 			contentChildren.push(renderHashtag({
-				key: link.start,
+				key: key++,
 				token,
-				link,
 			}));
 		} else if (token.type === 'reference') {
 			const { reference } = token;
 
 			if (reference.profile) {
 				contentChildren.push(renderProfileReference({
-					key: reference.text,
+					key: key++,
 					token,
 					profilePointer: reference.profile,
 				}));
 			} else if (reference.event) {
 				contentChildren.push(renderEventReference({
-					key: reference.text,
+					key: key++,
 					token,
 					eventPointer: reference.event,
 				}));
