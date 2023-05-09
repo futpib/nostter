@@ -5,6 +5,7 @@ import styles from './NoteTextCounters.module.css';
 import { NoteReplyTextCounter } from './NoteReplyTextCounter';
 import { NoteLikeTextCounter } from './NoteLikeTextCounter';
 import { NoteRepostTextCounter } from './NoteRepostTextCounter';
+import { NoteZapTextCounter } from './NoteZapTextCounter';
 
 export function NoteTextCounters({
 	noteEventPointer,
@@ -24,6 +25,10 @@ export function NoteTextCounters({
 			/>
 
 			<NoteLikeTextCounter
+				noteEventPointer={noteEventPointer}
+			/>
+
+			<NoteZapTextCounter
 				noteEventPointer={noteEventPointer}
 			/>
 		</div>

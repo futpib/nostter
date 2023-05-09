@@ -1,11 +1,12 @@
 import { ComponentType } from 'react';
+import { CounterValueText } from './CounterValueText';
 import styles from './NoteCounter.module.css';
 
 export function NoteCounter({
 	value,
 	iconComponent: IconComponent,
 }: {
-	value: number;
+	value: number | bigint;
 	iconComponent: ComponentType;
 }) {
 	return (
@@ -13,7 +14,11 @@ export function NoteCounter({
 			className={styles.noteCounter}
 		>
 			<IconComponent />
-			<span>{value}</span>
+			<span>
+				<CounterValueText
+					value={value}
+				/>
+			</span>
 		</div>
 	);
 }

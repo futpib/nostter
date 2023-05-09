@@ -18,10 +18,6 @@ export function getStaleTime(queryKey: FullQueryKey) {
 		if (subresource === 'reposts') {
 			return oneMinute;
 		}
-
-		if (subresource === 'reactions') {
-			return oneMinute;
-		}
 	}
 
 	if (resourceType === 'pubkey') {

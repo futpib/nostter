@@ -1,5 +1,4 @@
-import { nip25 } from 'nostr-tools';
-import { FaRegHeart } from 'react-icons/fa';
+import { BsLightningCharge } from 'react-icons/bs';
 import { NoteCounter } from "./NoteCounter";
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { trpcReact } from '@/clients/trpc';
@@ -8,10 +7,10 @@ import { useNow } from '@/hooks/useNow';
 import { useMemo } from 'react';
 import { startOf } from '@/luxon';
 import { EventKind } from '@/nostr/EventKind';
-import { POSITIVE_REACTIONS } from '@/constants/positiveReactions';
+import { decodeZapEvent } from './decodeZapEvent';
 import { useIdleLoop } from '@/hooks/useIdleLoop';
 
-export function NoteLikeCounter({
+export function NoteZapCounter({
 	noteEventPointer,
 	now: propsNow,
 }: {
@@ -23,7 +22,7 @@ export function NoteLikeCounter({
 	const nowRounded = useMemo(() => startOf(now, '5minutes'), [ now ]);
 
 	const input = useMemo(() => ({
-		kinds: [ EventKind.Reaction ],
+		kinds: [ EventKind.Zap ],
 		referencedEventIds: [ noteEventPointer.id ],
 	}), [ noteEventPointer.id ]);
 
@@ -45,20 +44,20 @@ export function NoteLikeCounter({
 		},
 	});
 
-	const positiveReactionsCount = useMemo(() => {
-		let positiveReactionsCount = 0;
+	const satoshisCount = useMemo(() => {
+		let satoshisCount = 0;
 
 		for (const page of data?.pages ?? []) {
 			for (const event of page.eventSet) {
-				const reactedEventPointer = nip25.getReactedEventPointer(event);
+				const { satoshis, complete } = decodeZapEvent(event, noteEventPointer) ?? {};
 
-				if (reactedEventPointer?.id === noteEventPointer.id && POSITIVE_REACTIONS.has(event.content)) {
-					positiveReactionsCount += 1;
+				if (satoshis && complete) {
+					satoshisCount += satoshis;
 				}
 			}
 		}
 
-		return positiveReactionsCount;
+		return satoshisCount;
 	}, [ data?.pages.length, noteEventPointer.id ]);
 
 	useIdleLoop(fetchNextPage, {
@@ -68,8 +67,8 @@ export function NoteLikeCounter({
 
 	return (
 		<NoteCounter
-			iconComponent={FaRegHeart}
-			value={positiveReactionsCount}
+			iconComponent={BsLightningCharge}
+			value={satoshisCount}
 		/>
 	);
 }

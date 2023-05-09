@@ -100,12 +100,6 @@ function getPoolQueryFilter(
 				filter['#e'] = [ resourceId ];
 				return filter;
 			}
-
-			if (subresource === 'reactions') {
-				filter.kinds = [ EVENT_KIND_REACTION ];
-				filter['#e'] = [ resourceId ];
-				return filter;
-			}
 		}
 	}
 
@@ -235,13 +229,6 @@ async function queryLocalRelayDexie(
 			return localRelayDexie.events.where({
 				eTag1s: [ resourceId ],
 				kind: EVENT_KIND_REPOST,
-			}).toArray();
-		}
-
-		if (subresource === 'reactions') {
-			return localRelayDexie.events.where({
-				eTag1s: [ resourceId ],
-				kind: EVENT_KIND_REACTION,
 			}).toArray();
 		}
 	}

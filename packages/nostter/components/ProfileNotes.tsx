@@ -18,6 +18,7 @@ import { TRPCQueryKey } from '@/clients/prehashQueryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'invariant';
 import { Cursor } from '@/trpc/router/nostr';
+import { startOf } from '@/luxon';
 
 export function ProfileNotes({
 	pubkey,
@@ -57,12 +58,7 @@ export function ProfileNotes({
 		},
 	], [ input ]);
 
-	const nowRounded = useMemo(() => {
-		const startOfMinute = now.startOf('minute');
-		const reminder = startOfMinute.minute % 5;
-
-		return startOfMinute.minus({ minutes: reminder });
-	}, [ now ]);
+	const nowRounded = useMemo(() => startOf(now, '5minutes'), [ now ]);
 
 	const initialCursor = useMemo(() => ({
 		until: nowRounded.toSeconds(),
