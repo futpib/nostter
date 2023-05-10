@@ -7,6 +7,7 @@ import { Profile } from "./Profile";
 import { ProfilePage } from "./ProfilePage";
 import { ProfileTooltipContent } from "./ProfileTooltipContent";
 import { DateTime } from "luxon";
+import { ProfileSkeleton } from "./ProfileSkeleton";
 
 const components = {
 	ProfilePage,
@@ -17,22 +18,9 @@ const components = {
 const Stub = () => null;
 
 const skeletonComponents = {
-	ProfilePage: Stub,
-	Profile: Stub,
+	ProfilePage: ProfileSkeleton,
+	Profile: ProfileSkeleton,
 	ProfileTooltipContent: Stub,
-};
-
-const ProfileNotFound = () => (
-	<div>
-		Profile not found
-	</div>
-);
-
-const notFoundComponents = {
-	// TODO
-	ProfilePage: ProfileNotFound,
-	Profile: ProfileNotFound,
-	ProfileTooltipContent: ProfileNotFound,
 };
 
 export function ProfileLoader({
@@ -70,7 +58,9 @@ export function ProfileLoader({
 	const pubkeyMetadata = pubkeyMetadatas?.get(profilePointer.pubkey);
 
 	return pubkeyMetadataEventQuery.isInitialLoading ? (
-		<SkeletonComponent />
+		<SkeletonComponent
+			id={profilePointer.pubkey}
+		/>
 	) : (
 		<Component
 			pubkey={profilePointer.pubkey}
