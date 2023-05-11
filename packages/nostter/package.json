@@ -40,7 +40,6 @@
     "react-content-loader": "^6.2.1",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
-    "react-intersection-observer-hook": "^2.1.1",
     "react-remove-scroll": "^2.5.5",
     "sharp": "^0.32.0",
     "superjson": "^1.12.2",

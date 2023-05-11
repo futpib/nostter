@@ -6,7 +6,6 @@ import { trpcReact } from '@/clients/trpc';
 import { EventKind } from '@/nostr/EventKind';
 import { DateTime } from 'luxon';
 import { NoteSkeleton } from './NoteSkeleton';
-import { useTrackVisibility } from 'react-intersection-observer-hook';
 import plur from 'plur';
 import styles from './ProfileNotes.module.css';
 import { useNow } from '@/hooks/useNow';
@@ -19,6 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'invariant';
 import { Cursor } from '@/trpc/router/nostr';
 import { startOf } from '@/luxon';
+import { useVisibility } from '@/hooks/useVisibility';
 
 export function ProfileNotes({
 	pubkey,
@@ -31,19 +31,29 @@ export function ProfileNotes({
 
 	const [ now, setNow ] = useState(initialNow);
 
-	const [ firstPageFirstEventWrapRef, {
-		isVisible: firstPageFirstEventWrapVisible,
-	}] = useTrackVisibility();
+	const {
+		ref: showFutureNotesButtonRef,
+		isVisible: showFutureNotesButtonVisible,
+	} = useVisibility();
 
-	const [ lastPageFirstEventWrapRef, {
+	const {
+		ref: lastPageFirstEventWrapRef,
 		isVisible: lastPageFirstEventWrapVisible,
-	}] = useTrackVisibility();
+	} = useVisibility();
 
-	const [ lastPageLastEventWrapRef, {
+	const {
+		ref: lastPageLastEventWrapRef,
 		isVisible: lastPageLastEventWrapVisible,
-	}] = useTrackVisibility();
+	} = useVisibility();
 
-	const { handleReflow } = useScrollKeeper();
+	const {
+		handleReflow: handleShowFutureNotesButtonReflow,
+	} = useScrollKeeper();
+
+	const showFutureNotesCombinedRef = useCallback((node: HTMLDivElement | null) => {
+		handleShowFutureNotesButtonReflow();
+		showFutureNotesButtonRef(node);
+	}, [ handleShowFutureNotesButtonReflow, showFutureNotesButtonRef ]);
 
 	const input = useMemo(() => ({
 		kinds: [ EventKind.Text, EventKind.Repost ],
@@ -196,18 +206,6 @@ export function ProfileNotes({
 		now,
 	]);
 
-	const firstNonEmptyPage = useMemo(() => {
-		return pages.find(page => page.eventSet.size > 0);
-	}, [ pages ]);
-
-	const firstPageFirstEvent = useMemo(() => {
-		if (!firstNonEmptyPage) {
-			return undefined;
-		}
-
-		return firstNonEmptyPage.eventSet.getLatestEvent();
-	}, [ firstNonEmptyPage ]);
-
 	const lastNonEmptyPage = useMemo(() => {
 		return pages.findLast(page => page.eventSet.size > 0);
 	}, [ pages ]);
@@ -284,7 +282,7 @@ export function ProfileNotes({
 			<div
 				className={classNames(
 					styles.newNotes,
-					!firstPageFirstEventWrapVisible && futurePage && futurePage.eventSet.size > 0 && styles.newNotesVisible,
+					showFutureNotesButtonVisible === false && futurePage && futurePage.eventSet.size > 0 && styles.newNotesVisible,
 				)}
 			>
 				<div
@@ -299,7 +297,7 @@ export function ProfileNotes({
 			</div>
 
 			<div
-				ref={handleReflow}
+				ref={showFutureNotesCombinedRef}
 				className={classNames(
 					styles.newNotesButton,
 					futurePage && futurePage.eventSet.size > 0 && styles.newNotesButtonVisible,
@@ -336,17 +334,6 @@ export function ProfileNotes({
 							<div
 								ref={lastPageFirstEventWrapRef}
 								className={styles.lastPageFirstEventWrap}
-							>
-								<EventLoader
-									componentKey="TimelineEvent"
-									eventPointer={event}
-									event={event}
-								/>
-							</div>
-						) : event.id === firstPageFirstEvent?.id ? (
-							<div
-								ref={firstPageFirstEventWrapRef}
-								className={styles.firstPageFirstEventWrap}
 							>
 								<EventLoader
 									componentKey="TimelineEvent"
