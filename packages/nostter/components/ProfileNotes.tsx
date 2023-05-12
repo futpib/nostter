@@ -206,6 +206,10 @@ export function ProfileNotes({
 		now,
 	]);
 
+	const firstNonEmptyPage = useMemo(() => {
+		return pages.find(page => page.eventSet.size > 0);
+	}, [ pages ]);
+
 	const lastNonEmptyPage = useMemo(() => {
 		return pages.findLast(page => page.eventSet.size > 0);
 	}, [ pages ]);
@@ -264,6 +268,15 @@ export function ProfileNotes({
 			nextCursor.until = event.created_at;
 		}
 
+		for (const event of firstNonEmptyPage?.eventSet.getEventsLatestFirst() ?? []) {
+			if (eventSet.size >= initialCursor.limit) {
+				break;
+			}
+
+			eventSet.add(event);
+			nextCursor.until = event.created_at;
+		}
+
 		queryClient.setQueryData(queryKey, {
 			pages: [ {
 				eventSet,
@@ -275,7 +288,7 @@ export function ProfileNotes({
 		setAfterNowRoundedEventSet(new EventSet());
 		setAfterNowRoundedEventsCount(0);
 		setRefetchCount((count) => count + 1);
-	}, [ futurePage ]);
+	}, [ futurePage, firstNonEmptyPage ]);
 
 	return (
 		<>
