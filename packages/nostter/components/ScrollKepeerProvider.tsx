@@ -2,7 +2,9 @@
 
 import { ReactNode, createContext } from "react";
 
-const noop = () => {};
+const noop = () => {
+	debugger;
+};
 
 export type ScrollKeeperContextValue = {
 	onReflow: () => void;

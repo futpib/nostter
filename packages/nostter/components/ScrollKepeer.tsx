@@ -9,6 +9,9 @@ export function ScrollKeeper({
 }) {
 	const afterChildrenRef = useRef<HTMLDivElement>();
 	const afterChildrenLastReflowOffsetTopRef = useRef(0);
+	const expectSyntheticScrollRef = useRef(false);
+	const expectSyntheticScrollEndRef = useRef(false);
+	const userScrolledOnceRef = useRef(false);
 
 	const handleAfterChildrenRef = useCallback((node: HTMLDivElement) => {
 		afterChildrenRef.current = node;
@@ -26,7 +29,14 @@ export function ScrollKeeper({
 		let scrollEndTimeout: number | undefined = undefined;
 
 		const handleScroll = () => {
+			if (expectSyntheticScrollRef.current) {
+				expectSyntheticScrollRef.current = false;
+				expectSyntheticScrollEndRef.current = true;
+				return;
+			}
+
 			isScrollingRef.current = true;
+			userScrolledOnceRef.current = true;
 
 			window.clearTimeout(scrollEndTimeout);
 			scrollEndTimeout = window.setTimeout(() => {
@@ -35,6 +45,11 @@ export function ScrollKeeper({
 		};
 
 		const handleScrollEnd = () => {
+			if (expectSyntheticScrollEndRef.current) {
+				expectSyntheticScrollEndRef.current = false;
+				return;
+			}
+
 			isScrollingRef.current = false;
 
 			window.clearTimeout(scrollEndTimeout);
@@ -58,7 +73,14 @@ export function ScrollKeeper({
 
 			const { offsetTop } = afterChildrenRef.current;
 
-			if (!isScrollingRef.current && isElementVisible(afterChildrenRef.current)) {
+			if (
+				!isScrollingRef.current
+				&& (
+					!userScrolledOnceRef.current
+					|| isElementVisible(afterChildrenRef.current)
+				)
+			) {
+				expectSyntheticScrollRef.current = true;
 				window.scrollBy({
 					top: offsetTop - afterChildrenLastReflowOffsetTopRef.current,
 					behavior: "instant" as any,

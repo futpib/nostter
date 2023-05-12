@@ -47,13 +47,14 @@ type TestCase = {
 	title?: string;
 	url: string;
 	now?: string;
+	fullPage?: false;
 };
 
 function compareByUrl(a: TestCase, b: TestCase) {
 	return a.url.localeCompare(b.url);
 }
 
-const testCases = [
+const testCases = ([
 	{
 		url: 'note1phg7k8mf8rq4e57uazxz26g0gus3qwpuxwhzguf0w787kxy6vnvqay3lna',
 	},
@@ -74,7 +75,12 @@ const testCases = [
 		url: 'npub14ugy9d6t3yqvs88asezpz23qyduuy8m789zh88fnqz302dqsjj4qlu8jay',
 		now: '2023-05-01T00:00:00.000Z',
 	},
-].sort(compareByUrl);
+	{
+		title: 'scroll keeping',
+		url: 'note1x7g0je3c8szapk39yef0c86w7hxngdfhfauhce389sl6pjnwuwps4s8f6u',
+		fullPage: false,
+	},
+] as const).slice().sort(compareByUrl);
 
 test.before(async t => {
 	const testCaseSemaphore = new Semaphore(4, {
@@ -162,7 +168,7 @@ test.beforeEach(async t => {
 
 const runTestCase = async (
 	t: ExecutionContext<TestContext>,
-	{ url, now = defaultNow }: TestCase,
+	{ url, now = defaultNow, fullPage }: TestCase,
 	{
 		screenshotDirectory,
 		baseUrl,
@@ -239,7 +245,7 @@ const runTestCase = async (
 			await page.bringToFront();
 			await page.screenshot({
 				path: screenshotPath,
-				fullPage: true,
+				fullPage: fullPage === false ? false : true,
 			});
 		} finally {
 			releaseBrowserScreenshotSemaphore();
