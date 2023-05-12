@@ -908,6 +908,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.194":
+  version: 4.14.194
+  resolution: "@types/lodash@npm:4.14.194"
+  checksum: 113f34831c461469d91feca2dde737f88487732898b4d25e9eb23b087bb193985f864d1e1e0f3b777edc5022e460443588b6000a3b2348c966f72d17eedc35ea
+  languageName: node
+  linkType: hard
+
 "@types/luxon@npm:^3.3.0":
   version: 3.3.0
   resolution: "@types/luxon@npm:3.3.0"
@@ -5090,6 +5097,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/deepmerge": ^2.2.0
     "@types/invariant": ^2.2.35
+    "@types/lodash": ^4.14.194
     "@types/luxon": ^3.3.0
     "@types/mime-types": ^2.1.1
     "@types/node": 18.15.11
@@ -5105,6 +5113,7 @@ __metadata:
     isomorphic-ws: ^5.0.0
     linkify-plugin-hashtag: ^4.1.1
     linkifyjs: ^4.1.1
+    lodash: ^4.17.21
     luxon: ^3.3.0
     mem: ^9.0.2
     mime-types: ^2.1.35
@@ -5117,6 +5126,7 @@ __metadata:
     react-content-loader: ^6.2.1
     react-dom: 18.2.0
     react-icons: ^4.8.0
+    react-merge-refs: ^2.0.2
     react-remove-scroll: ^2.5.5
     sharp: ^0.32.0
     superjson: ^1.12.2
@@ -5901,6 +5911,13 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 4dbba7ad989c295b410e19b2a702722dae44368cb04b6515f9471353552f31ac80bd350f121d5bff79f81504b84039ede44d09e9f035f48bb1032e6eace126c4
+  languageName: node
+  linkType: hard
+
+"react-merge-refs@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "react-merge-refs@npm:2.0.2"
+  checksum: 64758870d79ad52e6666d1d30cdecd5a72722edfd5c89808b41acdbd81a039f0c78b8b576f7ae247010468fc45cb57dd31f402693c64224439dbe0127f4389f3
   languageName: node
   linkType: hard
 

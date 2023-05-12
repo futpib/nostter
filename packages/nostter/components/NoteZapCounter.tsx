@@ -9,6 +9,7 @@ import { startOf } from '@/luxon';
 import { EventKind } from '@/nostr/EventKind';
 import { decodeZapEvent } from './decodeZapEvent';
 import { useIdleLoop } from '@/hooks/useIdleLoop';
+import { useHeavyQueriesEnabled } from '@/hooks/useHeavyQueriesEnabled';
 
 export function NoteZapCounter({
 	noteEventPointer,
@@ -17,6 +18,8 @@ export function NoteZapCounter({
 	noteEventPointer: EventPointer;
 	now?: string | DateTime;
 }) {
+	const { heavyQueriesEnabled } = useHeavyQueriesEnabled();
+
 	const now = useNow({ propsNow });
 
 	const nowRounded = useMemo(() => startOf(now, '5minutes'), [ now ]);
@@ -37,6 +40,8 @@ export function NoteZapCounter({
 		hasNextPage,
 		fetchNextPage,
 	} = trpcReact.nostr.eventsInfinite.useInfiniteQuery(input, {
+		enabled: heavyQueriesEnabled,
+
 		initialCursor,
 
 		getNextPageParam(lastPage) {
@@ -61,8 +66,7 @@ export function NoteZapCounter({
 	}, [ data?.pages.length, noteEventPointer.id ]);
 
 	useIdleLoop(fetchNextPage, {
-		enabled: false,
-		// enabled: Boolean(!isFetching && hasNextPage),
+		enabled: Boolean(!isFetching && hasNextPage && heavyQueriesEnabled),
 	});
 
 	return (

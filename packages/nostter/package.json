@@ -28,6 +28,7 @@
     "isomorphic-ws": "^5.0.0",
     "linkify-plugin-hashtag": "^4.1.1",
     "linkifyjs": "^4.1.1",
+    "lodash": "^4.17.21",
     "luxon": "^3.3.0",
     "mem": "^9.0.2",
     "mime-types": "^2.1.35",
@@ -40,6 +41,7 @@
     "react-content-loader": "^6.2.1",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "react-merge-refs": "^2.0.2",
     "react-remove-scroll": "^2.5.5",
     "sharp": "^0.32.0",
     "superjson": "^1.12.2",
@@ -55,6 +57,7 @@
     "@types/debug": "^4.1.7",
     "@types/deepmerge": "^2.2.0",
     "@types/invariant": "^2.2.35",
+    "@types/lodash": "^4.14.194",
     "@types/luxon": "^3.3.0",
     "@types/mime-types": "^2.1.1"
   }

@@ -16,6 +16,7 @@ import { SmallAvatarImage } from './SmallAvatarImage';
 import { PageLink } from '@/utils/getContentPageLinks';
 import { NoteContentPages } from './NoteContentPages';
 import { PageLinkMetadata } from './NoteContentPage';
+import { ScrollSpyStatusProvider } from './ScrollSpyStatusProvider';
 
 export function ChildNote({
 	id,
@@ -51,94 +52,96 @@ export function ChildNote({
 	const pubkeyMetadata = pubkeyMetadatas.get(pubkey);
 
 	return (
-		<article
-			className={styles.childNote}
-			onClick={onClick}
-			onAuxClick={onAuxClick}
-		>
-			<div className={styles.avatarColumn}>
-				<ProfileLink
-					unstyled
-					pubkey={pubkey}
-				>
-					<SmallAvatarImage
-						className={styles.avatar}
-						src={pubkeyMetadata?.picture}
-					/>
-				</ProfileLink>
-			</div>
+		<ScrollSpyStatusProvider>
+			<article
+				className={styles.childNote}
+				onClick={onClick}
+				onAuxClick={onAuxClick}
+			>
+				<div className={styles.avatarColumn}>
+					<ProfileLink
+						unstyled
+						pubkey={pubkey}
+					>
+						<SmallAvatarImage
+							className={styles.avatar}
+							src={pubkeyMetadata?.picture}
+						/>
+					</ProfileLink>
+				</div>
 
-			<div className={styles.contentColumn}>
-				<div
-					className={styles.header}
-				>
-					{pubkeyMetadata?.display_name && (
+				<div className={styles.contentColumn}>
+					<div
+						className={styles.header}
+					>
+						{pubkeyMetadata?.display_name && (
+							<div
+								className={styles.displayName}
+							>
+								<ProfileLink
+									unstyled
+									pubkey={pubkey}
+								>
+									{pubkeyMetadata?.display_name}
+								</ProfileLink>
+							</div>
+						)}
+
 						<div
-							className={styles.displayName}
+							className={styles.name}
 						>
 							<ProfileLink
 								unstyled
 								pubkey={pubkey}
 							>
-								{pubkeyMetadata?.display_name}
+								<ProfileMentionNameText
+									pubkey={pubkey}
+									pubkeyMetadatas={pubkeyMetadatas}
+								/>
 							</ProfileLink>
 						</div>
-					)}
 
-					<div
-						className={styles.name}
-					>
-						<ProfileLink
-							unstyled
-							pubkey={pubkey}
-						>
-							<ProfileMentionNameText
-								pubkey={pubkey}
-								pubkeyMetadatas={pubkeyMetadatas}
-							/>
-						</ProfileLink>
+						<CreatedAtLink
+							id={id}
+							createdAt={createdAt}
+						/>
 					</div>
 
-					<CreatedAtLink
-						id={id}
-						createdAt={createdAt}
+					<NoteRepliedProfiles
+						pubkey={pubkey}
+						repliedProfilePointers={repliedProfilePointers}
+						pubkeyMetadatas={pubkeyMetadatas}
+					/>
+
+					<NoteContentText
+						content={content}
+						references={references}
+						pubkeyMetadatas={pubkeyMetadatas}
+						contentImageLinks={contentImageLinks}
+						contentVideoLinks={contentVideoLinks}
+						contentPageLinks={contentPageLinks}
+						pageLinkMetadatas={pageLinkMetadatas}
+					/>
+
+					<NoteContentMedias
+						contentImageLinks={contentImageLinks}
+						contentVideoLinks={contentVideoLinks}
+					/>
+
+					<NoteContentPages
+						contentPageLinks={contentPageLinks}
+						pageLinkMetadatas={pageLinkMetadatas}
+					/>
+
+					<NoteContentNotes
+						contentReferencedEvents={contentReferencedEvents}
+					/>
+
+					<NoteCounters
+						noteEventPointer={{ id }}
 					/>
 				</div>
-
-				<NoteRepliedProfiles
-					pubkey={pubkey}
-					repliedProfilePointers={repliedProfilePointers}
-					pubkeyMetadatas={pubkeyMetadatas}
-				/>
-
-				<NoteContentText
-					content={content}
-					references={references}
-					pubkeyMetadatas={pubkeyMetadatas}
-					contentImageLinks={contentImageLinks}
-					contentVideoLinks={contentVideoLinks}
-					contentPageLinks={contentPageLinks}
-					pageLinkMetadatas={pageLinkMetadatas}
-				/>
-
-				<NoteContentMedias
-					contentImageLinks={contentImageLinks}
-					contentVideoLinks={contentVideoLinks}
-				/>
-
-				<NoteContentPages
-					contentPageLinks={contentPageLinks}
-					pageLinkMetadatas={pageLinkMetadatas}
-				/>
-
-				<NoteContentNotes
-					contentReferencedEvents={contentReferencedEvents}
-				/>
-
-				<NoteCounters
-					noteEventPointer={{ id }}
-				/>
-			</div>
-		</article>
+			</article>
+		</ScrollSpyStatusProvider>
 	);
 }

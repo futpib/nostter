@@ -10,6 +10,7 @@ import { startOf } from '@/luxon';
 import { EventKind } from '@/nostr/EventKind';
 import { POSITIVE_REACTIONS } from '@/constants/positiveReactions';
 import { useIdleLoop } from '@/hooks/useIdleLoop';
+import { useHeavyQueriesEnabled } from '@/hooks/useHeavyQueriesEnabled';
 
 export function NoteLikeCounter({
 	noteEventPointer,
@@ -18,6 +19,8 @@ export function NoteLikeCounter({
 	noteEventPointer: EventPointer;
 	now?: string | DateTime;
 }) {
+	const { heavyQueriesEnabled } = useHeavyQueriesEnabled();
+
 	const now = useNow({ propsNow });
 
 	const nowRounded = useMemo(() => startOf(now, '5minutes'), [ now ]);
@@ -38,6 +41,8 @@ export function NoteLikeCounter({
 		hasNextPage,
 		fetchNextPage,
 	} = trpcReact.nostr.eventsInfinite.useInfiniteQuery(input, {
+		enabled: heavyQueriesEnabled,
+
 		initialCursor,
 
 		getNextPageParam(lastPage) {
@@ -62,8 +67,7 @@ export function NoteLikeCounter({
 	}, [ data?.pages.length, noteEventPointer.id ]);
 
 	useIdleLoop(fetchNextPage, {
-		enabled: false,
-		// enabled: Boolean(!isFetching && hasNextPage),
+		enabled: Boolean(!isFetching && hasNextPage && heavyQueriesEnabled),
 	});
 
 	return (

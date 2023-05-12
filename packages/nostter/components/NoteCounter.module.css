@@ -10,3 +10,7 @@
 	color: rgb(var(--foreground-secondary-rgb));
 	font-size: 0.86em;
 }
+
+.noteTextCounter > :last-child {
+	min-width: 32px;
+}

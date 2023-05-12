@@ -1,0 +1,20 @@
+
+.debugScrollStatusVisible::before {
+	content: "visible";
+	color: green;
+}
+
+.debugScrollStatusOverscan::before {
+	content: "overscan";
+	color: orange;
+}
+
+.debugScrollStatusHidden::before {
+	content: "hidden";
+	color: red;
+}
+
+.debugScrollStatusUndefiend::before {
+	content: "undefined";
+	color: red;
+}
