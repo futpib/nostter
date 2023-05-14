@@ -118,7 +118,7 @@ function stringifyError(error: unknown) {
 	return 'Some weird error';
 }
 
-const defaultQueryString = stringifyQuery([
+export const defaultQueryString = stringifyQuery([
 	{
 		ids: [
 			'000000000',
