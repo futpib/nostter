@@ -8,7 +8,7 @@ import Semaphore from 'semaphore-promise';
 import regCli from 'reg-cli';
 
 function pathEscape(path: string) {
-	return path.replaceAll(':', '_');
+	return path.replaceAll(/[:?]/g, '_');
 }
 
 async function waitForFunction(t: ExecutionContext<TestContext>, name: string, page: Page, f: () => boolean) {
