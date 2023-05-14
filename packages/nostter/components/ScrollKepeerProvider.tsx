@@ -2,15 +2,15 @@
 
 import { ReactNode, createContext } from "react";
 
-const noop = () => {
-	debugger;
-};
+const noop = () => {};
 
 export type ScrollKeeperContextValue = {
-	onReflow: () => void;
+	onBeforeReflow: () => void;
+	onReflow: (element: HTMLElement | null) => void;
 };
 
 const defaultValue: ScrollKeeperContextValue = {
+	onBeforeReflow: noop,
 	onReflow: noop,
 };
 

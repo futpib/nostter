@@ -1,8 +1,13 @@
 import { ScrollKeeperContext } from "@/components/ScrollKepeerProvider";
-import { useContext, useMemo } from "react";
+import { useContext, useInsertionEffect, useMemo } from "react";
 
 export function useScrollKeeper() {
-	const { onReflow } = useContext(ScrollKeeperContext);
+	const { onBeforeReflow, onReflow } = useContext(ScrollKeeperContext);
+
+	useInsertionEffect(() => {
+		onBeforeReflow();
+	}, []);
+
 	return useMemo(() => ({
 		handleReflow: onReflow,
 	}), [onReflow]);

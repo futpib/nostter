@@ -7,6 +7,7 @@ const defautNamespaces = [
 	'nostter:*',
 	'-nostter:components:QueryClientProvider',
 	'-nostter:clients:queryFn',
+	'-nostter:components:ScrollSpyStatusProvider',
 ].join();
 
 if (typeof window !== 'undefined') {

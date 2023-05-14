@@ -1,27 +1,34 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef } from "react";
 import { ScrollKeeperContextValue, ScrollKeeperProvider } from "./ScrollKepeerProvider";
-import { isElementVisible } from "@/utils/isElementVisible";
 
 export function ScrollKeeper({
 	children,
 }: {
 	children: ReactNode;
 }) {
-	const afterChildrenRef = useRef<HTMLDivElement>();
-	const afterChildrenLastReflowOffsetTopRef = useRef(0);
-	const expectSyntheticScrollRef = useRef(false);
-	const expectSyntheticScrollEndRef = useRef(false);
-	const userScrolledOnceRef = useRef(false);
+	const afterChildrenRef = useRef<HTMLDivElement>(null);
 
-	const handleAfterChildrenRef = useCallback((node: HTMLDivElement) => {
-		afterChildrenRef.current = node;
+	const state = useMemo((): {
+		isScrolling: boolean;
+		userScrolledOnce: boolean;
 
-		if (node) {
-			afterChildrenLastReflowOffsetTopRef.current = node.offsetTop;
-		}
-	}, []);
+		scrollTopBeforeReflow: number | undefined;
+		childrenHeightBeforeReflow: number | undefined;
 
-	const isScrollingRef = useRef(false);
+		syntheticScrollTops: Set<number>;
+
+		animationFrame: number | undefined;
+	} => ({
+		isScrolling: false,
+		userScrolledOnce: false,
+
+		scrollTopBeforeReflow: undefined,
+		childrenHeightBeforeReflow: undefined,
+
+		syntheticScrollTops: new Set([ 0 ]),
+
+		animationFrame: undefined,
+	}), []);
 
 	// All this monster does is set `isScrollingRef.current` to `true` when the user is scrolling and `false` when they're not.
 	useEffect(() => {
@@ -29,14 +36,15 @@ export function ScrollKeeper({
 		let scrollEndTimeout: number | undefined = undefined;
 
 		const handleScroll = () => {
-			if (expectSyntheticScrollRef.current) {
-				expectSyntheticScrollRef.current = false;
-				expectSyntheticScrollEndRef.current = true;
+			if (
+				state.syntheticScrollTops.has(Math.floor(window.document.documentElement.scrollTop))
+				|| state.syntheticScrollTops.has(Math.ceil(window.document.documentElement.scrollTop))
+			) {
 				return;
 			}
 
-			isScrollingRef.current = true;
-			userScrolledOnceRef.current = true;
+			state.isScrolling = true;
+			state.userScrolledOnce = true;
 
 			window.clearTimeout(scrollEndTimeout);
 			scrollEndTimeout = window.setTimeout(() => {
@@ -45,12 +53,7 @@ export function ScrollKeeper({
 		};
 
 		const handleScrollEnd = () => {
-			if (expectSyntheticScrollEndRef.current) {
-				expectSyntheticScrollEndRef.current = false;
-				return;
-			}
-
-			isScrollingRef.current = false;
+			state.isScrolling = false;
 
 			window.clearTimeout(scrollEndTimeout);
 		};
@@ -66,35 +69,67 @@ export function ScrollKeeper({
 	}, []);
 
 	const scrollKeeperContextValue = useMemo((): ScrollKeeperContextValue => ({
-		onReflow() {
-			if (!afterChildrenRef.current) {
-				return;
+		onBeforeReflow() {
+			if (state.scrollTopBeforeReflow === undefined) {
+				state.scrollTopBeforeReflow = window.document.documentElement.scrollTop;
 			}
 
-			const { offsetTop } = afterChildrenRef.current;
+			if (state.childrenHeightBeforeReflow === undefined) {
+				state.childrenHeightBeforeReflow = afterChildrenRef.current?.offsetTop ?? 0;
+			}
+		},
 
-			if (
-				!isScrollingRef.current
-				&& (
-					!userScrolledOnceRef.current
-					|| isElementVisible(afterChildrenRef.current)
-				)
-			) {
-				expectSyntheticScrollRef.current = true;
-				window.scrollBy({
-					top: offsetTop - afterChildrenLastReflowOffsetTopRef.current,
-					behavior: "instant" as any,
-				});
+		onReflow(element) {
+			if (state.animationFrame !== undefined) {
+				window.cancelAnimationFrame(state.animationFrame);
+				state.animationFrame = undefined;
 			}
 
-			afterChildrenLastReflowOffsetTopRef.current = offsetTop;
+			state.animationFrame = window.requestAnimationFrame(() => {
+				if (state.isScrolling || state.userScrolledOnce) {
+					return;
+				}
+
+				if (
+					state.scrollTopBeforeReflow === undefined
+					|| state.childrenHeightBeforeReflow === undefined
+				) {
+					return;
+				}
+
+				const childrenHeightAfterReflow = (
+					afterChildrenRef.current
+					? afterChildrenRef.current.offsetTop
+					: element
+					? element.offsetHeight
+					: undefined
+				);
+
+				if (childrenHeightAfterReflow === undefined) {
+					return;
+				}
+
+				const addedHeight = childrenHeightAfterReflow - state.childrenHeightBeforeReflow;
+				const newScrollTop = state.scrollTopBeforeReflow + addedHeight;
+
+				if (newScrollTop === window.document.documentElement.scrollTop) {
+					return;
+				}
+
+				window.document.documentElement.scrollTop = newScrollTop;
+
+				state.scrollTopBeforeReflow = newScrollTop;
+				state.childrenHeightBeforeReflow = childrenHeightAfterReflow;
+
+				state.syntheticScrollTops.add(newScrollTop);
+			});
 		},
 	}), []);
 
 	return (
 		<ScrollKeeperProvider value={scrollKeeperContextValue}>
 			{children}
-			<div ref={handleAfterChildrenRef} />
+			<div ref={afterChildrenRef} />
 		</ScrollKeeperProvider>
 	);
 }
