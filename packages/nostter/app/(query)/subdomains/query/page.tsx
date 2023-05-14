@@ -1,5 +1,6 @@
-import { defaultQueryString, Query } from "@/components/Query";
+import { Query } from "@/components/Query";
 import { NextSeo } from "next-seo";
+import { defaultQueryString } from "@/constants/defaultQueryString";
 
 export default async function QueryPage({
 	searchParams,
@@ -14,12 +15,27 @@ export default async function QueryPage({
 		: defaultQueryString
 	);
 
+	const q = btoa(query);
+
 	return (
 		<>
 			<NextSeo
 				useAppDir
 				title="Query"
-				description={query}
+				description={query.replaceAll(/\s+/g, " ")}
+				openGraph={{
+					images: [
+						{
+							url: `/api/query/${q}/image`,
+							secureUrl: `/api/query/${q}/image`,
+							width: 1200,
+							height: 600,
+						},
+					],
+				}}
+				twitter={{
+					cardType: 'summary_large_image',
+				}}
 			/>
 
 			<Query />

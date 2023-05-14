@@ -1,17 +1,16 @@
 "use client";
 
+import { Query, defaultQueryString } from "@/constants/defaultQueryString";
 import { defaultRelays } from "@/constants/defaultRelays";
 import { useLocationHash } from "@/hooks/useLocationHash";
 import { simplePool as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Event, Filter, nip19, SimplePool } from "nostr-tools";
+import { Event, nip19, SimplePool } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/lib/nip19";
 import plur from "plur";
-import { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Query.module.css";
-
-type Query = Filter<number>[];
 
 function stringifyQuery(query: Query) {
 	return JSON.stringify(query, null, 2);
@@ -118,14 +117,6 @@ function stringifyError(error: unknown) {
 	return 'Some weird error';
 }
 
-export const defaultQueryString = stringifyQuery([
-	{
-		ids: [
-			'000000000',
-		],
-	},
-]);
-
 // @ts-expect-error
 class SimplePoolPrivate extends SimplePool {
 	_seenOn!: Record<string, undefined | Set<string>>;
@@ -142,7 +133,7 @@ export function Query() {
 	const [ query, setQuery ] = useState(
 		typeof qBase64 === 'string'
 		? atob(qBase64)
-		: defaultQueryString
+		: defaultQueryString,
 	);
 
 	const [ relays, setRelays ] = useState(defaultRelays);
