@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodType } from 'zod';
 import { trpcServer } from "@/trpc/server";
 import { EventSet } from '@/nostr/EventSet';
 import { maxCacheTime } from '@/utils/setCacheControlHeader';
@@ -12,9 +12,33 @@ const commonInputSchema = z.object({
 	cacheKeyNonce: z.string().optional(),
 });
 
+function zSorted<T extends string | number>(zArray: ZodType<T[]>) {
+	return zArray.refine(array => {
+		const sorted = [ ...array ].sort();
+
+		return sorted.every((value, index) => value === array[index]);
+	}, {
+		message: 'must be sorted',
+	});
+}
+
+function zUnique<T extends string | number>(zArray: ZodType<T[]>) {
+	return zArray.refine(array => {
+		const set_ = new Set(array);
+
+		return set_.size === array.length;
+	}, {
+		message: 'must be unique',
+	});
+}
+
+function zArrayUniqueSorted<T extends string | number>(zType: ZodType<T>) {
+	return zUnique(zSorted(z.array(zType)));
+}
+
 const eventPointerSchema = z.object({
 	id: z.string(),
-	relays: z.array(z.string()).optional(),
+	relays: zArrayUniqueSorted(z.string()).optional(),
 	author: z.string().optional(),
 });
 
@@ -24,11 +48,20 @@ const cursorSchema = z.object({
 	limit: z.number().optional(),
 });
 
-const eventsInputSchema = z.object({
-	kinds: z.array(z.number()).optional(),
-	authors: z.array(z.string()).optional(),
+function zNotStartsWith(zString: ZodType<string>, prefix: string) {
+	return zString.refine(value => !value.startsWith(prefix), {
+		message: 'must not start with ' + prefix,
+	});
+}
 
-	referencedEventIds: z.array(z.string()).optional(),
+const eventsInputSchema = z.object({
+	kinds:  zArrayUniqueSorted(z.number()).optional(),
+	authors: zArrayUniqueSorted(z.string()).optional(),
+
+	referencedEventIds: zArrayUniqueSorted(z.string()).optional(),
+	referencedHashtags: zArrayUniqueSorted(
+		zNotStartsWith(z.string(), '#')
+	).optional(),
 
 	cursor: cursorSchema.optional(),
 });
@@ -102,6 +135,7 @@ export const trpcNostrRouter = trpcServer.router({
 				authors,
 
 				referencedEventIds,
+				referencedHashtags,
 
 				cursor,
 			},
@@ -123,6 +157,10 @@ export const trpcNostrRouter = trpcServer.router({
 
 			if (referencedEventIds?.length) {
 				filter['#e'] = referencedEventIds;
+			}
+
+			if (referencedHashtags?.length) {
+				filter['#t'] = referencedHashtags;
 			}
 
 			const events = await ctx.relayPool.list(ctx.combinedRelays, [ filter ]);
@@ -194,6 +232,7 @@ export const trpcNostrRouter = trpcServer.router({
 				authors,
 
 				referencedEventIds,
+				referencedHashtags,
 
 				cursor,
 			},
@@ -210,6 +249,10 @@ export const trpcNostrRouter = trpcServer.router({
 
 				if (referencedEventIds?.length) {
 					filter['#e'] = referencedEventIds;
+				}
+
+				if (referencedHashtags?.length) {
+					filter['#t'] = referencedHashtags;
 				}
 
 				const subscribtion = ctx.relayPool.sub(ctx.combinedRelays, [ filter ]);

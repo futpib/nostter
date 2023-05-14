@@ -31,6 +31,7 @@ import { getNoteContentTokens } from '@/utils/getNoteContentTokens';
 import { toEventPointer } from '@/utils/toEventPointer';
 import { parsePageLinkMetadatas } from '@/utils/parsePageLinkMetadatas';
 import { createTRPCCaller } from '@/trpc/backend';
+import { getNow } from '@/utils/getNow';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -39,7 +40,7 @@ async function Nip19IdProfilePage({
 	now,
 }: {
 	profilePointer: ProfilePointer,
-	now?: DateTime,
+	now: undefined | DateTime,
 }) {
 	const { publicUrl } = getPublicRuntimeConfig();
 
@@ -248,16 +249,7 @@ export default async function Nip19IdPage({
 		redirect(`/${normalizedNip19Id}`);
 	}
 
-	const now = (() => {
-		const nowParam = typeof searchParams.now === 'string' ? searchParams.now : undefined;
-		const now = DateTime.fromISO(nowParam ?? '');
-
-		if (now.isValid) {
-			return now;
-		}
-
-		return undefined;
-	})();
+	const now = getNow({ searchParams });
 
 	if (decoded.type === 'profilePointer') {
 		return Nip19IdProfilePage({ profilePointer: decoded.profilePointer, now });

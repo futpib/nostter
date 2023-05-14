@@ -1,6 +1,6 @@
 import { defaultRelays } from "@/constants/defaultRelays";
 import { EVENT_KIND_SHORT_TEXT_NOTE } from "@/constants/eventKinds";
-import { findLinks } from "@/utils/findLinks";
+import { parseSearch } from "@/utils/parseSearch";
 import { setCacheControlHeader } from "@/utils/setCacheControlHeader";
 import { simplePool } from "@/utils/simplePool";
 import { Duration } from "luxon";
@@ -15,11 +15,9 @@ export async function GET(request: NextRequest, { params: { query } }: { params:
 
 	const paramsRelays = url.searchParams.getAll('relays');
 
-	const links = findLinks(query);
+	const { referencedHashtags } = parseSearch(query);
 
-	const hashtags = links.filter(link => link.type === 'hashtag');
-
-	if (hashtags.length === 0) {
+	if (referencedHashtags.length === 0) {
 		return new Response('No hashtags found, generic search is not supported yet', { status: 400 });
 	}
 
@@ -32,7 +30,7 @@ export async function GET(request: NextRequest, { params: { query } }: { params:
 	].map(effectiveRelays => simplePool.list(effectiveRelays, [ {
 		kinds: [ EVENT_KIND_SHORT_TEXT_NOTE ],
 		limit: 32,
-		'#t': hashtags.map(hashtag => hashtag.value.replace('#', '')),
+		'#t': referencedHashtags,
 	} ])));
 
 	const events = (() => {

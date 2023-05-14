@@ -1,12 +1,11 @@
 'use client';
 
 import { NoteLoader } from "./NoteLoader";
-import { notFound, redirect, useParams, usePathname } from "next/navigation";
+import { notFound, redirect, useParams } from "next/navigation";
 import { nip19Decode } from "@/utils/nip19Decode";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ProfileLoader } from "./ProfileLoader";
 import { DateTime } from "luxon";
-import { useMemo } from "react";
 
 function Nip19IdNotePageLoader({ eventPointer }: {
 	eventPointer: EventPointer;

@@ -1,33 +1,28 @@
 "use client";
 
-import { useAppInfiniteQuery } from '@/hooks/useAppQuery';
-import { NoteLoader } from './NoteLoader';
+import { EventKind } from '@/nostr/EventKind';
+import { parseSearch } from '@/utils/parseSearch';
+import { DateTime } from 'luxon';
+import { useMemo } from 'react';
+import { InfiniteEventsLoader } from './InfiniteEventsLoader';
 
 export function SearchNotes({
 	query,
+	now,
 }: {
 	query: string;
+	now?: string | DateTime;
 }) {
-	const notesQuery = useAppInfiniteQuery([
-		'finite',
-		'auto',
-		'nostr',
-		undefined,
-		'search',
-		query,
-	]);
-
-	const eventSet = notesQuery.data;
+	const { referencedHashtags } = useMemo(() => parseSearch(query), [ query ]);
 
 	return (
-		<>
-			{[...eventSet].map((note) => (
-				<NoteLoader
-					key={note.id}
-					componentKey="TimelineNoteLink"
-					eventPointer={note}
-				/>
-			))}
-		</>
+		<InfiniteEventsLoader
+			id="search-notes"
+			input={{
+				kinds: [ EventKind.Text ],
+				referencedHashtags,
+			}}
+			now={now}
+		/>
 	);
 }

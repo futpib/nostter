@@ -84,6 +84,10 @@ const testCases = ([
 		title: 'all notes',
 		url: '',
 	},
+	{
+		title: 'search notes',
+		url: 'search?q=%23bitcoin',
+	},
 ] as const).slice().sort(compareByUrl);
 
 test.before(async t => {

@@ -81,6 +81,10 @@ function filterToDexieQuery(filter: Filter): DexieQuery {
 			const tag = key.slice(1);
 
 			if (isIndexedTagKey(tag)) {
+				if (arrayValue.length === 0) {
+					continue;
+				}
+
 				equalityCriterias[`${tag}Tag1s`] = arrayValue as string[];
 				continue;
 			}

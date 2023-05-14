@@ -4,8 +4,16 @@ import { NextSeo } from 'next-seo';
 import { SearchPageLoader } from '@/components/SearchPageLoader';
 import { SearchNotes } from '@/components/SearchNotes';
 import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
+import { getNow } from '@/utils/getNow';
+import { DateTime } from 'luxon';
 
-async function SearchPageServer({ query }: { query: string }) {
+async function SearchPageServer({
+	query,
+	now,
+}: {
+	query: string;
+	now: undefined | DateTime;
+}) {
 	return (
 		<>
 			<NextSeo
@@ -15,6 +23,7 @@ async function SearchPageServer({ query }: { query: string }) {
 
 			<SearchNotes
 				query={query}
+				now={now?.toISO() ?? undefined}
 			/>
 		</>
 	);
@@ -39,13 +48,11 @@ export default async function SearchPage({
 
 	if (shouldSkipServerRendering(headers(), searchParams)) {
 		return (
-			<SearchPageLoader
-				query={query}
-			/>
+			<SearchPageLoader />
 		);
 	}
 
-	return SearchPageServer({
-		query,
-	});
+	const now = getNow({ searchParams });
+
+	return SearchPageServer({ query, now });
 }

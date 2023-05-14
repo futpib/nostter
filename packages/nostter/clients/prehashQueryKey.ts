@@ -59,6 +59,7 @@ const knownOptions = new Set([
 	'authors',
 	'relays',
 	'referencedEventIds',
+	'referencedHashtags',
 
 	'url',
 ]);
@@ -73,6 +74,7 @@ export type TRPCQueryKey = readonly [ string[], PartialDeep<{
 		authors: string[];
 		relays: string[];
 		referencedEventIds: string[];
+		referencedHashtags: string[];
 
 		url: string;
 	};
@@ -100,6 +102,7 @@ export function trpcQueryKeyHashFn(
 			trpcQueryKeyOptions.input?.authors?.join(),
 			trpcQueryKeyOptions.input?.relays?.join(),
 			trpcQueryKeyOptions.input?.referencedEventIds?.slice().sort().join(),
+			trpcQueryKeyOptions.input?.referencedHashtags?.slice().sort().join(),
 
 			trpcQueryKeyOptions.input?.url,
 		].join(';'),
