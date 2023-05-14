@@ -153,17 +153,6 @@ function getPoolQueryFilter(
 		}
 	}
 
-	if (resourceType === 'search' && typeof resourceId === 'string') {
-		const links = findLinks(resourceId);
-		const hashtags = links.filter(link => link.type === 'hashtag');
-
-		filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-		filter.limit = 32;
-		filter['#t'] = hashtags.map(hashtag => hashtag.value.replace('#', ''));
-
-		return filter;
-	}
-
 	invariant(false, 'getPoolQueryFilter cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
 }
 
@@ -284,16 +273,6 @@ async function queryLocalRelayDexie(
 
 			return query.toArray();
 		}
-	}
-
-	if (resourceType === 'search' && typeof resourceId === 'string') {
-		const links = findLinks(resourceId);
-		const hashtags = links.filter(link => link.type === 'hashtag');
-
-		return localRelayDexie.events.where({
-			tTag1s: hashtags.map(hashtag => hashtag.value.replace('#', '')),
-			kind: EVENT_KIND_SHORT_TEXT_NOTE,
-		}).limit(32).toArray();
 	}
 
 	invariant(false, 'localQueryFn cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);

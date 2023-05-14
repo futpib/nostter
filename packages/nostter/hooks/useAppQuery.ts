@@ -1,12 +1,12 @@
 import invariant from "invariant";
-import { UseQueryOptions, UseQueryResult, useQueries, QueriesOptions, useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { UseQueryOptions, UseQueryResult, useQueries, QueriesOptions } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { usePreferences } from "./usePreferences";
 import { EventSet } from "@/nostr/EventSet";
 import { handleSuccess } from "@/clients/handleSuccess";
-import { PrehashedQueryKey, prehashQueryKey } from "@/clients/prehashQueryKey";
+import { prehashQueryKey } from "@/clients/prehashQueryKey";
 import { getStaleTime } from "@/clients/staleTime";
-import { PageParam, backends } from "@/clients/queryFn";
+import { backends } from "@/clients/queryFn";
 
 export type QueryKeyParameters = {
 	relays: string[];
@@ -37,10 +37,6 @@ export type QueryKeyResource =
 		pubkey: undefined | string,
 		...rest:
 			| [ subresource: 'metadata' | 'notes' ]
-	]
-	| readonly [
-		resource: 'search',
-		query: string,
 	]
 ;
 
@@ -221,125 +217,4 @@ export function useAppQueries<
 	});
 
 	return useMergeAppQueryResults(queryResults as unknown as UseQueryResult<EventSet, TError>[]);
-}
-
-type UseAppInfiniteQueryResult = {
-	data: EventSet;
-	isInitialLoading: boolean;
-	isLoading: boolean;
-	fetchNextPage: () => void;
-	fetchPreviousPage: () => void;
-};
-
-export type UseAppInfiniteQueryOptions = Omit<UseInfiniteQueryOptions<EventSet, UseAppQueryError, EventSet, EventSet, PrehashedQueryKey>, 'queryKey' | 'queryFn'>;
-
-const seenEventSets = new WeakSet<EventSet>();
-
-/**
- * @deprecated Use trpc instead
- */
-export function useAppInfiniteQuery(
-	shortQueryKey: ShortQueryKey,
-	options?: UseAppInfiniteQueryOptions,
-): UseAppInfiniteQueryResult {
-	const fullQueryKey = useFullQueryKey(shortQueryKey);
-
-	const [
-		aQueryKey,
-		bQueryKey,
-		cQueryKey,
-		...restQueryKeys
-	] = expandQueryKey(fullQueryKey);
-
-	invariant(restQueryKeys.length === 0, 'Infinite queries are not supported for more than 3 backends');
-
-	const newOptions = useMemo((): UseAppInfiniteQueryOptions => ({
-		...options,
-
-		getNextPageParam(lastPage): PageParam {
-			return {
-				lastPageOldestEventCreatedAt: lastPage.getOldestEvent()?.created_at,
-			};
-		},
-
-		getPreviousPageParam(firstPage): PageParam {
-			return {
-				firstPageLatestEventCreatedAt: firstPage.getLatestEvent()?.created_at,
-			};
-		},
-
-		onSuccess(infiniteData) {
-			for (const eventSet of infiniteData.pages) {
-				if (seenEventSets.has(eventSet)) {
-					continue;
-				}
-
-				handleSuccess(eventSet);
-
-				seenEventSets.add(eventSet);
-			}
-
-			return options?.onSuccess?.(infiniteData);
-		},
-	}), [ options ]);
-
-	const aQueryResult = useInfiniteQuery(prehashQueryKey(aQueryKey), newOptions);
-	const bQueryResult = useInfiniteQuery(prehashQueryKey(bQueryKey), newOptions);
-	const cQueryResult = useInfiniteQuery(prehashQueryKey(cQueryKey), newOptions);
-
-	const isInitialLoading = useMemo(() => {
-		const everyDone = [ aQueryResult, bQueryResult, cQueryResult ].every(queryResult => !queryResult.isInitialLoading);
-		const someDoneAndNonEmpty = [ aQueryResult, bQueryResult, cQueryResult ].some(queryResult => (
-			(
-				queryResult.data
-					&& queryResult.data.pages.length > 0
-			) && !queryResult.isInitialLoading
-		));
-
-		return !(everyDone || someDoneAndNonEmpty);
-	}, [ aQueryResult, bQueryResult, cQueryResult ]);
-
-	const isLoading = useMemo(() => {
-		return [ aQueryResult, bQueryResult, cQueryResult ].some(queryResult => queryResult.isLoading);
-	}, [ aQueryResult, bQueryResult, cQueryResult ]);
-
-	const data = useMemo(() => {
-		const eventSet = new EventSet();
-
-		for (const queryResult of [ aQueryResult, bQueryResult, cQueryResult ]) {
-			for (const pageEventSet of queryResult.data?.pages ?? []) {
-				for (const event of pageEventSet) {
-					eventSet.add(event);
-				}
-			}
-		}
-
-		return eventSet;
-	}, [ aQueryResult.data, bQueryResult.data, cQueryResult.data ]);
-
-	const fetchNextPage = useCallback(() => {
-		aQueryResult.fetchNextPage();
-		bQueryResult.fetchNextPage();
-		cQueryResult.fetchNextPage();
-	}, [ aQueryResult, bQueryResult, cQueryResult ]);
-
-	const fetchPreviousPage = useCallback(() => {
-		aQueryResult.fetchPreviousPage();
-		bQueryResult.fetchPreviousPage();
-		cQueryResult.fetchPreviousPage();
-	}, [ aQueryResult, bQueryResult, cQueryResult ]);
-
-	return useMemo(() => ({
-		isLoading,
-		isInitialLoading,
-		data,
-		fetchNextPage,
-		fetchPreviousPage,
-	}), [
-		isLoading,
-		isInitialLoading,
-		data,
-		fetchNextPage,
-		fetchPreviousPage,
-	]);
 }
