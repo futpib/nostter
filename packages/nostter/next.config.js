@@ -19,6 +19,23 @@ const nextConfig = {
 			},
 		]
 	},
+
+	rewrites() {
+		return {
+			beforeFiles: [
+				{
+					source: '/:path*',
+					has: [
+						{
+							type: 'host',
+							value: `query.${VERCEL_URL}`,
+						},
+					],
+					destination: '/subdomains/query/:path*',
+				},
+			],
+		};
+	},
 };
 
 module.exports = nextConfig;
