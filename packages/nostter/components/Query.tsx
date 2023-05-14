@@ -1,13 +1,14 @@
 "use client";
 
 import { defaultRelays } from "@/constants/defaultRelays";
-import { simplePool } from "@/utils/simplePool";
+import { useLocationHash } from "@/hooks/useLocationHash";
+import { simplePool as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Event, Filter, nip19 } from "nostr-tools";
+import { Event, Filter, nip19, SimplePool } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/lib/nip19";
 import plur from "plur";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Query.module.css";
 
 type Query = Filter<number>[];
@@ -125,8 +126,14 @@ const defaultQueryString = stringifyQuery([
 	},
 ]);
 
+// @ts-expect-error
+class SimplePoolPrivate extends SimplePool {
+	_seenOn!: Record<string, undefined | Set<string>>;
+};
+
+const simplePool = simplePoolBase as unknown as SimplePoolPrivate;
+
 export function Query() {
-	const didScrollToHashRef = useRef(false);
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -141,7 +148,7 @@ export function Query() {
 	const [ relays, setRelays ] = useState(defaultRelays);
 
 	const relaysNormalized = useMemo(() => {
-		return [ ...new Set(relays) ].sort();
+		return [ ...new Set(relays) ].map(url => new URL(url).toString()).sort();
 	}, [ relays ]);
 
 	const [ queryParsed, queryParseError ] = useMemo((): [ undefined | Query, unknown ] => {
@@ -167,6 +174,7 @@ export function Query() {
 		let gotSomeResults = false;
 
 		setRows([]);
+		simplePool._seenOn = {};
 
 		const sub = simplePool.sub(relaysNormalized, queryParsed);
 
@@ -179,15 +187,17 @@ export function Query() {
 
 			const query_ = stringifyQuery(queryParsed);
 
-			if (query === query_) {
-				return;
+			if (query_ !== query) {
+				setQuery(query_);
 			}
 
-			setQuery(query_);
+			const qBase64_ = btoa(query_);
 
-			router.push(pathname + '?' + new URLSearchParams({
-				q: btoa(query),
-			}));
+			if (qBase64_ !== qBase64) {
+				router.push(pathname + '?' + new URLSearchParams({
+					q: qBase64_,
+				}));
+			}
 		};
 
 		const handleEvent = (event: Event) => {
@@ -217,34 +227,68 @@ export function Query() {
 		};
 	}, [ queryParsed ? hashQuery(queryParsed) : '', relaysNormalized ]);
 
+	const {
+		hash,
+		setHash,
+	} = useLocationHash();
+
 	const createHandleEventClick = (event: Event) => {
 		return () => {
-			window.location.hash = event.id;
+			setHash(event.id);
 		};
 	};
 
 	const handleEoseClick = () => {
-		window.location.hash = 'eose';
+		setHash('eose');
 	};
 
-	const createHandleRef = (id: string) => {
-		return (element: HTMLDivElement | null) => {
-			if (!element) {
-				return;
-			}
+	const [ intervalTickCounts, setIntervalTickCounts ] = useState(0);
 
-			if (didScrollToHashRef.current) {
-				return;
-			}
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIntervalTickCounts(intervalTickCounts => intervalTickCounts + 1);
+		}, 5000);
 
-			if (window.location.hash === '#' + id) {
-				element.scrollIntoView();
-				didScrollToHashRef.current = true;
-			}
+		return () => {
+			clearInterval(interval);
 		};
-	};
+	}, []);
 
-	const hash = window.location.hash.slice(1);
+	const eventRelayCounts = useMemo(() => {
+		const seenOn = simplePool._seenOn;
+
+		const eventRelayCounts: Record<string, number> = {};
+
+		for (const [ _, relays ] of Object.entries(seenOn)) {
+			for (const relay of relays ?? []) {
+				eventRelayCounts[relay] = (eventRelayCounts[relay] ?? 0) + 1;
+			}
+		}
+
+		return eventRelayCounts;
+	}, [ rows.length, intervalTickCounts ]);
+
+	const didScrollOnceRef = useRef(false);
+
+	useEffect(() => {
+		if (didScrollOnceRef.current) {
+			return;
+		}
+
+		if (!hash) {
+			return;
+		}
+
+		const element = document.getElementById(hash);
+
+		if (!element) {
+			return;
+		}
+
+		element.scrollIntoView();
+
+		didScrollOnceRef.current = true;
+	}, [ hash, rows.length ]);
 
 	return (
 		<div
@@ -262,6 +306,27 @@ export function Query() {
 				</div>
 			)}
 
+			<div className={styles.relays}>
+				{relaysNormalized.map(relay => (
+					<div
+						className={styles.relay}
+						key={relay}
+					>
+						<div
+							className={styles.relayCount}
+						>
+							{eventRelayCounts[relay] ?? 0}
+						</div>
+
+						<div
+							className={styles.relayUrl}
+						>
+							{relay}
+						</div>
+					</div>
+				))}
+			</div>
+
 			<div className={styles.count}>
 				Got {rows.length} {plur('message', rows.length)}
 			</div>
@@ -270,7 +335,6 @@ export function Query() {
 				{rows.map(row => (
 					row.type === 'event' ? (
 						<div
-							ref={createHandleRef(row.event.id)}
 							className={classNames(
 								styles.row,
 								hash === row.event.id && styles.rowHighlighted,
@@ -281,10 +345,24 @@ export function Query() {
 							onClick={createHandleEventClick(row.event)}
 						>
 							{stringifyEvent(row.event)}
+							{hash === row.event.id && (
+								<div className={styles.eventRowRelays}>
+									<div>
+										Seen on relays:
+									</div>
+									{simplePool.seenOn(row.event.id).map(relay => (
+										<div
+											className={styles.eventRowRelay}
+											key={relay}
+										>
+											{relay}
+										</div>
+									))}
+								</div>
+							)}
 						</div>
 					) : (
 						<div
-							ref={createHandleRef('eose')}
 							className={classNames(
 								styles.row,
 								hash === 'eose' && styles.rowHighlighted,

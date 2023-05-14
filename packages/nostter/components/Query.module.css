@@ -12,6 +12,15 @@
 	font-family: var(--font-mono);
 }
 
+.relay {
+	display: flex;
+	flex-direction: row;
+}
+
+.relayCount {
+	min-width: 32px;
+}
+
 .error {
 	color: rgb(var(--foreground-secondary-rgb));
 	border-bottom: 1px solid rgb(var(--border-rgb));
