@@ -1,7 +1,6 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { FaArrowUp } from 'react-icons/fa'
 import { trpcReact } from '@/clients/trpc';
 import { EventKind } from '@/nostr/EventKind';
 import { DateTime } from 'luxon';
@@ -11,14 +10,13 @@ import styles from './ProfileNotes.module.css';
 import { useNow } from '@/hooks/useNow';
 import { EventLoader } from './EventLoader';
 import { EventSet } from '@/nostr/EventSet';
-import classNames from 'classnames';
-import { useScrollKeeper } from '@/hooks/useScrollKeeper';
 import { TRPCQueryKey } from '@/clients/prehashQueryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'invariant';
 import { Cursor } from '@/trpc/router/nostr';
 import { startOf } from '@/luxon';
 import { useVisibility } from '@/hooks/useVisibility';
+import { ShowFutureNotesButton } from './ShowFutureNotesButton';
 
 export function ProfileNotes({
 	pubkey,
@@ -32,11 +30,6 @@ export function ProfileNotes({
 	const [ now, setNow ] = useState(initialNow);
 
 	const {
-		ref: showFutureNotesButtonRef,
-		isVisible: showFutureNotesButtonVisible,
-	} = useVisibility();
-
-	const {
 		ref: lastPageFirstEventWrapRef,
 		isVisible: lastPageFirstEventWrapVisible,
 	} = useVisibility();
@@ -45,15 +38,6 @@ export function ProfileNotes({
 		ref: lastPageLastEventWrapRef,
 		isVisible: lastPageLastEventWrapVisible,
 	} = useVisibility();
-
-	const {
-		handleReflow: handleShowFutureNotesButtonReflow,
-	} = useScrollKeeper();
-
-	const showFutureNotesCombinedRef = useCallback((node: HTMLDivElement | null) => {
-		handleShowFutureNotesButtonReflow();
-		showFutureNotesButtonRef(node);
-	}, [ handleShowFutureNotesButtonReflow, showFutureNotesButtonRef ]);
 
 	const input = useMemo(() => ({
 		kinds: [ EventKind.Text, EventKind.Repost ],
@@ -292,33 +276,16 @@ export function ProfileNotes({
 
 	return (
 		<>
-			<div
-				className={classNames(
-					styles.newNotes,
-					showFutureNotesButtonVisible === false && futurePage && futurePage.eventSet.size > 0 && styles.newNotesVisible,
-				)}
-			>
-				<div
-					className={styles.newNotesPill}
-					onClick={handleShowFutureNotesClick}
-				>
-					<FaArrowUp />
-					<div>
-						New notes
-					</div>
-				</div>
-			</div>
-
-			<div
-				ref={showFutureNotesCombinedRef}
-				className={classNames(
-					styles.newNotesButton,
-					futurePage && futurePage.eventSet.size > 0 && styles.newNotesButtonVisible,
-				)}
+			<ShowFutureNotesButton
+				visible={Boolean(futurePage && futurePage.eventSet.size > 0)}
 				onClick={handleShowFutureNotesClick}
-			>
-				Show {futurePage?.eventSet.size} {plur('Note', futurePage?.eventSet.size)}
-			</div>
+				pillChildren="New notes"
+				buttonChildren={(
+					<>
+						Show {futurePage?.eventSet.size} {plur('Note', futurePage?.eventSet.size)}
+					</>
+				)}
+			/>
 
 			{(isInitialLoading && eventsLatestFirst.length === 0) ? (
 				<NoteSkeleton
