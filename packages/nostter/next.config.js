@@ -20,18 +20,18 @@ const nextConfig = {
 		]
 	},
 
-	rewrites() {
+	async rewrites() {
 		return {
 			beforeFiles: [
 				{
-					source: '/:path*',
+					source: '/',
 					has: [
 						{
 							type: 'host',
 							value: 'query.nostter.com',
 						},
 					],
-					destination: '/subdomains/query/:path*',
+					destination: '/subdomains/query/',
 				},
 			],
 		};
