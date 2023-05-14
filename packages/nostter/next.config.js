@@ -28,7 +28,7 @@ const nextConfig = {
 					has: [
 						{
 							type: 'host',
-							value: `query.${VERCEL_URL}`,
+							value: 'query.nostter.com',
 						},
 					],
 					destination: '/subdomains/query/:path*',
