@@ -80,6 +80,10 @@ const testCases = ([
 		url: 'note1x7g0je3c8szapk39yef0c86w7hxngdfhfauhce389sl6pjnwuwps4s8f6u',
 		fullPage: false,
 	},
+	{
+		title: 'all notes',
+		url: '',
+	},
 ] as const).slice().sort(compareByUrl);
 
 test.before(async t => {

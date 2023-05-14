@@ -1,5 +1,7 @@
 import invariant from "invariant";
-import { Event } from "nostr-tools";
+import { Event as Event_ } from "nostr-tools";
+
+type Event = Event_<number>;
 
 function uniqueSortedArrayBinarySearchInsert(array: number[], value: number) {
 	let low = 0;

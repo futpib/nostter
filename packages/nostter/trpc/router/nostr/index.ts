@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { trpcServer } from "@/trpc/server";
-import { EVENT_KIND_REACTION, EVENT_KIND_SHORT_TEXT_NOTE } from '@/constants/eventKinds';
 import { EventSet } from '@/nostr/EventSet';
 import { maxCacheTime } from '@/utils/setCacheControlHeader';
 import { combineMetaMiddleware, combineRelaysMiddleware, ensureRelaysMiddleware } from '@/trpc/middlewares';
 import { observable } from '@trpc/server/observable';
 import { Event, Filter } from 'nostr-tools';
 import invariant from 'invariant';
+import { EventKind } from '@/nostr/EventKind';
 
 const commonInputSchema = z.object({
 	cacheKeyNonce: z.string().optional(),
@@ -32,6 +32,8 @@ const eventsInputSchema = z.object({
 
 	cursor: cursorSchema.optional(),
 });
+
+export type EventsInput = z.infer<typeof eventsInputSchema>;
 
 export type Cursor = z.infer<typeof cursorSchema>;
 
@@ -65,7 +67,7 @@ export const trpcNostrRouter = trpcServer.router({
 		.input(z.intersection(commonInputSchema, eventPointerSchema))
 		.query(async ({ input: { id, author }, ctx }) => {
 			const filter = {
-				kinds: [ EVENT_KIND_SHORT_TEXT_NOTE ],
+				kinds: [ EventKind.Text ],
 				ids: [ id ],
 				authors: author ? [ author ] : undefined,
 			};
