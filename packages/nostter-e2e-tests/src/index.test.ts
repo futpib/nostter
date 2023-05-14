@@ -7,12 +7,12 @@ import Semaphore from 'semaphore-promise';
 // @ts-expect-error
 import regCli from 'reg-cli';
 
-async function waitForFunction(name: string, page: Page, f: () => boolean) {
+async function waitForFunction(t: ExecutionContext<TestContext>, name: string, page: Page, f: () => boolean) {
 	try {
 		await page.waitForFunction(f);
 	} catch (error) {
 		await page.screenshot({
-			path: path.join('screenshots', 'error', `${name}.png`),
+			path: path.join('screenshots', 'error', `${t.title}.${name}.png`),
 			fullPage: true,
 		});
 
@@ -192,7 +192,7 @@ const runTestCase = async (
 			waitUntil: 'networkidle2',
 		});
 
-		await waitForFunction('no skeletons', page, () => {
+		await waitForFunction(t, 'no skeletons', page, () => {
 			const skeletons = window.document.querySelectorAll('[data-test-name$="Skeleton"]');
 
 			return skeletons.length === 0;
