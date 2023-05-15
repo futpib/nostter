@@ -4,6 +4,12 @@
 	font-size: 0.73em;
 }
 
+.query button {
+	font-size: inherit;
+	font-family: inherit;
+	padding: 0 2px;
+}
+
 .textarea {
 	resize: vertical;
 	width: 100%;
@@ -12,9 +18,15 @@
 	font-family: var(--font-mono);
 }
 
-.relay {
+.relay:hover {
+	background: rgba(var(--background-hover-rgba));
+}
+
+.relayEnabled {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+	min-width: 32px;
 }
 
 .relayCount {

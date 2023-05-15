@@ -2,6 +2,7 @@
 
 import { Query, defaultQueryString } from "@/constants/defaultQueryString";
 import { defaultRelays } from "@/constants/defaultRelays";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLocationHash } from "@/hooks/useLocationHash";
 import { simplePool as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
@@ -9,8 +10,16 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Event, nip19, SimplePool } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/lib/nip19";
 import plur from "plur";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Query.module.css";
+
+function normalizeUrl(url: string) {
+	return new URL(url).toString();
+}
+
+function urlEquals(url1: string, url2: string) {
+	return normalizeUrl(url1) === normalizeUrl(url2);
+}
 
 function stringifyQuery(query: Query) {
 	return JSON.stringify(query, null, 2);
@@ -132,14 +141,26 @@ export function Query() {
 
 	const [ query, setQuery ] = useState(
 		typeof qBase64 === 'string'
-		? atob(qBase64)
+		? Buffer.from(qBase64, 'base64').toString('utf8')
 		: defaultQueryString,
 	);
 
-	const [ relays, setRelays ] = useState(defaultRelays);
+	const [ localStorageRelays, setLocalStorageRelays ] = useLocalStorage<Record<string, undefined | boolean>>({
+		key: 'relays',
+	});
 
-	const relaysNormalized = useMemo(() => {
-		return [ ...new Set(relays) ].map(url => new URL(url).toString()).sort();
+	const relays = useMemo(() => {
+		const relays = new Map(defaultRelays.map(url => [ normalizeUrl(url), true ]));
+
+		for (const [ url, enabled ] of Object.entries(localStorageRelays ?? {})) {
+			relays.set(normalizeUrl(url), Boolean(enabled));
+		}
+
+		return relays;
+	}, [ localStorageRelays ]);
+
+	const relaysArray = useMemo(() => {
+		return Array.from(relays.entries()).flatMap(([ url, enabled ]) => enabled ? [ url ] : []).sort();
 	}, [ relays ]);
 
 	const [ queryParsed, queryParseError ] = useMemo((): [ undefined | Query, unknown ] => {
@@ -167,7 +188,7 @@ export function Query() {
 		setRows([]);
 		simplePool._seenOn = {};
 
-		const sub = simplePool.sub(relaysNormalized, queryParsed);
+		const sub = simplePool.sub(relaysArray, queryParsed);
 
 		const handleSomeResults = () => {
 			if (gotSomeResults) {
@@ -182,7 +203,7 @@ export function Query() {
 				setQuery(query_);
 			}
 
-			const qBase64_ = btoa(query_);
+			const qBase64_ = Buffer.from(query_, 'utf8').toString('base64');
 
 			if (qBase64_ !== qBase64) {
 				router.push(pathname + '?' + new URLSearchParams({
@@ -216,7 +237,7 @@ export function Query() {
 			sub.off('eose', handleEose);
 			sub.unsub();
 		};
-	}, [ queryParsed ? hashQuery(queryParsed) : '', relaysNormalized ]);
+	}, [ queryParsed ? hashQuery(queryParsed) : '', relaysArray ]);
 
 	const {
 		hash,
@@ -281,6 +302,57 @@ export function Query() {
 		didScrollOnceRef.current = true;
 	}, [ hash, rows.length ]);
 
+	const createHandleRelayEnabledChange = (url: string) => {
+		url = normalizeUrl(url);
+
+		return (event: ChangeEvent<HTMLInputElement>) => {
+			const enabled = event.target.checked;
+
+			setLocalStorageRelays({
+				...localStorageRelays,
+				[url]: enabled,
+			});
+		};
+	};
+
+	const [ addRelayRelay, setAddRelayRelay ] = useState('');
+
+	const handleAddRelayRelayChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+		setAddRelayRelay(event.target.value);
+	}, []);
+
+	const isAddRelayRelayValid = useMemo(() => {
+		try {
+			new URL(addRelayRelay);
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}, [ addRelayRelay ]);
+
+	const handleAddRelaySubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		setLocalStorageRelays({
+			...localStorageRelays,
+			[addRelayRelay]: true,
+		});
+
+		setAddRelayRelay('');
+	}, [ addRelayRelay ]);
+
+	const createHandleRelayRemoveClick = (url: string) => {
+		url = normalizeUrl(url);
+
+		return () => {
+			setLocalStorageRelays(Object.fromEntries(
+				Object
+					.entries(localStorageRelays ?? {})
+					.filter(([ url_ ]) => !urlEquals(url_, url)),
+			));
+		};
+	};
+
 	return (
 		<div
 			className={styles.query}
@@ -297,26 +369,74 @@ export function Query() {
 				</div>
 			)}
 
-			<div className={styles.relays}>
-				{relaysNormalized.map(relay => (
-					<div
-						className={styles.relay}
-						key={relay}
-					>
-						<div
-							className={styles.relayCount}
+			<table className={styles.relays}>
+				<tbody>
+					{Array.from(relays.entries()).map(([ url, enabled ]) => (
+						<tr
+							className={styles.relay}
+							key={url}
 						>
-							{eventRelayCounts[relay] ?? 0}
-						</div>
+							<td>
+								<div
+									className={styles.relayEnabled}
+								>
+									<input
+										type="checkbox"
+										checked={enabled}
+										onChange={createHandleRelayEnabledChange(url)}
+									/>
+								</div>
+							</td>
 
-						<div
-							className={styles.relayUrl}
-						>
-							{relay}
-						</div>
-					</div>
-				))}
-			</div>
+							<td
+								className={styles.relayCount}
+							>
+								{eventRelayCounts[url] ?? 0}
+							</td>
+
+							<td
+								className={styles.relayUrl}
+							>
+								{url}
+							</td>
+
+							<td
+								className={styles.relayRemove}
+							>
+								{!defaultRelays.some(url_ => urlEquals(url_, url)) && (
+									<button
+										className={styles.relayRemoveButton}
+										onClick={createHandleRelayRemoveClick(url)}
+									>
+										Remove
+									</button>
+								)}
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+
+			<form
+				className={styles.addRelays}
+				onSubmit={handleAddRelaySubmit}
+			>
+				<input
+					required
+					className={styles.addRelaysInput}
+					type="text"
+					value={addRelayRelay}
+					onChange={handleAddRelayRelayChange}
+				/>
+
+				<button
+					disabled={!isAddRelayRelayValid}
+					className={styles.addRelaysButton}
+					type="submit"
+				>
+					Add relay
+				</button>
+			</form>
 
 			<div className={styles.count}>
 				Got {rows.length} {plur('message', rows.length)}

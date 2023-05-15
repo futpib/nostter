@@ -11,11 +11,11 @@ export default async function QueryPage({
 
 	const query = (
 		typeof qBase64 === "string"
-		? atob(qBase64)
+		? Buffer.from(qBase64, 'base64').toString('utf-8')
 		: defaultQueryString
 	);
 
-	const q = btoa(query);
+	const q = Buffer.from(query, 'utf-8').toString('base64');
 
 	return (
 		<>
