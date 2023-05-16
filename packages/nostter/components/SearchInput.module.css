@@ -1,0 +1,16 @@
+
+.searchInput {
+	flex-grow: 1;
+
+	padding: 12px 16px;
+	background: rgb(var(--background-secondary-rgb));
+	border: 1px solid transparent;
+	border-radius: 9999px;
+	font-size: inherit;
+}
+
+.searchInput:focus {
+	background: rgb(var(--background-rgb));
+	outline: none;
+	border-color: rgb(var(--foreground-link-rgb));
+}

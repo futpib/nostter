@@ -1,0 +1,5 @@
+
+.searchForm {
+	display: flex;
+	flex-direction: column;
+}

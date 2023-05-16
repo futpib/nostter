@@ -7,6 +7,7 @@ import styles from './layout.module.css'
 import { QueryClientProvider } from '@/components/QueryClientProvider';
 import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
 import { PreferencesProvider } from '@/components/PreferencesProvider';
+import { SearchForm } from '@/components/SearchForm';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -54,7 +55,7 @@ export default function RootLayout({
 							</main>
 
 							<footer className={styles.footer}>
-								{/* TODO: aside */}
+								<SearchForm />
 							</footer>
 						</body>
 					</ScrollKeeperProvider>

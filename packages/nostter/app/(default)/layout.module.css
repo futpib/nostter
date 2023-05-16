@@ -41,7 +41,14 @@
 
 	display: none;
 	flex-direction: column;
+	gap: 16px;
 	max-width: 350px;
+	padding-left: 40px;
+	padding-top: 4px;
+
+	position: sticky;
+	max-height: 100vh;
+	top: 0;
 }
 
 @media (min-width: 500px) {
