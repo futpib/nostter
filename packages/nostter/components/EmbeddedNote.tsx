@@ -20,6 +20,8 @@ export function EmbeddedNote({
 	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
+	tagsImageLinks,
+	tagsVideoLinks,
 	contentImageLinks,
 	contentVideoLinks,
 	onClick,
@@ -32,6 +34,8 @@ export function EmbeddedNote({
 	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
+	tagsImageLinks: ImageLink[];
+	tagsVideoLinks: ImageLink[];
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	onClick?: (event: MouseEvent<HTMLElement>) => void;
@@ -109,6 +113,8 @@ export function EmbeddedNote({
 
 			<NoteContentMedias
 				embedded
+				tagsImageLinks={tagsImageLinks}
+				tagsVideoLinks={tagsVideoLinks}
 				contentImageLinks={contentImageLinks}
 				contentVideoLinks={contentVideoLinks}
 			/>

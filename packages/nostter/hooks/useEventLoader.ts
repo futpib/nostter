@@ -15,6 +15,8 @@ import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { useMemo } from "react";
 import { usePubkeyMetadatasLoader } from "./usePubkeyMetadatasLoader";
 import { Event, parseReferences } from "nostr-tools";
+import { getTagsImageLinks } from "@/utils/getTagsImageLinks";
+import { getTagsVideoLinks } from "@/utils/getTagsVideoLinks";
 
 export function useEventLoader({
 	eventPointer,
@@ -53,6 +55,18 @@ export function useEventLoader({
 	const repostedEvent = useMemo(() => event ? nip18.getRepostedEvent(event) : undefined, [event]);
 
 	const references = useMemo(() => event ? parseReferences(event) : undefined, [event]);
+
+	const tagsImageLinks = useMemo(() => {
+		return getTagsImageLinks(event?.tags ?? []);
+	}, [
+		event?.tags,
+	]);
+
+	const tagsVideoLinks = useMemo(() => {
+		return getTagsVideoLinks(event?.tags ?? []);
+	}, [
+		event?.tags,
+	]);
 
 	const contentTokens = useMemo(() => getNoteContentTokens(event?.content || '', references ?? []), [event?.content, references]);
 
@@ -115,6 +129,9 @@ export function useEventLoader({
 
 		repostedEventPointer,
 		repostedEvent,
+
+		tagsImageLinks,
+		tagsVideoLinks,
 
 		contentImageLinks,
 		contentVideoLinks,

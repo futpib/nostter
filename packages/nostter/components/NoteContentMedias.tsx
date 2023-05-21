@@ -20,15 +20,37 @@ export type ContentMediaLink = {
 
 export function NoteContentMedias({
 	embedded,
+	tagsImageLinks,
+	tagsVideoLinks,
 	contentImageLinks,
 	contentVideoLinks,
 }: {
 	embedded?: boolean;
+	tagsImageLinks: ImageLink[];
+	tagsVideoLinks: ImageLink[];
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 }) {
 	const contentMediaLinks = useMemo(() => {
 		const uniqueByUrl = new Map<string, ContentMediaLink>();
+
+		for (const tagsVideoLink of tagsVideoLinks) {
+			uniqueByUrl.set(tagsVideoLink.url, {
+				type: 'video',
+				url: tagsVideoLink.url,
+				size: 'full',
+				style: {},
+			});
+		}
+
+		for (const tagsImageLink of tagsImageLinks) {
+			uniqueByUrl.set(tagsImageLink.url, {
+				type: 'image',
+				url: tagsImageLink.url,
+				size: 'full',
+				style: {},
+			});
+		}
 
 		for (const contentVideoLink of contentVideoLinks) {
 			uniqueByUrl.set(contentVideoLink.url, {

@@ -22,6 +22,8 @@ export function NotePage({
 	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
+	tagsImageLinks,
+	tagsVideoLinks,
 	contentImageLinks,
 	contentVideoLinks,
 	contentPageLinks,
@@ -37,6 +39,8 @@ export function NotePage({
 	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
+	tagsImageLinks: ImageLink[];
+	tagsVideoLinks: ImageLink[];
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	contentPageLinks: PageLink[];
@@ -106,6 +110,8 @@ export function NotePage({
 					id={noteEvent.id}
 					pubkey={noteEvent.pubkey}
 					content={noteEvent.content}
+					tagsImageLinks={tagsImageLinks}
+					tagsVideoLinks={tagsVideoLinks}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
 					contentPageLinks={contentPageLinks}

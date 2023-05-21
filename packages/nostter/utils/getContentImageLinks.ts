@@ -4,6 +4,7 @@ export type ImageLink = {
 	url: string;
 	secureUrl?: string;
 	type: string;
+	blurhash?: string;
 };
 
 export function getContentImageLinks(contentTokens: ContentToken[]): ImageLink[] {

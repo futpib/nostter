@@ -79,6 +79,9 @@ export function NoteLoader({
 		event,
 		references,
 
+		tagsImageLinks,
+		tagsVideoLinks,
+
 		contentImageLinks,
 		contentVideoLinks,
 		contentPageLinks,
@@ -103,6 +106,8 @@ export function NoteLoader({
 			id={event.id}
 			pubkey={event.pubkey}
 			content={event.content}
+			tagsImageLinks={tagsImageLinks}
+			tagsVideoLinks={tagsVideoLinks}
 			contentImageLinks={contentImageLinks}
 			contentVideoLinks={contentVideoLinks}
 			contentPageLinks={contentPageLinks}

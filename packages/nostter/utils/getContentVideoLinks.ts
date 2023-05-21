@@ -1,7 +1,9 @@
 import { ImageLink } from "./getContentImageLinks";
 import { ContentToken } from "./getNoteContentTokens";
 
-export function getContentVideoLinks(contentTokens: ContentToken[]): ImageLink[] {
+export type VideoLink = ImageLink;
+
+export function getContentVideoLinks(contentTokens: ContentToken[]): VideoLink[] {
 	const contentVideoLinks = contentTokens.flatMap(token => {
 		if (token.type !== 'link') {
 			return [];

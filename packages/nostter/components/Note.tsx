@@ -25,6 +25,8 @@ export function Note({
 	repliedProfilePointers,
 	createdAt,
 	pubkeyMetadatas,
+	tagsImageLinks,
+	tagsVideoLinks,
 	contentImageLinks,
 	contentVideoLinks,
 	contentPageLinks,
@@ -38,6 +40,8 @@ export function Note({
 	repliedProfilePointers: ProfilePointer[];
 	createdAt: number;
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
+	tagsImageLinks: ImageLink[];
+	tagsVideoLinks: ImageLink[];
 	contentImageLinks: ImageLink[];
 	contentVideoLinks: ImageLink[];
 	contentPageLinks: PageLink[];
@@ -113,6 +117,8 @@ export function Note({
 				/>
 
 				<NoteContentMedias
+					tagsImageLinks={tagsImageLinks}
+					tagsVideoLinks={tagsVideoLinks}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
 				/>

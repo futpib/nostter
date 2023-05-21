@@ -32,6 +32,8 @@ import { toEventPointer } from '@/utils/toEventPointer';
 import { parsePageLinkMetadatas } from '@/utils/parsePageLinkMetadatas';
 import { createTRPCCaller } from '@/trpc/backend';
 import { getNow } from '@/utils/getNow';
+import { getTagsImageLinks } from '@/utils/getTagsImageLinks';
+import { getTagsVideoLinks } from '@/utils/getTagsVideoLinks';
 
 const log = debugExtend('pages', 'Nip19IdPage');
 
@@ -104,6 +106,9 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 
 	const references = parseReferences(noteEvent);
 
+	const tagsImageLinks = getTagsImageLinks(noteEvent.tags);
+	const tagsVideoLinks = getTagsVideoLinks(noteEvent.tags);
+
 	const contentTokens = getNoteContentTokens(noteEvent.content, references);
 
 	const contentImageLinks = getContentImageLinks(contentTokens);
@@ -171,12 +176,12 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 				description={contentText}
 				openGraph={{
 					title: pubkeyText,
-					images: contentImageLinks.map((imageLink) => ({
+					images: [...tagsImageLinks, ...contentImageLinks].map((imageLink) => ({
 						url: imageLink.url,
 						secureUrl: imageLink.secureUrl,
 						type: imageLink.type,
 					})),
-					videos: contentVideoLinks.map((videoLink) => ({
+					videos: [...tagsImageLinks, ...contentVideoLinks].map((videoLink) => ({
 						url: videoLink.url,
 						secureUrl: videoLink.secureUrl,
 						type: videoLink.type,
@@ -199,6 +204,8 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 					id={noteEvent.id}
 					pubkey={noteEvent.pubkey}
 					content={noteEvent.content}
+					tagsImageLinks={tagsImageLinks}
+					tagsVideoLinks={tagsVideoLinks}
 					contentImageLinks={contentImageLinks}
 					contentVideoLinks={contentVideoLinks}
 					contentPageLinks={contentPageLinks}

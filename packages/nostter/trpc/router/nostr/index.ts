@@ -100,7 +100,7 @@ export const trpcNostrRouter = trpcServer.router({
 		.input(z.intersection(commonInputSchema, eventPointerSchema))
 		.query(async ({ input: { id, author }, ctx }) => {
 			const filter = {
-				kinds: [ EventKind.Text ],
+				kinds: [ EventKind.Text, EventKind.FileMetadata ],
 				ids: [ id ],
 				authors: author ? [ author ] : undefined,
 			};

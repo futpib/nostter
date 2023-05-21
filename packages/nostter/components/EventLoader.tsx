@@ -40,6 +40,9 @@ export function EventLoader({
 		repostedEventPointer,
 		repostedEvent,
 
+		tagsImageLinks,
+		tagsVideoLinks,
+
 		contentImageLinks,
 		contentVideoLinks,
 		contentPageLinks,
@@ -65,6 +68,8 @@ export function EventLoader({
 			kind={event.kind}
 			pubkey={event.pubkey}
 			content={event.content}
+			tagsImageLinks={tagsImageLinks}
+			tagsVideoLinks={tagsVideoLinks}
 			contentImageLinks={contentImageLinks}
 			contentVideoLinks={contentVideoLinks}
 			contentPageLinks={contentPageLinks}

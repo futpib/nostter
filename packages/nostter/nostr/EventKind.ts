@@ -13,6 +13,7 @@ export enum EventKind {
 	ChannelMessage = 42,
 	ChannelHideMessage = 43,
 	ChannelMuteUser = 44,
+	FileMetadata = 1063,
 	Report = 1984,
 	ZapRequest = 9734,
 	Zap = 9735,
