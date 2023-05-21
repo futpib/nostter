@@ -23,7 +23,7 @@
     "@ava/typescript": "^4.0.0",
     "ava": "^5.2.0",
     "find-chrome-bin": "^1.0.5",
-    "puppeteer": "^20.1.0",
+    "puppeteer": "^20.2.1",
     "reg-cli": "^0.17.7",
     "semaphore-promise": "^1.4.1",
     "typescript": "^5.0.4"

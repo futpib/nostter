@@ -71,7 +71,7 @@ export function useEventLoader({
 		contentTokens,
 	]);
 
-	invariant(contentPageLinks.length <= 1, 'NoteLoader: contentPageLinks.length > 1');
+	invariant(contentPageLinks.length <= 1, 'useEventLoader: contentPageLinks.length > 1');
 
 	const contentReferencedEvents = useMemo(() => {
 		return getContentReferencedEvents(contentTokens);

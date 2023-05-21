@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { FaRegHeart } from 'react-icons/fa';
 import { CounterValueText } from './CounterValueText';
 import styles from './NoteCounter.module.css';
 
@@ -7,7 +7,7 @@ export function NoteCounter({
 	iconComponent: IconComponent,
 }: {
 	value: number | bigint;
-	iconComponent: ComponentType;
+	iconComponent: typeof FaRegHeart;
 }) {
 	return (
 		<div
