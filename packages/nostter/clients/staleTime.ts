@@ -20,11 +20,5 @@ export function getStaleTime(queryKey: FullQueryKey) {
 		}
 	}
 
-	if (resourceType === 'pubkey') {
-		if (subresource === 'metadata') {
-			return oneMinute;
-		}
-	}
-
 	return 0;
 }

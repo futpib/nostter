@@ -7,22 +7,25 @@ import { getContentVideoLinks } from "@/utils/getContentVideoLinks";
 import { getNoteContentTokens } from "@/utils/getNoteContentTokens";
 import { getReferencedProfiles } from "@/utils/getReferencedProfiles";
 import { parsePageLinkMetadatas } from "@/utils/parsePageLinkMetadatas";
-import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
 import { toEventPointer } from "@/utils/toEventPointer";
 import invariant from "invariant";
-import { Event, parseReferences, nip18 } from "nostr-tools";
+import { DateTime } from "luxon";
+import { nip18 } from "nostr-tools";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { useMemo } from "react";
-import { useAppQueries } from "./useAppQuery";
+import { usePubkeyMetadatasLoader } from "./usePubkeyMetadatasLoader";
+import { Event, parseReferences } from "nostr-tools";
 
 export function useEventLoader({
 	eventPointer,
 	initialDataEvent,
 	onEventQuerySuccess,
+	now,
 }: {
 	eventPointer: EventPointer;
 	initialDataEvent?: Event;
 	onEventQuerySuccess?: (data: EventSet) => void;
+	now?: string | DateTime;
 }) {
 	const eventQuery = trpcReact.nostr.event.useQuery(toEventPointer(eventPointer), {
 		enabled: initialDataEvent?.id !== eventPointer.id,
@@ -91,25 +94,18 @@ export function useEventLoader({
 		contentPageLinkMetadataQuery.data
 	]);
 
-	const pubkeyMetadataEventQueries = useAppQueries({
-		queries: [ eventProfilePointer, ...profilePointers ].flatMap(profilePointer => profilePointer ? [
-			{
-				queryKey: [
-					'finite',
-					'auto',
-					'nostr',
-					profilePointer,
-					'pubkey',
-					profilePointer.pubkey,
-					'metadata',
-				],
-			},
-		] : []),
+	const {
+		isProfileMetadatasInitialLoading,
+		pubkeyMetadatas,
+	} = usePubkeyMetadatasLoader({
+		profilePointers: [
+			...(eventProfilePointer ? [ eventProfilePointer ] : []),
+			...profilePointers,
+		],
+		now,
 	});
 
-	const isInitialLoading = eventQuery.isInitialLoading || pubkeyMetadataEventQueries.isInitialLoading;
-
-	const pubkeyMetadatas = parsePubkeyMetadataEvents(Array.from(pubkeyMetadataEventQueries.data ?? []));
+	const isInitialLoading = eventQuery.isInitialLoading || isProfileMetadatasInitialLoading;
 
 	return {
 		isInitialLoading,

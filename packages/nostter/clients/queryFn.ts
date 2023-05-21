@@ -103,56 +103,6 @@ function getPoolQueryFilter(
 		}
 	}
 
-	if (resourceType === 'events' && typeof resourceId === 'number') {
-		filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-		filter.limit = 32;
-		filter.since = resourceId;
-
-		if (
-			pageParam
-				&& 'lastPageOldestEventCreatedAt' in pageParam
-				&& typeof pageParam.lastPageOldestEventCreatedAt === 'number'
-		) {
-			filter.until = pageParam.lastPageOldestEventCreatedAt;
-		}
-
-		if (
-			pageParam
-				&& 'firstPageLatestEventCreatedAt' in pageParam
-				&& typeof pageParam.firstPageLatestEventCreatedAt === 'number'
-		) {
-			filter.since = Math.max(pageParam.firstPageLatestEventCreatedAt, resourceId);
-		}
-
-		return filter;
-	}
-
-	if (resourceType === 'pubkey' && typeof resourceId === 'string') {
-		invariant(resourceId, 'getPoolQueryFilter called with pubkey resource type but no resource ID');
-
-		filter.authors = [ resourceId ];
-
-		if (subresource === 'metadata') {
-			filter.kinds = [ EVENT_KIND_METADATA ];
-			return filter;
-		}
-
-		if (subresource === 'notes') {
-			filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-			filter.limit = 32;
-
-			if (pageParam && 'lastPageOldestEventCreatedAt' in pageParam) {
-				filter.until = pageParam.lastPageOldestEventCreatedAt;
-			}
-
-			if (pageParam && 'firstPageLatestEventCreatedAt' in pageParam) {
-				filter.since = pageParam.firstPageLatestEventCreatedAt;
-			}
-
-			return filter;
-		}
-	}
-
 	invariant(false, 'getPoolQueryFilter cannot handle these arguments: %s %s %s', resourceType, resourceId, subresource);
 }
 
@@ -219,59 +169,6 @@ async function queryLocalRelayDexie(
 				eTag1s: [ resourceId ],
 				kind: EVENT_KIND_REPOST,
 			}).toArray();
-		}
-	}
-
-	if (resourceType === 'events') {
-		if (typeof resourceId === 'number') {
-			const since = resourceId;
-			const until = pageParam && 'lastPageOldestEventCreatedAt' in pageParam ? pageParam.lastPageOldestEventCreatedAt : undefined;
-
-			return localRelayDexie.events
-				.orderBy('created_at')
-				.reverse()
-				.filter(x => (
-					x.kind === EVENT_KIND_SHORT_TEXT_NOTE
-						&& (!since || x.created_at > since)
-						&& (!until || x.created_at < until)
-				))
-				.limit(32)
-				.toArray();
-		}
-	}
-
-	if (resourceType === 'pubkey') {
-		if (subresource === 'metadata') {
-			return localRelayDexie.events.where({
-				pubkey: resourceId,
-				kind: EVENT_KIND_METADATA,
-			}).toArray();
-		}
-
-		if (subresource === 'notes') {
-			let query = localRelayDexie.events.where({
-				pubkey: resourceId,
-				kind: EVENT_KIND_SHORT_TEXT_NOTE,
-			});
-
-			if (pageParam && 'lastPageOldestEventCreatedAt' in pageParam) {
-				const { lastPageOldestEventCreatedAt } = pageParam;
-
-				if (lastPageOldestEventCreatedAt) {
-					query = query
-					query = query.and(event => event.created_at < lastPageOldestEventCreatedAt);
-				}
-			}
-
-			if (pageParam && 'firstPageLatestEventCreatedAt' in pageParam) {
-				const { firstPageLatestEventCreatedAt } = pageParam;
-
-				if (firstPageLatestEventCreatedAt) {
-					query = query.and(event => event.created_at > firstPageLatestEventCreatedAt);
-				}
-			}
-
-			return query.toArray();
 		}
 	}
 

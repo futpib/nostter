@@ -1,5 +1,5 @@
 import invariant from "invariant";
-import { UseQueryOptions, UseQueryResult, useQueries, QueriesOptions } from "@tanstack/react-query";
+import { UseQueryOptions, UseQueryResult, useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { usePreferences } from "./usePreferences";
 import { EventSet } from "@/nostr/EventSet";
@@ -27,16 +27,6 @@ export type QueryKeyResource =
 				,
 			]
 		,
-	]
-	| readonly [
-		resource: 'events',
-		since: number,
-	]
-	| readonly [
-		resource: 'pubkey',
-		pubkey: undefined | string,
-		...rest:
-			| [ subresource: 'metadata' | 'notes' ]
 	]
 ;
 
@@ -180,41 +170,4 @@ export function useAppQuery(
 	});
 
 	return useMergeAppQueryResults(queryResults)
-}
-
-/**
- * @deprecated Use trpc instead
- */
-export function useAppQueries<
-	T extends any[],
-	TError = unknown,
->(
-	{ queries }: {
-		queries: readonly [...QueriesOptions<T>];
-	},
-): UseAppQueryResult<EventSet, TError> {
-	const queryPreferences = useQueryPreferences();
-
-	const expandedQueries = useMemo(() => {
-		return queries.flatMap((query) => {
-			const fullQueryKey = shortQueryKeyToFullQueryKey(query.queryKey, queryPreferences);
-			const fullQueryKeys = expandQueryKey(fullQueryKey);
-
-			return fullQueryKeys.map((fullQueryKey): UseAppQueryOptions => ({
-				...query,
-				queryKey: prehashQueryKey(fullQueryKey),
-				staleTime: getStaleTime(fullQueryKey),
-				onSuccess(eventSet) {
-					handleSuccess(eventSet);
-					return query.onSuccess?.(eventSet);
-				},
-			}));
-		});
-	}, [ queryPreferences, queries ]);
-
-	const queryResults = useQueries({
-		queries: expandedQueries,
-	});
-
-	return useMergeAppQueryResults(queryResults as unknown as UseQueryResult<EventSet, TError>[]);
 }

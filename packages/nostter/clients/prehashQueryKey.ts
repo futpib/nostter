@@ -1,4 +1,5 @@
 import { FullQueryKey, QueryKeyParameters, QueryKeyPreferences, QueryKeyResource } from "@/hooks/useAppQuery";
+import { Cursor } from "@/trpc/router/nostr";
 import invariant from "invariant";
 import { PartialDeep } from "type-fest";
 
@@ -61,6 +62,8 @@ const knownOptions = new Set([
 	'referencedEventIds',
 	'referencedHashtags',
 
+	'cursor',
+
 	'url',
 ]);
 
@@ -75,6 +78,8 @@ export type TRPCQueryKey = readonly [ string[], PartialDeep<{
 		relays: string[];
 		referencedEventIds: string[];
 		referencedHashtags: string[];
+
+		cursor: Cursor;
 
 		url: string;
 	};
@@ -103,6 +108,12 @@ export function trpcQueryKeyHashFn(
 			trpcQueryKeyOptions.input?.relays?.join(),
 			trpcQueryKeyOptions.input?.referencedEventIds?.slice().sort().join(),
 			trpcQueryKeyOptions.input?.referencedHashtags?.slice().sort().join(),
+
+			[
+				trpcQueryKeyOptions.input?.cursor?.since,
+				trpcQueryKeyOptions.input?.cursor?.until,
+				trpcQueryKeyOptions.input?.cursor?.limit,
+			].join(),
 
 			trpcQueryKeyOptions.input?.url,
 		].join(';'),
