@@ -19,6 +19,7 @@ import { TimelineNoteLink } from "./TimelineNoteLink";
 import { ChildNoteSkeleton } from "./ChildNoteSkeleton";
 import { useEventLoader } from "@/hooks/useEventLoader";
 import { NoteNotFound } from "./NoteNotFound";
+import { EmbeddedNoteNotFound } from "./EmbeddedNoteNotFound";
 
 const components = {
 	NotePage,
@@ -51,8 +52,8 @@ const notFoundComponents = {
 	Note: NoteNotFound,
 	ParentNote: NoteNotFound,
 	ParentNoteLink: NoteNotFound,
-	EmbeddedNote: NoteNotFound,
-	EmbeddedNoteLink: NoteNotFound,
+	EmbeddedNote: EmbeddedNoteNotFound,
+	EmbeddedNoteLink: EmbeddedNoteNotFound,
 	ChildNote: NoteNotFound,
 	ChildNoteLink: NoteNotFound,
 	TimelineNote: NoteNotFound,
