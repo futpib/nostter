@@ -1,21 +1,18 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { Event, parseReferences } from 'nostr-tools';
+import {  parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
 import { Note } from '@/components/Note';
 import { renderNoteContent } from '@/utils/renderNoteContent';
-import { getPubkeyMetadataRequests } from '@/utils/getPubkeyMetadataRequests';
 import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
 import { getContentImageLinks } from '@/utils/getContentImageLinks';
 import { getContentReferencedEvents } from '@/utils/getContentReferencedEvents';
 import { getContentVideoLinks } from '@/utils/getContentVideoLinks';
-import { getPublicRuntimeConfig } from '@/utils/getPublicRuntimeConfig';
 import { NoteParentNotes } from '@/components/NoteParentNotes';
 import { NoteChildNotes } from '@/components/NoteChildNotes';
 import { getThread } from '@/utils/getThread';
 import { nip19Decode } from '@/utils/nip19Decode';
 import { Nip19IdPageLoader } from '@/components/Nip19IdPageLoader';
-import { debugExtend } from '@/utils/debugExtend';
 import { getReferencedProfiles } from '@/utils/getReferencedProfiles';
 import { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
 import { guessMimeType } from '@/utils/guessMimeType';
@@ -34,8 +31,8 @@ import { createTRPCCaller } from '@/trpc/backend';
 import { getNow } from '@/utils/getNow';
 import { getTagsImageLinks } from '@/utils/getTagsImageLinks';
 import { getTagsVideoLinks } from '@/utils/getTagsVideoLinks';
-
-const log = debugExtend('pages', 'Nip19IdPage');
+import { EventKind } from '@/nostr/EventKind';
+import { startOf } from '@/luxon';
 
 async function Nip19IdProfilePage({
 	profilePointer,
@@ -44,13 +41,28 @@ async function Nip19IdProfilePage({
 	profilePointer: ProfilePointer,
 	now: undefined | DateTime,
 }) {
-	const { publicUrl } = getPublicRuntimeConfig();
+	const trpcCaller = await createTRPCCaller();
 
-	const pubkeyMetadataResponse = await fetch(`${publicUrl}/api/pubkey/${profilePointer.pubkey}/metadata`);
+	const nowRounded = startOf(now ?? DateTime.local(), 'hour');
 
-	const { event: pubkeyMetadataEvent }: { event: Event } = await pubkeyMetadataResponse.json();
+	const initialCursor = {
+		until: nowRounded.toSeconds(),
+		limit: 1,
+	};
 
-	const pubkeyMetadatas = parsePubkeyMetadataEvents([ pubkeyMetadataEvent ]);
+	const pubkeyMetadataEventSet = await trpcCaller.nostr.eventsInfinite({
+		kinds: [
+			EventKind.Metadata,
+		],
+
+		authors: [
+			profilePointer.pubkey,
+		],
+
+		cursor: initialCursor,
+	});
+
+	const pubkeyMetadatas = parsePubkeyMetadataEvents([ ...pubkeyMetadataEventSet.eventSet ]);
 
 	const pubkeyMetadata = pubkeyMetadatas.get(profilePointer.pubkey);
 
@@ -93,7 +105,13 @@ async function Nip19IdProfilePage({
 	);
 }
 
-async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer }) {
+async function Nip19IdNotePage({
+	eventPointer,
+	now,
+}: {
+	eventPointer: EventPointer;
+	now: undefined | DateTime,
+}) {
 	const trpcCaller = await createTRPCCaller();
 
 	const noteEventSet = await trpcCaller.nostr.event(toEventPointer(eventPointer));
@@ -123,6 +141,24 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 		contentReferencedEvents,
 	});
 
+	const {
+		profilePointers: referencedProfilePointers,
+	} = getReferencedProfiles(noteEvent);
+
+	const profilePointers = [
+		{
+			pubkey: noteEvent.pubkey,
+		},
+		...referencedProfilePointers,
+	];
+
+	const nowRounded = startOf(now ?? DateTime.local(), 'hour');
+
+	const initialCursor = {
+		until: nowRounded.toSeconds(),
+		limit: 1,
+	};
+
 	const [
 		pageLinkMetadataResponses,
 
@@ -130,20 +166,25 @@ async function Nip19IdNotePage({ eventPointer }: { eventPointer: EventPointer })
 	] = await Promise.all([
 		Promise.all(contentPageLinks.map(({ url }) => trpcCaller.page.metadata({ url }))),
 
-		Promise.all(getPubkeyMetadataRequests(noteEvent).map(async (request): Promise<{ event?: Event }> => {
-			const t0 = performance.now();
-			const response = await fetch(request);
-			log('fetch', request, performance.now() - t0);
+		Promise.all(profilePointers.map(profilePointer => trpcCaller.nostr.eventsInfinite({
+			kinds: [
+				EventKind.Metadata,
+			],
 
-			if (response.status === 404) {
-				return {};
-			}
+			authors: [
+				profilePointer.pubkey,
+			],
 
-			return response.json();
-		})),
+			cursor: initialCursor,
+		}))),
 	]);
 
-	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventResponses.flatMap(r => r.event ? [ r.event ] : []));
+	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventResponses.flatMap(r => r.eventSet ? [ ...r.eventSet ] : []));
+
+	console.log({
+		profilePointers,
+		pubkeyMetadatas,
+	})
 
 	const { contentChildren } = renderNoteContent({
 		content: noteEvent.content,
@@ -262,5 +303,5 @@ export default async function Nip19IdPage({
 		return Nip19IdProfilePage({ profilePointer: decoded.profilePointer, now });
 	}
 
-	return Nip19IdNotePage({ eventPointer: decoded.eventPointer });
+	return Nip19IdNotePage({ eventPointer: decoded.eventPointer, now });
 }
