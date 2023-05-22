@@ -1,5 +1,5 @@
 import { nip19 } from "nostr-tools";
-import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
+import { DecodeResult, EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 
 export type Nip19DecodeResultEventPointer = {
 	type: 'eventPointer';
@@ -29,7 +29,19 @@ export function nip19Decode(nip19IdParam: unknown): undefined | Nip19DecodeResul
 		nip19IdParamString = nip19IdParamString.slice(1);
 	}
 
-	const nip19DecodeResult = nip19.decode(nip19IdParamString);
+	let nip19DecodeResult: undefined | DecodeResult;
+
+	try {
+		nip19DecodeResult = nip19.decode(nip19IdParamString);
+	} catch (error) {
+		if (error instanceof Error) {
+			error.message = `nip19Decode(${nip19IdParamString}): ${error.message}`;
+		}
+
+		console.warn(error);
+
+		return undefined;
+	}
 
 	const { type, data } = nip19DecodeResult;
 
