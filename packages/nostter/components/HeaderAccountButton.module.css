@@ -1,0 +1,17 @@
+
+.headerAccountButton {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+
+	padding: 12px;
+
+	border-radius: 9999px;
+	cursor: pointer;
+	transition: background-color 0.2s ease-in-out;
+}
+
+.headerAccountButton:hover {
+	background-color: rgb(var(--background-secondary-rgb));
+}

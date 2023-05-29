@@ -192,15 +192,15 @@ function getKeyHexNpub(key: KeyHex): string {
 }
 
 function getKeyNsecNpub(key: KeyNsec): string {
-	return key.value;
-}
-
-function getKeyNpubNpub(key: KeyNpub): string {
 	const decodeResult = nip19.decode(key.value);
 
 	invariant(decodeResult.type === 'nsec', 'Expected nsec key');
 
 	return nip19.npubEncode(getPublicKey(decodeResult.data));
+}
+
+function getKeyNpubNpub(key: KeyNpub): string {
+	return key.value;
 }
 
 export type DerivationOptions = {

@@ -9,11 +9,13 @@
 .header {
 	flex-grow: 1;
 	flex-shrink: 0;
+	justify-content: space-between;
 
 	display: none;
 	flex-direction: column;
 	max-width: 88px;
-	padding: 0 8px;
+	padding: 0 8px 12px;
+	max-height: 100vh;
 }
 
 .main {

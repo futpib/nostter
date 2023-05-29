@@ -7,7 +7,8 @@ import styles from './layout.module.css'
 import { QueryClientProvider } from '@/components/QueryClientProvider';
 import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
 import { PreferencesProvider } from '@/components/PreferencesProvider';
-import { Footer } from '@/components/Footer';
+import { FooterContent } from '@/components/FooterContent';
+import { HeaderContent } from '@/components/HeaderContent';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -45,7 +46,7 @@ export default function RootLayout({
 					<ScrollKeeperProvider>
 						<body className={styles.body}>
 							<header className={styles.header}>
-								{/* TODO: header */}
+								<HeaderContent />
 							</header>
 
 							<main className={styles.main}>
@@ -55,7 +56,7 @@ export default function RootLayout({
 							</main>
 
 							<footer className={styles.footer}>
-								<Footer />
+								<FooterContent />
 							</footer>
 						</body>
 					</ScrollKeeperProvider>

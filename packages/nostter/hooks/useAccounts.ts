@@ -31,8 +31,6 @@ export function useAccounts() {
 		return [ { pubkey } ];
 	}), [ accountsLocalStorage ]);
 
-	console.log({ accounts, accountsLocalStorage });
-
 	return {
 		accounts,
 	};
