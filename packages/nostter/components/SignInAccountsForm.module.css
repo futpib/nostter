@@ -1,0 +1,36 @@
+
+.signInAccountsForm {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+
+	min-height: 100vh;
+}
+
+.signInAccountsFieldset {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+
+	border: none;
+	max-width: 300px;
+}
+
+.signInAccountsHeader {
+	font-size: 1.73em;
+}
+
+.signInAccountsInput {
+	border-radius: 4px;
+	border: 1px solid rgb(var(--border-rgb));
+	font-size: 1.13em;
+	height: 56px;
+	padding: 8px;
+}
+
+.signInAccountsInput:focus {
+	border: 1px solid rgb(var(--foreground-link-rgb));
+	outline: none;
+}

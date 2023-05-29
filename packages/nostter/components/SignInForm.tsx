@@ -1,14 +1,16 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from './LoginForm.module.css';
-import { getKeyId, getKeyNpub, getKeyNpubSync, keyFeaturesMultipleAccounts, keyFeaturesPassphrase, parseKey } from "@/nostr/Key";
+import styles from './SignInForm.module.css';
+import { getKeyId, getKeyNpubSync, keyFeaturesMultipleAccounts, keyFeaturesPassphrase, parseKey } from "@/nostr/Key";
 import { useAccountsLocalStorage } from "@/hooks/useAccountsLocalStorage";
 import invariant from "invariant";
 import { useDebounce } from 'use-debounce';
+import { Button } from "./Button";
+import { useSignInWithExtensionForm } from "@/hooks/useSignInWithExtensionForm";
 
-export function LoginForm() {
+export function SignInForm() {
 	const { addKey, addAccount } = useAccountsLocalStorage();
 
 	const [ key, setKey ] = useState('');
@@ -17,25 +19,22 @@ export function LoginForm() {
 	const [ debouncedKey ] = useDebounce(key, 300);
 	const [ debouncedPassphrase ] = useDebounce(passphrase, 300);
 
-	const [ hasExtension, setHasExtension ] = useState(false);
+	const router = useRouter();
 
-	useEffect(() => {
-		if (typeof window === 'undefined') {
-			return;
-		}
+	const onAfterExtensionSignIn = useCallback(() => {
+		router.push('/');
+	}, [ router ]);
 
-		if (typeof window.nostr === 'undefined') {
-			return;
-		}
-
-		setHasExtension(true);
-	}, []);
+	const {
+		extensionSignInDisabled,
+		handleExtensionSignInClick,
+	} = useSignInWithExtensionForm({
+		onAfterExtensionSignIn,
+	});
 
 	const validKey = useMemo(() => {
 		return parseKey(debouncedKey, debouncedPassphrase || undefined);
 	}, [ debouncedKey, debouncedPassphrase ]);
-
-	const router = useRouter();
 
 	const handleKeyChange = useCallback((event: FormEvent<HTMLInputElement>) => {
 		setKey(event.currentTarget.value);
@@ -58,64 +57,46 @@ export function LoginForm() {
 		addAccount(npub, keyId, { accountIndex: 0 });
 
 		if (keyFeaturesMultipleAccounts(validKey)) {
-			router.push(`/login/accounts/${keyId}`);
+			router.push(`/signIn/accounts/${keyId}`);
 			return;
 		}
 
 		router.push('/');
 	}, [ validKey, router ]);
 
-	const handleExtensionLoginClick = useCallback(async () => {
-		await window.nostr?.getPublicKey();
-
-		const validKey = {
-			type: 'extension',
-		} as const;
-
-		const keyId = getKeyId(validKey);
-		const npub = await getKeyNpub(validKey, { accountIndex: 0 });
-
-		addKey(validKey);
-		addAccount(npub, keyId, { accountIndex: 0 });
-
-		router.push('/');
-	}, [ hasExtension, router ]);
-
 	return (
 		<form
-			className={styles.loginForm}
+			className={styles.signInForm}
 			onSubmit={handleSubmit}
 		>
 			<fieldset
-				className={styles.loginFieldset}
+				className={styles.signInFieldset}
 			>
 				<h1
-					className={styles.loginHeader}
+					className={styles.signInHeader}
 				>
-					Login to Nostr
+					Sign in to Nostr
 				</h1>
 
-				<button
-					className={styles.loginButton}
-					type="button"
-					disabled={!hasExtension}
-					onClick={handleExtensionLoginClick}
+				<Button
+					disabled={extensionSignInDisabled}
+					onClick={handleExtensionSignInClick}
 				>
-					Login with extension
-				</button>
+					Sign in with extension
+				</Button>
 
 				<div
-					className={styles.loginHr}
+					className={styles.signInHr}
 				>
 					<div
-						className={styles.loginHrText}
+						className={styles.signInHrText}
 					>
 						or
 					</div>
 				</div>
 
 				<input
-					className={styles.loginInput}
+					className={styles.signInInput}
 					type="text"
 					placeholder="Private or public key"
 					value={key}
@@ -124,7 +105,7 @@ export function LoginForm() {
 
 				{validKey && keyFeaturesPassphrase(validKey) && (
 					<input
-						className={styles.loginInput}
+						className={styles.signInInput}
 						type="password"
 						placeholder="Passphrase (optional)"
 						value={passphrase}
@@ -132,13 +113,12 @@ export function LoginForm() {
 					/>
 				)}
 
-				<button
-					className={styles.loginButton}
+				<Button
 					type="submit"
 					disabled={!validKey}
 				>
-					Login
-				</button>
+					Sign in
+				</Button>
 			</fieldset>
 		</form>
 	);

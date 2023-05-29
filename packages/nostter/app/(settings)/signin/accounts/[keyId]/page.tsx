@@ -1,16 +1,16 @@
-import { LoginForm } from "@/components/LoginForm";
+import { SignInAccountsForm } from "@/components/SignInAccountsForm";
 import { NextSeo } from "next-seo";
 
-export default async function LoginPage() {
+export default async function SignInAccountsPage() {
 	return (
 		<>
 			<NextSeo
 				useAppDir
-				title="Log in to Nostr"
+				title="Sign in to Nostr"
 				description="A censorship-resistant alternative to Twitter that has a chance of working"
 			/>
 
-			<LoginForm />
+			<SignInAccountsForm />
 		</>
 	);
 }

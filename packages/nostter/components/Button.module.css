@@ -1,0 +1,26 @@
+
+.button {
+	border-radius: 9999px;
+	height: 36px;
+	font-weight: 700;
+	border: none;
+	transition: background-color 0.2s ease-in-out;
+	cursor: pointer;
+	background-color: transparent;
+	border: 1px solid rgb(var(--border-rgb));
+}
+
+.button:hover {
+	background-color: rgb(var(--background-secondary-rgb));
+}
+
+.button:focus {
+	border: 1px solid rgb(var(--foreground-link-rgb));
+	outline: none;
+}
+
+.button:disabled {
+	background-color: rgb(var(--background-secondary-rgb));
+	border: 1px solid rgb(var(--border-rgb));
+	cursor: not-allowed;
+}

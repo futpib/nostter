@@ -9,11 +9,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { nip19 } from 'nostr-tools';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePubkeyMetadatasLoader } from "@/hooks/usePubkeyMetadatasLoader";
-import styles from './LoginAccountsForm.module.css';
+import styles from './SignInAccountsForm.module.css';
 import { DateTime } from 'luxon';
 import { useNow } from '@/hooks/useNow';
 import { startOf } from '@/luxon';
 import { ProfileTooltipContent } from './ProfileTooltipContent';
+import { Button } from './Button';
 
 function npubToHex(npub: string) {
 	const decodeResult = nip19.decode(npub);
@@ -23,7 +24,7 @@ function npubToHex(npub: string) {
 	return decodeResult.data;
 }
 
-export function LoginAccountsForm({
+export function SignInAccountsForm({
 	now: propsNow,
 }: {
 	now?: string | DateTime;
@@ -130,14 +131,14 @@ export function LoginAccountsForm({
 
 	return (
 		<form
-			className={styles.loginAccountsForm}
+			className={styles.signInAccountsForm}
 			onSubmit={handleSubmit}
 		>
 			<fieldset
-				className={styles.loginAccountsFieldset}
+				className={styles.signInAccountsFieldset}
 			>
 				<h1
-					className={styles.loginAccountsHeader}
+					className={styles.signInAccountsHeader}
 				>
 					Select accounts
 				</h1>
@@ -152,13 +153,12 @@ export function LoginAccountsForm({
 					null
 				))}
 
-				<button
-					className={styles.loginAccountsButton}
+				<Button
 					type="submit"
 					disabled={!key}
 				>
-					Login
-				</button>
+					SignIn
+				</Button>
 			</fieldset>
 		</form>
 	);
