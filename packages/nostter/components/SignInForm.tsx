@@ -57,7 +57,7 @@ export function SignInForm() {
 		addAccount(npub, keyId, { accountIndex: 0 });
 
 		if (keyFeaturesMultipleAccounts(validKey)) {
-			router.push(`/signIn/accounts/${keyId}`);
+			router.push(`/sign-in/accounts/${keyId}`);
 			return;
 		}
 
