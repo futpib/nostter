@@ -34,7 +34,7 @@
     "mime-types": "^2.1.35",
     "next": "13.4.3",
     "next-seo": "^5.15.0",
-    "nostr-tools": "^1.11.1",
+    "nostr-tools": "npm:@futpib/nostr-tools@1.11.2",
     "parse5-sax-parser": "^7.0.0",
     "plur": "^5.1.0",
     "react": "18.2.0",
@@ -48,6 +48,7 @@
     "supports-color": "^8.1.1",
     "type-fest": "^3.11.0",
     "typescript": "5.0.4",
+    "use-debounce": "^9.0.4",
     "utf-8-validate": "^6.0.3",
     "ws": "^8.13.0",
     "zod": "^3.21.4"

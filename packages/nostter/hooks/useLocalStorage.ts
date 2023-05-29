@@ -37,7 +37,7 @@ export function useLocalStorage<T>({
 	stringify?: Stringify<T>;
 }): [
 	T | undefined,
-	(value: T | undefined) => void,
+	(value: ((oldValue: T | undefined) => T) | T | undefined) => void,
 ] {
 	const [ value, setValue_ ] = useState<T | undefined>(undefined);
 
@@ -49,7 +49,7 @@ export function useLocalStorage<T>({
 		localStorageWrite(key, stringify, value);
 	}, [ value ]);
 
-	const setValue = useCallback((value: T | undefined) => {
+	const setValue = useCallback((value: ((oldValue: T | undefined) => T) | T | undefined) => {
 		setValue_(value);
 	}, []);
 
