@@ -1,9 +1,11 @@
 import { nip19 } from "nostr-tools";
 import { useMemo } from "react";
 import { useAccountsLocalStorage } from "./useAccountsLocalStorage";
+import { usePreferencesLocalStorage } from "./usePreferencesLocalStorage";
 
 export function useAccounts() {
 	const { accountsLocalStorage } = useAccountsLocalStorage();
+	const { preferencesLocalStorage } = usePreferencesLocalStorage();
 
 	const accounts = useMemo(() => Object.entries(accountsLocalStorage?.accounts ?? {}).flatMap(([ npub, account ]) => {
 		const keys = Object.entries(account?.keyReferences ?? {}).flatMap(([ keyId, _keyReference ]) => {
@@ -31,7 +33,14 @@ export function useAccounts() {
 		return [ { pubkey } ];
 	}), [ accountsLocalStorage ]);
 
+	const primaryAccountPubkey = preferencesLocalStorage?.primaryAccountPubkey ?? accounts.at(0)?.pubkey;
+
+	const primaryAccount = useMemo(() => {
+		return accounts.find((account) => account.pubkey === primaryAccountPubkey);
+	}, [ accounts, primaryAccountPubkey ]);
+
 	return {
 		accounts,
+		primaryAccount,
 	};
 }

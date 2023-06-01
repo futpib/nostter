@@ -8,7 +8,7 @@
 }
 
 .names {
-	display: none;
+	display: flex;
 	flex-direction: column;
 	gap: 4px;
 }
@@ -20,10 +20,4 @@
 
 .name {
 	color: rgb(var(--foreground-secondary-rgb));
-}
-
-@media (min-width: 1280px) {
-	.names {
-		display: flex;
-	}
 }

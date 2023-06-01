@@ -3,6 +3,7 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	justify-content: space-between;
 	gap: 12px;
 
 	padding: 12px;
@@ -14,4 +15,35 @@
 
 .headerAccountButton:hover {
 	background-color: rgb(var(--background-secondary-rgb));
+}
+
+.headerAccountButtonContent {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+}
+
+.ellipsis {
+	display: none;
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.headerAccountButtonTooltip {
+	display: flex;
+	flex-direction: column;
+	min-width: 300px;
+
+	background-color: rgb(var(--background-rgb));
+	border: 1px solid rgb(var(--background-rgb));
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 0 4px 0px rgba(var(--shadow-rgba));
+	color: rgb(var(--foreground-rgb));
+}
+
+@media (min-width: 1280px) {
+	.ellipsis {
+		display: initial;
+	}
 }

@@ -150,7 +150,7 @@ export function NoteContentMedias({
 	};
 
 	const createHandleMediaClick = (index: number) => () => {
-		console.log('createHandleMediaClick', index);
+		console.log('TODO createHandleMediaClick', index);
 		setIsDialogOpen(true);
 	};
 

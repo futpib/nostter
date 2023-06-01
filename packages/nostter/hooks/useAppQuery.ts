@@ -8,14 +8,23 @@ import { prehashQueryKey } from "@/clients/prehashQueryKey";
 import { getStaleTime } from "@/clients/staleTime";
 import { backends } from "@/clients/queryFn";
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type QueryKeyParameters = {
 	relays: string[];
 };
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type ShortQueryKeyParameters = undefined | {
 	relays?: string[];
 };
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type QueryKeyResource =
 	| readonly [
 		resource: 'event',
@@ -38,10 +47,16 @@ type ShortQueryKey = readonly [
 	...resource: QueryKeyResource,
 ];
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type QueryKeyPreferences = {
 	relays: string[],
 };
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type FullQueryKey = readonly [
 	preferences: QueryKeyPreferences,
 	mode: 'finite' | 'infinite',
@@ -144,6 +159,9 @@ function useFullQueryKey(shortQueryKey: ShortQueryKey): FullQueryKey {
 
 type UseAppQueryError = unknown;
 
+/**
+ * @deprecated Use trpc instead
+ */
 export type UseAppQueryOptions = Omit<UseQueryOptions<EventSet, UseAppQueryError, EventSet, ShortQueryKey>, 'queryKey' | 'queryFn'>;
 
 /**

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ReactNode, useCallback, useState } from "react";
 import { nip19 } from "nostr-tools";
 import styles from "./ProfileLink.module.css";
-import { autoPlacement, offset, useFloating, useHover, useInteractions } from "@floating-ui/react";
+import { offset, shift, useFloating, useHover, useInteractions } from "@floating-ui/react";
 import { ProfileLoader } from "./ProfileLoader";
 import classNames from "classnames";
 
@@ -32,7 +32,7 @@ export function ProfileLink({
 	const { x, y, strategy, refs, context } = useFloating({
 		open: isTooltipOpen,
 		onOpenChange: setIsTooltipOpen,
-		middleware: [ autoPlacement(), offset(16) ],
+		middleware: [ shift(), offset(16) ],
 	});
 
 	const hover = useHover(context, {

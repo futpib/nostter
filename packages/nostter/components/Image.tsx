@@ -17,9 +17,12 @@ export function Image({
 	onClick?: (event: MouseEvent<HTMLImageElement>) => void;
 }) {
 	const handleClick = useCallback((event: MouseEvent<HTMLImageElement>) => {
-		event.stopPropagation();
+		if (!onClick) {
+			return;
+		}
 
-		onClick?.(event);
+		event.stopPropagation();
+		onClick(event);
 	}, [ onClick ]);
 
 	const [ didError, setDidError ] = useState(false);

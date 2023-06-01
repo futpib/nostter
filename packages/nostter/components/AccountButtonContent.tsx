@@ -1,24 +1,27 @@
 
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
+import classNames from 'classnames';
 import styles from './AccountButtonContent.module.css';
-import { Image } from './Image';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { SmallAvatarImage } from './SmallAvatarImage';
 
 export function AccountButtonContent({
+	namesClassName,
 	pubkey,
 	pubkeyMetadata,
 }: {
+	namesClassName?: string;
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
 }) {
 	return (
 		<>
-			<Image
+			<SmallAvatarImage
 				className={styles.avatar}
 				src={pubkeyMetadata?.picture}
 			/>
 
-			<div className={styles.names}>
+			<div className={classNames(styles.names, namesClassName)}>
 				<div
 					className={styles.displayName}
 				>

@@ -20,6 +20,7 @@ export function SmallAvatarImage({
 
 	return (
 		<Image
+			key={src}
 			className={className}
 			src={smallSrc}
 			fallbackSrc={src}

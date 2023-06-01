@@ -181,11 +181,6 @@ async function Nip19IdNotePage({
 
 	const pubkeyMetadatas = parsePubkeyMetadataEvents(pubkeyMetadataEventResponses.flatMap(r => r.eventSet ? [ ...r.eventSet ] : []));
 
-	console.log({
-		profilePointers,
-		pubkeyMetadatas,
-	})
-
 	const { contentChildren } = renderNoteContent({
 		content: noteEvent.content,
 		references,

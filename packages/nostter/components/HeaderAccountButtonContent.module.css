@@ -1,0 +1,9 @@
+.headerAccountButtonContentNames {
+	display: none;
+}
+
+@media (min-width: 1280px) {
+	.headerAccountButtonContentNames {
+		display: flex;
+	}
+}
