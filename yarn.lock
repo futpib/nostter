@@ -3221,6 +3221,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fp-ts@npm:^2.16.0":
+  version: 2.16.0
+  resolution: "fp-ts@npm:2.16.0"
+  checksum: 0724a4d8b2171cc98e9d9a05e6fe7e0acbc8c79eaabe8e257cbe3a6a5a77acdbdd2572e2ca8135e91d6e02542237499db6e952a58829ba0796ab96063dd39eb2
+  languageName: node
+  linkType: hard
+
 "fresh@npm:0.5.2":
   version: 0.5.2
   resolution: "fresh@npm:0.5.2"
@@ -4703,6 +4710,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"monocle-ts@npm:^2.3.13":
+  version: 2.3.13
+  resolution: "monocle-ts@npm:2.3.13"
+  peerDependencies:
+    fp-ts: ^2.5.0
+  checksum: dddfa5706fe1fdb068606f5ac5215a00e723d155407de491bb53591264e281ec0ea1735759db93686d9daf676b105660bf2c656ebcd51626a4bfbb8de9accb3c
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -4797,6 +4813,16 @@ __metadata:
     "@nestjs/core": ^9.0.0
     graphile-worker: ^0.13.0
   checksum: 6aeb7730ad203a1cc179c14efa91e2533f3cd711def3795e924c46bde8d3151ba045820c48a164e3b679b1224c7762c95507d54295f03dfdbb22fbd4572789f2
+  languageName: node
+  linkType: hard
+
+"newtype-ts@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "newtype-ts@npm:0.3.5"
+  peerDependencies:
+    fp-ts: ^2.0.0
+    monocle-ts: ^2.0.0
+  checksum: 3168c0386313156f4ecf9160eec48d5506aa372d3406f6a05fde9f75b8f9549b149dea53574e9b2f201190c01fe49af8c9554481b319f0b616a4413f89af3d16
   languageName: node
   linkType: hard
 
@@ -5118,6 +5144,7 @@ __metadata:
     debug: ^4.3.4
     deepmerge: ^4.3.1
     dexie: ^3.2.3
+    fp-ts: ^2.16.0
     invariant: ^2.2.4
     isomorphic-ws: ^5.0.0
     linkify-plugin-hashtag: ^4.1.1
@@ -5126,6 +5153,8 @@ __metadata:
     luxon: ^3.3.0
     mem: ^9.0.2
     mime-types: ^2.1.35
+    monocle-ts: ^2.3.13
+    newtype-ts: ^0.3.5
     next: 13.4.3
     next-seo: ^5.15.0
     nostr-tools: "npm:@futpib/nostr-tools@1.11.2"

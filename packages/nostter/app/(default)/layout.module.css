@@ -15,7 +15,10 @@
 	flex-direction: column;
 	max-width: 88px;
 	padding: 0 8px 12px;
+
+	position: sticky;
 	max-height: 100vh;
+	top: 0;
 }
 
 .main {

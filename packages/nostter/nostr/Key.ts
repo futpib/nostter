@@ -1,5 +1,6 @@
 import invariant from "invariant";
 import { Event, getSignature, getPublicKey, nip06, nip19, validateEvent } from "nostr-tools";
+import { isNpub, Npub } from "./Npub";
 
 export type KeyHex = {
 	type: 'hex';
@@ -187,37 +188,53 @@ export function parseKey(key: string, passphrase: undefined | string): undefined
 	return undefined;
 }
 
-function getKeyHexNpub(key: KeyHex): string {
-	return nip19.npubEncode(getPublicKey(key.value));
+function getKeyHexNpub(key: KeyHex): Npub {
+	const npub = nip19.npubEncode(getPublicKey(key.value));
+
+	invariant(isNpub(npub), 'Invalid npub %s', npub);
+
+	return npub;
 }
 
-function getKeyNsecNpub(key: KeyNsec): string {
+function getKeyNsecNpub(key: KeyNsec): Npub {
 	const decodeResult = nip19.decode(key.value);
 
 	invariant(decodeResult.type === 'nsec', 'Expected nsec key');
 
-	return nip19.npubEncode(getPublicKey(decodeResult.data));
+	const npub = nip19.npubEncode(getPublicKey(decodeResult.data));
+
+	invariant(isNpub(npub), 'Invalid npub %s', npub);
+
+	return npub;
 }
 
-function getKeyNpubNpub(key: KeyNpub): string {
-	return key.value;
+function getKeyNpubNpub(key: KeyNpub): Npub {
+	const npub = key.value;
+
+	invariant(isNpub(npub), 'Invalid npub %s', npub);
+
+	return npub;
 }
 
 export type DerivationOptions = {
 	readonly accountIndex: number;
 };
 
-function getKeyMnemonicNpub(key: KeyMnemonic, derivationOptions: DerivationOptions): string {
+function getKeyMnemonicNpub(key: KeyMnemonic, derivationOptions: DerivationOptions): Npub {
 	const privateKey = nip06.privateKeyFromSeedWords(key.value, key.passphrase, derivationOptions.accountIndex);
 
-	return nip19.npubEncode(getPublicKey(privateKey));
+	const npub = nip19.npubEncode(getPublicKey(privateKey));
+
+	invariant(isNpub(npub), 'Invalid npub %s', npub);
+
+	return npub;
 }
 
 export function keyFeaturesNpubSync(key: Key): key is KeyFeaturesNpubSync {
 	return key.type !== 'extension';
 }
 
-export function getKeyNpubSync(key: KeyFeaturesNpubSync, derivationOptions: DerivationOptions): string {
+export function getKeyNpubSync(key: KeyFeaturesNpubSync, derivationOptions: DerivationOptions): Npub {
 	if (key.type === 'hex') {
 		return getKeyHexNpub(key);
 	}
@@ -237,12 +254,16 @@ export function getKeyNpubSync(key: KeyFeaturesNpubSync, derivationOptions: Deri
 	invariant(false, 'Invalid key type %s', (key as Key).type);
 }
 
-export async function getKeyNpub(key: Key, derivationOptions: DerivationOptions): Promise<string> {
+export async function getKeyNpub(key: Key, derivationOptions: DerivationOptions): Promise<Npub> {
 	if (key.type === 'extension') {
 		invariant(window.nostr, 'Nostr extension is not installed');
 
 		const publicKey = await window.nostr.getPublicKey();
-		return nip19.npubEncode(publicKey);
+		const npub = nip19.npubEncode(publicKey);
+
+		invariant(isNpub(npub), 'Invalid npub %s', npub);
+
+		return npub;
 	}
 
 	return getKeyNpubSync(key, derivationOptions);

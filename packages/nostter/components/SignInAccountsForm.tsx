@@ -2,7 +2,6 @@
 
 import { trpcReact } from '@/clients/trpc';
 import { useAccountsLocalStorage } from '@/hooks/useAccountsLocalStorage';
-import { EventKind } from '@/nostr/EventKind';
 import { getKeyNpubSync, keyFeaturesNpubSync } from '@/nostr/Key';
 import invariant from 'invariant';
 import { useParams, useRouter } from 'next/navigation';
@@ -13,8 +12,9 @@ import styles from './SignInAccountsForm.module.css';
 import { DateTime } from 'luxon';
 import { useNow } from '@/hooks/useNow';
 import { startOf } from '@/luxon';
-import { ProfileTooltipContent } from './ProfileTooltipContent';
 import { Button } from './Button';
+import { AccountButtonContent } from './AccountButtonContent';
+import { isNpub, isoNpub } from '@/nostr/Npub';
 
 function npubToHex(npub: string) {
 	const decodeResult = nip19.decode(npub);
@@ -65,7 +65,7 @@ export function SignInAccountsForm({
 		return Array.from({ length: accountCount }).map((_, accountIndex) => {
 			const npub = getKeyNpubSync(key, { accountIndex });
 
-			return npubToHex(npub);
+			return npubToHex(isoNpub.unwrap(npub));
 		});
 	}, [ key, accountCount ]);
 
@@ -123,6 +123,8 @@ export function SignInAccountsForm({
 			const npub = nip19.npubEncode(pubkey);
 			const accountIndex = pubkeys.indexOf(pubkey);
 
+			invariant(isNpub(npub), 'Invalid npub %s', npub);
+
 			addAccount(npub, keyId, { accountIndex });
 		}
 
@@ -144,7 +146,7 @@ export function SignInAccountsForm({
 				</h1>
 
 				{pubkeys.map(pubkey => pubkeyHasEvents.get(pubkey) ? (
-					<ProfileTooltipContent
+					<AccountButtonContent
 						key={pubkey}
 						pubkey={pubkey}
 						pubkeyMetadata={pubkeyMetadatas.get(pubkey)}
@@ -157,7 +159,7 @@ export function SignInAccountsForm({
 					type="submit"
 					disabled={!key}
 				>
-					SignIn
+					Sign in
 				</Button>
 			</fieldset>
 		</form>

@@ -34,10 +34,11 @@ export function useAccounts() {
 	}), [ accountsLocalStorage ]);
 
 	const primaryAccountPubkey = preferencesLocalStorage?.primaryAccountPubkey ?? accounts.at(0)?.pubkey;
+	const firstAccount = accounts.at(0);
 
 	const primaryAccount = useMemo(() => {
-		return accounts.find((account) => account.pubkey === primaryAccountPubkey);
-	}, [ accounts, primaryAccountPubkey ]);
+		return accounts.find((account) => account.pubkey === primaryAccountPubkey) ?? firstAccount;
+	}, [ accounts, primaryAccountPubkey, firstAccount?.pubkey ]);
 
 	return {
 		accounts,
