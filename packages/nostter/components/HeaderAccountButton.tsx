@@ -10,7 +10,7 @@ import styles from './HeaderAccountButton.module.css';
 import { HeaderAccountButtonTooltipContent } from './HeaderAccountButtonTooltipContent';
 
 export function HeaderAccountButton() {
-	const { primaryAccount } = useAccounts();
+	const { accounts, primaryAccount, isAccountsInitialLoading } = useAccounts();
 
 	const {
 		pubkeyMetadatas,
@@ -47,7 +47,7 @@ export function HeaderAccountButton() {
 		}, 0);
 	}, []);
 
-	return (
+	return (isAccountsInitialLoading || !accounts.length) ? null : (
 		<>
 			<div
 				ref={refs.setReference}

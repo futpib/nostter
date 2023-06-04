@@ -1,6 +1,8 @@
 import { DerivationOptions, getKeyId, Key } from "@/nostr/Key";
 import { isoNpub, Npub } from "@/nostr/Npub";
-import { useCallback } from "react";
+import { parseAccountsCookieStorage } from "@/utils/parseAccountsCookieStorage";
+import { useCallback, useEffect } from "react";
+import { useCookieStorage } from "./useCookieStorage";
 import { useLocalStorage } from "./useLocalStorage";
 
 type KeyReference = {
@@ -15,6 +17,12 @@ type AccountsLocalStorage = {
 	keys: Record<string, undefined | Key>;
 	accounts: Record<string, undefined | Account>;
 };
+
+type AccountsCookieStorage = string[];
+
+function stringifyAccountsCookieStorage(accountsCookieStorage: undefined | AccountsCookieStorage): string {
+	return (accountsCookieStorage ?? []).join(',');
+}
 
 function collectGarbageKeys(accountsLocalStorage: AccountsLocalStorage): { garbageKeys: Map<string, Key> } {
 	const markedKeyIds = new Set<string>();
@@ -39,9 +47,25 @@ function collectGarbageKeys(accountsLocalStorage: AccountsLocalStorage): { garba
 }
 
 export function useAccountsLocalStorage() {
-	const [ accountsLocalStorage, setAccountsLocalStorage ] = useLocalStorage<AccountsLocalStorage>({
+	const [ accountsLocalStorage, setAccountsLocalStorage, isAccountsLocalStorageInitialLoading ] = useLocalStorage<AccountsLocalStorage>({
 		key: 'accounts',
 	});
+
+	const [ _, setAccountsCookieStorage ] = useCookieStorage<AccountsCookieStorage>({
+		key: 'accounts',
+		parse: parseAccountsCookieStorage,
+		stringify: stringifyAccountsCookieStorage,
+	});
+
+	useEffect(() => {
+		const accounts = Array.from(
+			new Set(
+				Object.keys(accountsLocalStorage?.accounts ?? {})
+			)
+		).sort();
+
+		setAccountsCookieStorage(accounts);
+	}, [ accountsLocalStorage, setAccountsCookieStorage ]);
 
 	const addKey = useCallback((key: Key) => {
 		const keyId = getKeyId(key);
@@ -77,7 +101,6 @@ export function useAccountsLocalStorage() {
 	}, [ setAccountsLocalStorage ]);
 
 	const removeAccount = useCallback((npubToRemove: Npub) => {
-		debugger;
 		const newAccounts = Object.fromEntries(
 			Object.entries(accountsLocalStorage?.accounts ?? {})
 				.filter(([ npub, value ]) => value && npub !== isoNpub.unwrap(npubToRemove)),
@@ -105,6 +128,7 @@ export function useAccountsLocalStorage() {
 
 	return {
 		accountsLocalStorage,
+		isAccountsLocalStorageInitialLoading,
 
 		addKey,
 		addAccount,

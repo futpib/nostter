@@ -17,7 +17,7 @@ const nextConfig = {
 				destination: '/:nip19Id',
 				permanent: true,
 			},
-		]
+		];
 	},
 
 	async rewrites() {

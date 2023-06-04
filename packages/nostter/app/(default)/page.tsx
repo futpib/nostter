@@ -1,30 +1,25 @@
-import { AllNotes } from "@/components/AllNotes";
-import { HomePageLoader } from "@/components/HomePageLoader";
-import { getNow } from "@/utils/getNow";
-import { shouldSkipServerRendering } from "@/utils/shouldSkipServerRendering";
-import { NextSeo } from "next-seo";
-import { headers } from "next/headers";
 
-export default async function HomePage({ searchParams }: { searchParams: Record<string, unknown> }) {
+import { IndexPageLoader } from "@/components/IndexPageLoader";
+import { parseAccountsCookieStorage } from "@/utils/parseAccountsCookieStorage";
+import { shouldSkipServerRendering } from "@/utils/shouldSkipServerRendering";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function IndexPage({ searchParams }: { searchParams: Record<string, unknown> }) {
 	if (shouldSkipServerRendering(headers(), searchParams)) {
 		return (
-			<HomePageLoader />
+			<IndexPageLoader />
 		);
 	}
 
-	const now = getNow({ searchParams });
+	const cookieStore = cookies();
+	const accountsCookieValue = cookieStore.get('accounts');
 
-	return (
-		<>
-			<NextSeo
-				useAppDir
-				title="Nostr"
-				description="A censorship-resistant alternative to Twitter that has a chance of working"
-			/>
+	const accounts = accountsCookieValue ? parseAccountsCookieStorage(accountsCookieValue.value) : [];
 
-			<AllNotes
-				now={now}
-			/>
-		</>
-	);
+	if (accounts.length === 0) {
+		redirect('/explore');
+	}
+
+	redirect('/home');
 }

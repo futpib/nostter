@@ -1,17 +1,18 @@
+import Cookies from 'js-cookie';
 import { debugExtend } from "@/utils/debugExtend";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
-const log = debugExtend('hooks', 'useLocalStorage');
+const log = debugExtend('hooks', 'useCookieStorage');
 
 type Stringify<T> = (value: undefined | T) => string;
 type Parse<T> = (raw: string) => undefined | T;
 
-function localStorageRead<T>(key: string, parse: Parse<T>): T | undefined {
+function cookieStorageRead<T>(key: string, parse: Parse<T>): T | undefined {
 	if (typeof window === 'undefined') {
 		return undefined;
 	}
 
-	const raw = window.localStorage.getItem(key);
+	const raw = Cookies.get(key);
 
 	if (!raw) {
 		return undefined;
@@ -19,21 +20,23 @@ function localStorageRead<T>(key: string, parse: Parse<T>): T | undefined {
 
 	const parsed = parse(raw);
 
-	log('localStorageRead', key, parsed);
+	log('cookieStorageRead', key, parsed);
 
 	return parsed;
 }
 
-function localStorageWrite<T>(key: string, stringify: Stringify<T>, value: T | undefined) {
+function cookieStorageWrite<T>(key: string, stringify: Stringify<T>, value: T | undefined) {
 	if (typeof window === 'undefined') {
 		return;
 	}
 
 	const raw = stringify(value) ?? '';
 
-	log('localStorageWrite', key, value);
+	log('cookieStorageWrite', key, value);
 
-	window.localStorage.setItem(key, raw);
+	Cookies.set(key, raw, {
+		secure: window.location.protocol !== 'http:',
+	});
 }
 
 type LightStorageEvent = {
@@ -43,14 +46,14 @@ type LightStorageEvent = {
 
 const tabStorageHandlers = new Set<(event: LightStorageEvent) => void>();
 
-export function useLocalStorage<T>({
+export function useCookieStorage<T>({
 	key,
-	parse = JSON.parse,
-	stringify = JSON.stringify,
+	parse,
+	stringify,
 }: {
 	key: string;
-	parse?: Parse<T>;
-	stringify?: Stringify<T>;
+	parse: Parse<T>;
+	stringify: Stringify<T>;
 }): [
 	value: T | undefined,
 	setValue: (value: ((oldValue: T | undefined) => T) | T | undefined) => void,
@@ -71,11 +74,10 @@ export function useLocalStorage<T>({
 				return;
 			}
 
-			setValue_(localStorageRead(key, parse));
+			setValue_(cookieStorageRead(key, parse));
 			setIsInitialLoading(false);
 		};
 
-		window.addEventListener('storage', handleStorage);
 		tabStorageHandlers.add(handleStorage);
 
 		handleStorage({
@@ -83,7 +85,6 @@ export function useLocalStorage<T>({
 		});
 
 		return () => {
-			window.removeEventListener('storage', handleStorage);
 			tabStorageHandlers.delete(handleStorage);
 		};
 	}, [ key, parse ]);
@@ -93,7 +94,7 @@ export function useLocalStorage<T>({
 			return;
 		}
 
-		localStorageWrite(key, stringify, value);
+		cookieStorageWrite(key, stringify, value);
 		shouldWriteNextUpdateToStorageRef.current = false;
 
 		for (const handler of tabStorageHandlers) {

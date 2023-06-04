@@ -897,6 +897,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-cookie@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/js-cookie@npm:3.0.3"
+  checksum: 927254ec37ce4fbe4d9d54f53a446b4351259799d9933db5808ddb7c430396aa2496bdd0a4e47e1b56048ffbec98645cbd4daa9e3ed9a6fff55e25eb640fcb15
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:*, @types/json-schema@npm:^7.0.8":
   version: 7.0.11
   resolution: "@types/json-schema@npm:7.0.11"
@@ -4074,6 +4081,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-cookie@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "js-cookie@npm:3.0.5"
+  checksum: 2dbd2809c6180fbcf060c6957cb82dbb47edae0ead6bd71cbeedf448aa6b6923115003b995f7d3e3077bfe2cb76295ea6b584eb7196cca8ba0a09f389f64967a
+  languageName: node
+  linkType: hard
+
 "js-string-escape@npm:^1.0.1":
   version: 1.0.1
   resolution: "js-string-escape@npm:1.0.1"
@@ -5132,6 +5146,7 @@ __metadata:
     "@types/debug": ^4.1.7
     "@types/deepmerge": ^2.2.0
     "@types/invariant": ^2.2.35
+    "@types/js-cookie": ^3.0.3
     "@types/lodash": ^4.14.194
     "@types/luxon": ^3.3.0
     "@types/mime-types": ^2.1.1
@@ -5147,6 +5162,7 @@ __metadata:
     fp-ts: ^2.16.0
     invariant: ^2.2.4
     isomorphic-ws: ^5.0.0
+    js-cookie: ^3.0.5
     linkify-plugin-hashtag: ^4.1.1
     linkifyjs: ^4.1.1
     lodash: ^4.17.21

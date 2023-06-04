@@ -5,7 +5,7 @@ type PreferencesLocalStorage = {
 };
 
 export function usePreferencesLocalStorage() {
-	const [ preferencesLocalStorage, setPreferencesLocalStorage ] = useLocalStorage<PreferencesLocalStorage>({
+	const [ preferencesLocalStorage, setPreferencesLocalStorage, isPreferencesLocalStorageInitialLoading ] = useLocalStorage<PreferencesLocalStorage>({
 		key: 'preferences',
 	});
 
@@ -18,6 +18,7 @@ export function usePreferencesLocalStorage() {
 
 	return {
 		preferencesLocalStorage,
+		isPreferencesLocalStorageInitialLoading,
 
 		setPrimaryAccountPubkey,
 	};
