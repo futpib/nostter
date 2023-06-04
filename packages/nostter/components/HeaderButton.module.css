@@ -1,0 +1,28 @@
+.headerButton {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+	align-items: center;
+
+	padding: 12px;
+
+	border-radius: 9999px;
+	cursor: pointer;
+	transition: background-color 0.2s ease-in-out;
+
+	font-size: 1.33em;
+}
+
+.headerButton:hover {
+	background-color: rgb(var(--background-secondary-rgb));
+}
+
+.headerButtonText {
+	display: none;
+}
+
+@media (min-width: 1280px) {
+	.headerButtonText {
+		display: initial;
+	}
+}
