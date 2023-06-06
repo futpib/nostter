@@ -8,7 +8,7 @@ export function ExplorePageLoader() {
 		<>
 			<NextSeo
 				useAppDir
-				title="Nostr"
+				title="Explore"
 				description="A censorship-resistant alternative to Twitter that has a chance of working"
 			/>
 

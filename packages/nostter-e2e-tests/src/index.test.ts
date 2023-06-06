@@ -71,6 +71,10 @@ const testCases = ([
 		url: 'note1xfkvxpw2yng3ckl239nrm2lj9du5wtx7a0hxcg40lqshksxluefs2d6npw'
 	},
 	{
+		title: 'preview for page without siteName',
+		url: 'note1wpt8p05x0ue5flp7jx4n8wrae7eklcs7xwf9a8fngg5nhkh8va2sunlnhw',
+	},
+	{
 		title: 'without profile info',
 		url: 'npub1s7ehx4ynuzvyqm275zsazd9y5y5qdm4sy09wz9pzdcnnva20nxlsgf5s44',
 	},

@@ -15,10 +15,12 @@ import { InfiniteEventsLoaderInput, useInfiniteEventsLoader } from '@/hooks/useI
 export function InfiniteEventsLoader({
 	id,
 	input,
+	enabled = true,
 	now,
 }: {
 	id: string;
 	input: InfiniteEventsLoaderInput;
+	enabled?: boolean;
 	now?: string | DateTime;
 }) {
 	const {
@@ -42,6 +44,7 @@ export function InfiniteEventsLoader({
 	} = useInfiniteEventsLoader({
 		now,
 		input,
+		enabled,
 	});
 
 	const handleShowFutureNotesClick = useCallback(() => {

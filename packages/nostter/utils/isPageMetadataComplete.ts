@@ -5,7 +5,6 @@ export function isPageLinkMetadataComplete(metadata: Partial<PageLinkMetadata>):
 		metadata.url
 			&& metadata.title
 			&& metadata.description
-			&& metadata.siteName
 			&& metadata.image
 	);
 }

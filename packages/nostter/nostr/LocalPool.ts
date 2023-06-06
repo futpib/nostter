@@ -1,7 +1,10 @@
 import { isIndexedTagKey, getLocalRelayDexie, EventRecord } from "@/dexie/localRelay";
+import { debugExtend } from "@/utils/debugExtend";
 import { Collection, IndexableType, Table } from "dexie";
 import invariant from "invariant";
 import { CountPayload, Event, Filter, Sub, SubscriptionOptions } from "nostr-tools";
+
+const log = debugExtend('nostr', 'localPool');
 
 type EqualityCriterias = Partial<{
 	id: string;
@@ -21,13 +24,14 @@ type EqualityCriterias = Partial<{
 	tTag1s: string[];
 }>;
 
-type DexieQuery = {
+type DexieQueryByEqualityCriterias = {
+	type: 'DexieQueryByEqualityCriterias';
 	equalityCriterias: EqualityCriterias;
 	filter?: (event: Event) => boolean;
 	limit?: number;
 };
 
-function filterToDexieQuery(filter: Filter): DexieQuery {
+function filterToDexieQueryByEqualityCriterias(filter: Filter): DexieQueryByEqualityCriterias {
 	const equalityCriterias: EqualityCriterias = {};
 
 	let until: number | undefined;
@@ -112,6 +116,7 @@ function filterToDexieQuery(filter: Filter): DexieQuery {
 	}
 
 	return {
+		type: 'DexieQueryByEqualityCriterias',
 		equalityCriterias,
 		filter: (until || multipleKinds) ? (event) => {
 			let allPass = true;
@@ -130,25 +135,142 @@ function filterToDexieQuery(filter: Filter): DexieQuery {
 	};
 }
 
+type DexieQueryByCreatedAt = {
+	type: 'DexieQueryByCreatedAt';
+	filter?: (event: Event) => boolean;
+	limit: number;
+};
+
+type DexieQuery =
+	| DexieQueryByEqualityCriterias
+	| DexieQueryByCreatedAt;
+
+function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
+	let until: number | undefined;
+	let multipleIds: undefined | Set<string>;
+	let multipleKinds: undefined | Set<number>;
+	let multipleAuthors: undefined | Set<string>;
+
+	invariant(filter.limit !== undefined, 'limit must be defined');
+
+	for (const [ key, value ] of Object.entries(filter)) {
+		if (value === undefined) {
+			continue;
+		}
+
+		let firstValue: string | number;
+		let arrayValue: (string | number)[];
+
+		if (Array.isArray(value)) {
+			firstValue = value[0];
+			arrayValue = value;
+		} else {
+			firstValue = value;
+			arrayValue = [ value ];
+		}
+
+		if (key === "ids") {
+			multipleIds = new Set(arrayValue as string[]);
+			continue;
+		}
+
+		if (key === "kinds") {
+			multipleKinds = new Set(arrayValue as number[]);
+			continue;
+		}
+
+		if (key === 'authors') {
+			multipleAuthors = new Set(arrayValue as string[]);
+			continue;
+		}
+
+		if (key === 'until') {
+			if (!firstValue) {
+				continue;
+			}
+
+			until = firstValue as number;
+			continue;
+		}
+
+		if (key === 'limit') {
+			continue;
+		}
+
+		invariant(false, `FIXME: Unsupported filter key: ${key}`);
+	}
+
+	return {
+		type: 'DexieQueryByCreatedAt',
+		filter: (until || multipleKinds || multipleIds) ? (event) => {
+			let allPass = true;
+
+			if (until !== undefined) {
+				allPass &&= event.created_at <= until;
+			}
+
+			if (multipleIds !== undefined) {
+				allPass &&= multipleIds.has(event.id);
+			}
+
+			if (multipleKinds !== undefined) {
+				allPass &&= multipleKinds.has(event.kind);
+			}
+
+			if (multipleAuthors !== undefined) {
+				allPass &&= multipleAuthors.has(event.pubkey);
+			}
+
+			return allPass;
+		} : undefined,
+		limit: filter.limit,
+	};
+}
+
+function filterToDexieQuery(filter: Filter): DexieQuery {
+	if (
+		filter.authors
+			&& filter.authors.length > 1
+			&& filter.limit !== undefined
+			&& filter.until !== undefined
+	) {
+		return filterToDexieQueryByCreatedAt(filter);
+	}
+
+	return filterToDexieQueryByEqualityCriterias(filter);
+}
+
 function applyDexieQuery(
 	table: Table<EventRecord, IndexableType>,
-	{
-		equalityCriterias,
-		filter,
-		limit,
-	}: DexieQuery,
+	dexieQuery: DexieQuery,
 ): Collection<EventRecord, IndexableType> {
-	let result = table.where(equalityCriterias);
+	if (dexieQuery.type === 'DexieQueryByCreatedAt') {
+		const { limit, filter } = dexieQuery;
 
-	if (filter) {
-		result = result.filter(filter);
+		let result = table.orderBy('created_at')
+
+		if (filter) {
+			result = result.filter(filter);
+		}
+
+		return result.limit(limit).reverse();
+	} else if (dexieQuery.type === 'DexieQueryByEqualityCriterias') {
+		const { equalityCriterias, filter, limit } = dexieQuery;
+
+		let result = table.where(equalityCriterias);
+
+		if (filter) {
+			result = result.filter(filter);
+		}
+
+		if (limit) {
+			result = result.limit(limit);
+		}
+
+		return result;
+	} else {
+		invariant(false, `FIXME: Unsupported dexieQuery type: ${(dexieQuery as any).type}`);
 	}
-
-	if (limit) {
-		result = result.limit(limit);
-	}
-
-	return result;
 }
 
 type SubEvent = {
@@ -177,7 +299,11 @@ export class LocalPool {
 			return applyDexieQuery(localRelayDexie.events, dexieQuery).toArray();
 		}));
 
-		return queryResults.flat();
+		const result = queryResults.flat();
+
+		log('list', filters, result);
+
+		return result;
 	}
 
 	sub(_relays: string[], filters: Filter[]): Sub {

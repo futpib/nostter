@@ -6,6 +6,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLocationHash } from "@/hooks/useLocationHash";
 import { simplePool as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
+import { DateTime } from "luxon";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Event, nip19, SimplePool } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/lib/nip19";
@@ -111,6 +112,22 @@ type EoseRow = {
 };
 
 type Row = EventRow | EoseRow;
+
+function prettyEventString(event: Event) {
+	return JSON.stringify({
+		note: nip19.noteEncode(event.id),
+
+		nevent: nip19.neventEncode({
+			id: event.id,
+			author: event.pubkey,
+		}),
+
+		npub: nip19.npubEncode(event.pubkey),
+
+		created_at_iso: DateTime.fromSeconds(event.created_at).toISO(),
+		created_at_locale: DateTime.fromSeconds(event.created_at).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS),
+	}, null, 2);
+}
 
 function stringifyEvent(event: Event) {
 	return JSON.stringify(event, null, 2);
@@ -455,7 +472,12 @@ export function Query() {
 							key={row.event.id}
 							onClick={createHandleEventClick(row.event)}
 						>
-							{stringifyEvent(row.event)}
+							<div className={styles.eventRowPretty}>
+								{prettyEventString(row.event)}
+							</div>
+							<div className={styles.eventRowEvent}>
+								{stringifyEvent(row.event)}
+							</div>
 							{hash === row.event.id && (
 								<div className={styles.eventRowRelays}>
 									<div>

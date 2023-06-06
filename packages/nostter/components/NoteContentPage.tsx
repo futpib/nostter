@@ -1,5 +1,6 @@
 'use client';
 
+import { tryParseUrl } from '@/utils/tryParseUrl';
 import { MouseEvent } from 'react';
 import { Image } from './Image';
 import styles from './NoteContentPage.module.css';
@@ -8,7 +9,7 @@ export type PageLinkMetadata = {
 	url: string;
 	title: string;
 	description: string;
-	siteName: string;
+	siteName?: string;
 	image: string;
 };
 
@@ -21,6 +22,8 @@ export function NoteContentPage({
 		event.stopPropagation();
 		window.open(pageLinkMetadata.url, '_blank');
 	};
+
+	const urlParsed = tryParseUrl(pageLinkMetadata.url);
 
 	return (
 		<div
@@ -40,7 +43,7 @@ export function NoteContentPage({
 				<div
 					className={styles.noteContentPageSiteName}
 				>
-					{pageLinkMetadata.siteName}
+					{pageLinkMetadata.siteName ?? urlParsed?.hostname ?? pageLinkMetadata.url}
 				</div>
 
 				<div

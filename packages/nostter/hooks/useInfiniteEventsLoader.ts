@@ -9,13 +9,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNow } from "./useNow";
 import { useVisibility } from "./useVisibility";
 
-export type InfiniteEventsLoaderInput = Omit<EventsInput, 'cursor'>;
+export type InfiniteEventsLoaderInput = Omit<EventsInput, 'cursor' | 'cacheKeyNonce'>;
 
 export function useInfiniteEventsLoader({
 	input,
+	enabled = true,
 	now: propsNow,
 }: {
 	input: InfiniteEventsLoaderInput;
+	enabled?: boolean;
 	now?: string | DateTime;
 }) {
 	const initialNow = useNow({ propsNow });
@@ -54,6 +56,8 @@ export function useInfiniteEventsLoader({
 		...input,
 		cacheKeyNonce: 'local',
 	}, {
+		enabled: enabled !== false,
+
 		trpc: {
 			context: {
 				forceLink: 'local',
@@ -70,6 +74,8 @@ export function useInfiniteEventsLoader({
 		...input,
 		cacheKeyNonce: 'backend',
 	}, {
+		enabled: enabled !== false,
+
 		trpc: {
 			context: {
 				forceLink: 'backend',
@@ -86,6 +92,8 @@ export function useInfiniteEventsLoader({
 		fetchNextPage,
 		hasNextPage,
 	} = trpcReact.nostr.eventsInfinite.useInfiniteQuery(input, {
+		enabled: enabled !== false,
+
 		getNextPageParam(lastPage) {
 			return lastPage.nextCursor;
 		},
@@ -105,9 +113,10 @@ export function useInfiniteEventsLoader({
 		cacheKeyNonce: String(refetchCount),
 	}, {
 		enabled: (
-			!isInitialLoading
-			&& !isLocalFirstPageInitialLoading
-			&& !isBackendFirstPageInitialLoading
+			enabled !== false
+				&& !isInitialLoading
+				&& !isLocalFirstPageInitialLoading
+				&& !isBackendFirstPageInitialLoading
 		),
 
 		onData(event) {
