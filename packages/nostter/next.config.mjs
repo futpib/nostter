@@ -1,7 +1,7 @@
 const { VERCEL_URL } = process.env;
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+export default {
 	experimental: {
 		appDir: true,
 	},
@@ -37,5 +37,3 @@ const nextConfig = {
 		};
 	},
 };
-
-module.exports = nextConfig;
