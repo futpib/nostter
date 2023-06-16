@@ -1,10 +1,82 @@
-import { isIndexedTagKey, getLocalRelayDexie, EventRecord } from "@/dexie/localRelay";
+import { isIndexedTagKey, getLocalRelayDexie, EventRecord, LocalRelayDexie } from "@/dexie/localRelay";
 import { debugExtend } from "@/utils/debugExtend";
 import { Collection, IndexableType, Table } from "dexie";
 import invariant from "invariant";
 import { CountPayload, Event, Filter, Sub, SubscriptionOptions } from "nostr-tools";
 
 const log = debugExtend('nostr', 'localPool');
+
+const filterReplacements = new WeakMap<Function, Record<string, any>>();
+
+function getFilterDebugString(filter: Function) {
+	let debugString = filter.toString();
+
+	const replacements = filterReplacements.get(filter) ?? {};
+
+	for (const [ key, value ] of Object.entries(replacements)) {
+		debugString = debugString.replaceAll(key, JSON.stringify(value, (_key, value) => {
+			if (value instanceof Set) {
+				return `new Set(${JSON.stringify([ ...value ])})`;
+			}
+
+			return value;
+		}, 2));
+	}
+
+	return debugString;
+}
+
+function buildFilterFunction({
+	until,
+	multipleKinds,
+	multipleIds,
+	multipleAuthors,
+}: {
+	until?: number;
+	multipleKinds?: Set<number>;
+	multipleIds?: Set<string>;
+	multipleAuthors?: Set<string>;
+}) {
+	if (
+		until === undefined
+			&& multipleKinds === undefined
+			&& multipleIds === undefined
+			&& multipleAuthors === undefined
+	) {
+		return undefined;
+	}
+
+	const filter = (event: Event) => {
+		let allPass = true;
+
+		if (until !== undefined) {
+			allPass &&= event.created_at <= until;
+		}
+
+		if (multipleIds !== undefined) {
+			allPass &&= multipleIds.has(event.id);
+		}
+
+		if (multipleKinds !== undefined) {
+			allPass &&= multipleKinds.has(event.kind);
+		}
+
+		if (multipleAuthors !== undefined) {
+			allPass &&= multipleAuthors.has(event.pubkey);
+		}
+
+		return allPass;
+	};
+
+	filterReplacements.set(filter, {
+		until,
+		multipleIds,
+		multipleKinds,
+		multipleAuthors,
+	});
+
+	return filter;
+}
 
 type EqualityCriterias = Partial<{
 	id: string;
@@ -36,7 +108,7 @@ function filterToDexieQueryByEqualityCriterias(filter: Filter): DexieQueryByEqua
 
 	let until: number | undefined;
 	let limit: number | undefined;
-	let multipleKinds: undefined | number[];
+	let multipleKinds: undefined | Set<number>;
 
 	for (const [ key, value ] of Object.entries(filter)) {
 		if (value === undefined) {
@@ -67,7 +139,7 @@ function filterToDexieQueryByEqualityCriterias(filter: Filter): DexieQueryByEqua
 				equalityCriterias.kind = firstValue;
 				continue;
 			} else if (arrayValue.length > 1) {
-				multipleKinds = arrayValue as number[];
+				multipleKinds = new Set(arrayValue as number[]);
 				continue;
 			} else {
 				invariant(false, 'kinds must not be empty');
@@ -118,19 +190,10 @@ function filterToDexieQueryByEqualityCriterias(filter: Filter): DexieQueryByEqua
 	return {
 		type: 'DexieQueryByEqualityCriterias',
 		equalityCriterias,
-		filter: (until || multipleKinds) ? (event) => {
-			let allPass = true;
-
-			if (until !== undefined) {
-				allPass &&= event.created_at <= until;
-			}
-
-			if (multipleKinds !== undefined) {
-				allPass &&= multipleKinds.includes(event.kind);
-			}
-
-			return allPass;
-		} : undefined,
+		filter: buildFilterFunction({
+			until,
+			multipleKinds,
+		}),
 		limit,
 	};
 }
@@ -139,14 +202,25 @@ type DexieQueryByCreatedAt = {
 	type: 'DexieQueryByCreatedAt';
 	filter?: (event: Event) => boolean;
 	limit: number;
+	until?: number;
 };
 
 type DexieQuery =
 	| DexieQueryByEqualityCriterias
 	| DexieQueryByCreatedAt;
 
+function getDexieQueryDebugString(dexieQuery: DexieQuery) {
+	return JSON.stringify(dexieQuery, (key, value) => {
+		if (key === 'filter') {
+			const value_ = value as DexieQuery['filter'];
+			return value_ ? getFilterDebugString(value) : value_;
+		}
+
+		return value;
+	}, 2);
+}
+
 function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
-	let until: number | undefined;
 	let multipleIds: undefined | Set<string>;
 	let multipleKinds: undefined | Set<number>;
 	let multipleAuthors: undefined | Set<string>;
@@ -184,16 +258,11 @@ function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
 			continue;
 		}
 
-		if (key === 'until') {
-			if (!firstValue) {
-				continue;
-			}
-
-			until = firstValue as number;
+		if (key === 'limit') {
 			continue;
 		}
 
-		if (key === 'limit') {
+		if (key === 'until') {
 			continue;
 		}
 
@@ -202,38 +271,18 @@ function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
 
 	return {
 		type: 'DexieQueryByCreatedAt',
-		filter: (until || multipleKinds || multipleIds) ? (event) => {
-			let allPass = true;
-
-			if (until !== undefined) {
-				allPass &&= event.created_at <= until;
-			}
-
-			if (multipleIds !== undefined) {
-				allPass &&= multipleIds.has(event.id);
-			}
-
-			if (multipleKinds !== undefined) {
-				allPass &&= multipleKinds.has(event.kind);
-			}
-
-			if (multipleAuthors !== undefined) {
-				allPass &&= multipleAuthors.has(event.pubkey);
-			}
-
-			return allPass;
-		} : undefined,
+		filter: buildFilterFunction({
+			multipleIds,
+			multipleKinds,
+			multipleAuthors,
+		}),
 		limit: filter.limit,
+		until: filter.until,
 	};
 }
 
 function filterToDexieQuery(filter: Filter): DexieQuery {
-	if (
-		filter.authors
-			&& filter.authors.length > 1
-			&& filter.limit !== undefined
-			&& filter.until !== undefined
-	) {
+	if (filter.limit !== undefined) {
 		return filterToDexieQueryByCreatedAt(filter);
 	}
 
@@ -245,27 +294,47 @@ function applyDexieQuery(
 	dexieQuery: DexieQuery,
 ): Collection<EventRecord, IndexableType> {
 	if (dexieQuery.type === 'DexieQueryByCreatedAt') {
-		const { limit, filter } = dexieQuery;
+		const { limit, until, filter } = dexieQuery;
 
-		let result = table.orderBy('created_at')
+		let result: Collection<EventRecord, IndexableType>;
+		let debugString = '';
+
+		if (until !== undefined) {
+			result = table.where('created_at').below(until).reverse();
+			debugString += `table.where('created_at').below(${until})`;
+		} else {
+			result = table.orderBy('created_at').reverse();
+			debugString += `table.orderBy('created_at').reverse()`;
+		}
 
 		if (filter) {
 			result = result.filter(filter);
+			debugString += `.filter(filter)`;
 		}
 
-		return result.limit(limit).reverse();
+		result = result.limit(limit);
+		debugString += `.limit(${limit})`;
+
+		log('applyDexieQuery', getDexieQueryDebugString(dexieQuery), debugString);
+
+		return result;
 	} else if (dexieQuery.type === 'DexieQueryByEqualityCriterias') {
 		const { equalityCriterias, filter, limit } = dexieQuery;
 
 		let result = table.where(equalityCriterias);
+		let debugString = `table.where(${JSON.stringify(equalityCriterias)})`;
 
 		if (filter) {
 			result = result.filter(filter);
+			debugString += `.filter(filter)`;
 		}
 
 		if (limit) {
 			result = result.limit(limit);
+			debugString += `.limit(${limit})`;
 		}
+
+		log('applyDexieQuery', getDexieQueryDebugString(dexieQuery), debugString);
 
 		return result;
 	} else {
@@ -280,12 +349,26 @@ type SubEvent = {
 }
 
 export class LocalPool {
+	constructor(
+		private readonly _localRelayDexie?: LocalRelayDexie,
+	) {}
+
+	private _getLocalRelayDexie(): Promise<LocalRelayDexie> {
+		if (this._localRelayDexie) {
+			return Promise.resolve(this._localRelayDexie);
+		}
+
+		return getLocalRelayDexie();
+	}
+
 	async get(_relays: string[], filter: Filter): Promise<Event | null> {
 		const dexieQuery = filterToDexieQuery(filter);
 
-		const localRelayDexie = await getLocalRelayDexie();
+		const localRelayDexie = await this._getLocalRelayDexie();
 
 		const result = await applyDexieQuery(localRelayDexie.events, dexieQuery).first();
+
+		log('get', filter, result);
 
 		return result ?? null;
 	}
@@ -293,7 +376,7 @@ export class LocalPool {
 	async list(_relays: string[], filters: Filter[]): Promise<Event[]> {
 		const dexieQueries = filters.map(filterToDexieQuery);
 
-		const localRelayDexie = await getLocalRelayDexie();
+		const localRelayDexie = await this._getLocalRelayDexie();
 
 		const queryResults = await Promise.all(dexieQueries.map(dexieQuery => {
 			return applyDexieQuery(localRelayDexie.events, dexieQuery).toArray();
@@ -317,7 +400,7 @@ export class LocalPool {
 		(async () => {
 			const dexieQueries = filters.map(filterToDexieQuery);
 
-			const localRelayDexie = await getLocalRelayDexie();
+			const localRelayDexie = await this._getLocalRelayDexie();
 
 			await Promise.all(dexieQueries.map(dexieQuery => {
 				return applyDexieQuery(localRelayDexie.events, dexieQuery)

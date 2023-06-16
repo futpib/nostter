@@ -1,9 +1,9 @@
-import { EventRecord, getLocalRelayDexie } from "@/dexie/localRelay";
+import { EventRecord, getLocalRelayDexie, LocalRelayDexie } from "@/dexie/localRelay";
 import { EventSet } from "@/nostr/EventSet";
 
 const existingEventIds = new Set<string>();
 
-export async function handleSuccess(eventSet: EventSet) {
+export async function localRelayDexiesHandleSuccess(localRelayDexie: LocalRelayDexie, eventSet: EventSet) {
 	const eventRecords = new Map<string, EventRecord>();
 
 	for (const event of eventSet) {
@@ -36,9 +36,13 @@ export async function handleSuccess(eventSet: EventSet) {
 		existingEventIds.add(eventRecord.id);
 	}
 
-	const localRelayDexie = await getLocalRelayDexie();
-
 	return Promise.all([
 		localRelayDexie.events.bulkPut([...eventRecords.values()]),
 	]);
+}
+
+export async function handleSuccess(eventSet: EventSet) {
+	const localRelayDexie = await getLocalRelayDexie();
+
+	return localRelayDexiesHandleSuccess(localRelayDexie, eventSet);
 }

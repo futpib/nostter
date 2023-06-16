@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "NODE_OPTIONS='--loader=tsx' c8 ava"
   },
   "dependencies": {
     "@floating-ui/react": "^0.24.1",
@@ -21,10 +22,11 @@
     "@types/react-dom": "18.2.4",
     "bolt11": "^1.4.1",
     "bufferutil": "^4.0.7",
+    "c8": "^8.0.0",
     "classnames": "^2.3.2",
     "debug": "^4.3.4",
     "deepmerge": "^4.3.1",
-    "dexie": "^3.2.3",
+    "dexie": "^3.2.4",
     "fp-ts": "^2.16.0",
     "invariant": "^2.2.4",
     "isomorphic-ws": "^5.0.0",
@@ -60,7 +62,7 @@
   },
   "packageManager": "yarn@3.5.0",
   "devDependencies": {
-    "@ava/typescript": "^4.0.0",
+    "@bleed-believer/path-alias": "^0.15.2",
     "@types/debug": "^4.1.7",
     "@types/deepmerge": "^2.2.0",
     "@types/invariant": "^2.2.35",
@@ -68,14 +70,19 @@
     "@types/lodash": "^4.14.194",
     "@types/luxon": "^3.3.0",
     "@types/mime-types": "^2.1.1",
-    "ava": "^5.3.0"
+    "ava": "^5.3.0",
+    "fake-indexeddb": "^4.0.1",
+    "tsx": "^3.12.7"
   },
   "ava": {
-    "typescript": {
-      "rewritePaths": {
-        "/": "dist/"
-      },
-      "compile": "tsc"
-    }
+    "extensions": {
+      "ts": "module"
+    },
+    "require": [
+      "fake-indexeddb/auto"
+    ],
+    "nodeArguments": [
+      "--loader=tsx"
+    ]
   }
 }
