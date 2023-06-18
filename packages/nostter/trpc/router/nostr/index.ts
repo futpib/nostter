@@ -2,7 +2,7 @@ import { z, ZodType } from 'zod';
 import { trpcServer } from "@/trpc/server";
 import { EventSet } from '@/nostr/EventSet';
 import { maxCacheTime } from '@/utils/setCacheControlHeader';
-import { combineMetaMiddleware, combineRelaysMiddleware, ensureRelaysMiddleware } from '@/trpc/middlewares';
+import { combineMetaMiddleware, combineRelaysMiddleware, ensureRelaysMiddleware, resolveAuthorsPublicKeySetHash } from '@/trpc/middlewares';
 import { observable } from '@trpc/server/observable';
 import { Event, Filter } from 'nostr-tools';
 import invariant from 'invariant';
@@ -128,18 +128,24 @@ export const trpcNostrRouter = trpcServer.router({
 		}))
 		.use(combineRelaysMiddleware)
 		.use(ensureRelaysMiddleware)
+		.use(resolveAuthorsPublicKeySetHash)
 		.input(z.intersection(commonInputSchema, eventsInputSchema))
 		.query(async ({
 			input: {
 				kinds,
-				authors,
 
 				referencedEventIds,
 				referencedHashtags,
 
 				cursor,
 			},
-			ctx,
+			ctx: {
+				combinedRelays,
+
+				resolvedAuthors: authors,
+
+				relayPool,
+			},
 		}) => {
 			const cursorDuration = (
 				cursor?.since && cursor?.until
@@ -163,7 +169,7 @@ export const trpcNostrRouter = trpcServer.router({
 				filter['#t'] = referencedHashtags;
 			}
 
-			const events = await ctx.relayPool.list(ctx.combinedRelays, [ filter ]);
+			const events = await relayPool.list(combinedRelays, [ filter ]);
 
 			const eventSet = new EventSet();
 
@@ -225,18 +231,24 @@ export const trpcNostrRouter = trpcServer.router({
 
 	eventsSubscription: trpcServer.procedure
 		.use(combineRelaysMiddleware)
+		.use(resolveAuthorsPublicKeySetHash)
 		.input(z.intersection(commonInputSchema, eventsInputSchema))
 		.subscription(({
 			input: {
 				kinds,
-				authors,
 
 				referencedEventIds,
 				referencedHashtags,
 
 				cursor,
 			},
-			ctx,
+			ctx: {
+				combinedRelays,
+
+				resolvedAuthors: authors,
+
+				relayPool,
+			},
 		}) => {
 			return observable<Event>(observer => {
 				const filter: Filter = {
@@ -255,9 +267,9 @@ export const trpcNostrRouter = trpcServer.router({
 					filter['#t'] = referencedHashtags;
 				}
 
-				const subscribtion = ctx.relayPool.sub(ctx.combinedRelays, [ filter ]);
+				const subscribtion = relayPool.sub(combinedRelays, [ filter ]);
 
-				subscribtion.on('event', event => {
+				subscribtion.on('event', (event: Event) => {
 					if (filter.since && event.created_at < filter.since) {
 						return;
 					}

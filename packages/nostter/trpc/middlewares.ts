@@ -1,10 +1,15 @@
 import { LocalPool } from "@/nostr/LocalPool";
 import { debugExtend } from "@/utils/debugExtend";
+import { getPublicRuntimeConfig } from "@/utils/getPublicRuntimeConfig";
 import invariant from "invariant";
 import { TRPCMeta } from "./meta";
 import { trpcServer } from "./server";
+import pMemoize from 'p-memoize';
+import QuickLRU from 'quick-lru';
 
 const log = debugExtend('middlewares');
+
+const { publicUrl } = getPublicRuntimeConfig();
 
 export const combineRelaysMiddleware = trpcServer.middleware(({ input, rawInput, ctx, next }) => {
 	const someInput = (input ?? rawInput) as { relays?: string[] } | undefined;
@@ -53,3 +58,39 @@ export const combineMetaMiddleware = ({ meta: meta_ }: { meta: TRPCMeta }) => {
 		return next();
 	});
 };
+
+const getPublicKeySet = pMemoize(async (publicKeySetHash: string): Promise<string[]> => {
+	const response = await fetch(publicUrl + '/api/public-key-set/' + publicKeySetHash);
+
+	if (!response.ok) {
+		throw new Error('Error fetching public key set');
+	}
+
+	const { publicKeys } = await response.json();
+
+	return publicKeys;
+}, {
+	cacheKey: ([ hash ]) => hash,
+	cache: new QuickLRU({
+		maxSize: 16,
+	}),
+});
+
+export const resolveAuthorsPublicKeySetHash = trpcServer.middleware(async ({ input, rawInput, ctx, next }) => {
+	const someInput = (input ?? rawInput) as {
+		authorsPublicKeySetHash?: undefined | string;
+		authors?: undefined | string[];
+	} | undefined;
+
+	if (someInput?.authorsPublicKeySetHash) {
+		invariant(!ctx.resolvedAuthors, "resolvedAuthors already set");
+
+		const publicKeys = await getPublicKeySet(someInput.authorsPublicKeySetHash);
+
+		ctx.resolvedAuthors = publicKeys;
+	} else {
+		ctx.resolvedAuthors = someInput?.authors ?? undefined;
+	}
+
+	return next();
+});
