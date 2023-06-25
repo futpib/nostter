@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import classNames from 'classnames';
+import { Analytics } from '@vercel/analytics/react';
 import { Noto_Sans as NotoSans, Noto_Color_Emoji as NotoColorEmoji } from 'next/font/google';
 import './globals.css'
 import { NextSeo } from 'next-seo';
@@ -62,6 +63,8 @@ export default function RootLayout({
 					</ScrollKeeperProvider>
 				</QueryClientProvider>
 			</PreferencesProvider>
+
+			<Analytics />
 		</html>
 	);
 }
