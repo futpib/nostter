@@ -96,6 +96,10 @@ const testCases = ([
 		title: 'search notes',
 		url: 'search?q=%23bitcoin',
 	},
+	{
+		title: 'jack\'s following',
+		url: 'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m/following',
+	},
 ] as const).slice().sort(compareByUrl);
 
 test.before(async t => {
