@@ -49,3 +49,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.about {
+	word-break: break-word;
+}
