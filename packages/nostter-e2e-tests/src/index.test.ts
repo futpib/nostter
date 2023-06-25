@@ -8,7 +8,7 @@ import Semaphore from 'semaphore-promise';
 import regCli from 'reg-cli';
 
 function pathEscape(path: string) {
-	return path.replaceAll(/[:?]/g, '_');
+	return path.replaceAll(/[\/:?]/g, '_');
 }
 
 async function waitForFunction(t: ExecutionContext<TestContext>, name: string, page: Page, f: () => boolean) {
@@ -16,7 +16,7 @@ async function waitForFunction(t: ExecutionContext<TestContext>, name: string, p
 		await page.waitForFunction(f);
 	} catch (error) {
 		await page.screenshot({
-			path: pathEscape(path.join('screenshots', 'error', `${t.title}.${name}.png`)),
+			path: path.join('screenshots', 'error', pathEscape(`${t.title}.${name}.png`)),
 			fullPage: true,
 		});
 
@@ -253,18 +253,18 @@ const runTestCase = async (
 			}
 		});
 
-		const screenshotPath = path.join(screenshotDirectory, [
+		const screenshotPath = path.join(screenshotDirectory, pathEscape([
 			url,
 			now,
 			skipServerRendering ? 'client' : 'server',
-		].join('.') + '.png');
+		].join('.') + '.png'));
 
 		const releaseBrowserScreenshotSemaphore = await browserScreenshotSemaphore.acquire();
 
 		try {
 			await page.bringToFront();
 			await page.screenshot({
-				path: pathEscape(screenshotPath),
+				path: screenshotPath,
 				fullPage: fullPage === false ? false : true,
 			});
 		} finally {
