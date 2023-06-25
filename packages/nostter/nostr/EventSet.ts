@@ -1,7 +1,12 @@
 import invariant from "invariant";
-import { Event as Event_ } from "nostr-tools";
+import { Event as Event_, Filter as Filter_, Kind, matchFilter } from "nostr-tools";
+import { EventKind } from "./EventKind";
 
 type Event = Event_<number>;
+
+type Filter = Filter_ | {
+	kinds?: Kind[] | EventKind[];
+};
 
 function uniqueSortedArrayBinarySearchInsert(array: number[], value: number) {
 	let low = 0;
@@ -24,6 +29,34 @@ function uniqueSortedArrayBinarySearchInsert(array: number[], value: number) {
 
 	array.splice(low, 0, value);
 }
+
+class EventSetPoolLike {
+	constructor(private _eventSet: EventSet) {}
+
+	get(filter: Filter): undefined | Event {
+		for (const event of this._eventSet) {
+			if (matchFilter(filter, event)) {
+				return event;
+			}
+		}
+
+		return undefined;
+	}
+
+	list(filters: Filter[]): Event[] {
+		const events: Event[] = [];
+
+		for (const event of this._eventSet) {
+			if (filters.every(filter => matchFilter(filter, event))) {
+				events.push(event);
+			}
+		}
+
+		return events;
+	}
+}
+
+export type EventSetJSON = Event[][];
 
 export class EventSet {
 	private _events = new Map<string, Event>();
@@ -48,6 +81,10 @@ export class EventSet {
 		return this.toEvent();
 	}
 
+	get poolLike() {
+		return new EventSetPoolLike(this);
+	}
+
 	[Symbol.iterator]() {
 		return this._events.values();
 	}
@@ -62,7 +99,7 @@ export class EventSet {
 		return clone;
 	}
 
-	toJSON() {
+	toJSON(): EventSetJSON {
 		return this._createdAtOrder.map(createdAt => {
 			const events = this._eventsByCreatedAt.get(createdAt);
 
@@ -77,6 +114,10 @@ export class EventSet {
 	}
 
 	static fromJSON(json: any) {
+		if (json instanceof EventSet) {
+			return json.clone();
+		}
+
 		const eventSet = new EventSet();
 
 		for (const eventGroup of json) {
@@ -111,6 +152,18 @@ export class EventSet {
 
 	get(id: string) {
 		return this._events.get(id);
+	}
+
+	filter(filter: Filter) {
+		const eventSet = new EventSet();
+
+		for (const event of this) {
+			if (matchFilter(filter, event)) {
+				eventSet.add(event);
+			}
+		}
+
+		return eventSet;
 	}
 
 	toEvent(): undefined | Event {

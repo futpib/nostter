@@ -10,6 +10,7 @@ import { ProfileSkeleton } from "./ProfileSkeleton";
 import { usePubkeyMetadatasLoader } from "@/hooks/usePubkeyMetadatasLoader";
 import { ProfileListItem } from "./ProfileListItem";
 import { ProfileListItemSkeleton } from "./ProfileListItemSkeleton";
+import { EventSet } from "@/nostr/EventSet";
 
 const components = {
 	ProfilePage,
@@ -32,10 +33,12 @@ const skeletonComponents = {
 export function ProfileLoader({
 	componentKey,
 	profilePointer,
+	pubkeyPreloadedEventSet,
 	now,
 }: {
 	componentKey: keyof typeof components;
 	profilePointer: ProfilePointer;
+	pubkeyPreloadedEventSet?: EventSet;
 	now?: string | DateTime;
 }) {
 	const {
@@ -43,6 +46,7 @@ export function ProfileLoader({
 		pubkeyMetadatas,
 	} = usePubkeyMetadatasLoader({
 		profilePointers: [ profilePointer ],
+		pubkeyPreloadedEventSet,
 		now,
 	});
 

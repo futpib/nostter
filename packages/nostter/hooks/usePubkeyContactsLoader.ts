@@ -1,6 +1,7 @@
 import { trpcReact } from "@/clients/trpc";
 import { startOf } from "@/luxon";
 import { EventKind } from "@/nostr/EventKind";
+import { EventSet } from "@/nostr/EventSet";
 import { DateTime } from "luxon";
 import { ProfilePointer } from "nostr-tools/lib/nip19";
 import { useMemo } from "react";
@@ -8,9 +9,11 @@ import { useNow } from "./useNow";
 
 export function usePubkeyContactsLoader({
 	profilePointer,
+	pubkeyPreloadedEventSet,
 	now: propsNow,
 }: {
 	profilePointer: ProfilePointer;
+	pubkeyPreloadedEventSet?: EventSet;
 	now?: string | DateTime;
 }) {
 	const now = useNow({ propsNow });
@@ -21,11 +24,26 @@ export function usePubkeyContactsLoader({
 		limit: 1,
 	}), [ nowRounded ]);
 
-	const { data, isInitialLoading } = trpcReact.nostr.eventsInfinite.useInfiniteQuery({
+	const filter = useMemo(() => ({
 		kinds: [ EventKind.Contacts ],
 		authors: [ profilePointer.pubkey ],
-	}, {
+	}), [ profilePointer.pubkey ]);
+
+	const pubkeyPreloadedContactsEvents = useMemo(() => {
+		return pubkeyPreloadedEventSet?.filter(filter);
+	}, [ pubkeyPreloadedEventSet, filter ]);
+
+	const { data, isInitialLoading } = trpcReact.nostr.eventsInfinite.useInfiniteQuery(filter, {
 		initialCursor,
+		initialData: pubkeyPreloadedContactsEvents?.size ? {
+			pages: [
+				{
+					eventSet: pubkeyPreloadedContactsEvents,
+					nextCursor: undefined,
+				},
+			],
+			pageParams: [ initialCursor ],
+		} : undefined,
 	});
 
 	const latestContactsEventFromNostr = useMemo(() => {

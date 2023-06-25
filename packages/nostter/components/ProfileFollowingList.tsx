@@ -7,19 +7,29 @@ import { DateTime } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import { ProfileLoader } from "./ProfileLoader";
 import styles from './ProfileFollowingList.module.css';
+import { EventSet, EventSetJSON } from "@/nostr/EventSet";
 
 export function ProfileFollowingList({
 	pubkey,
+	pubkeyPreloadedEventSet: pubkeyPreloadedEventSetJSON,
 	now,
 }: {
 	pubkey: string;
+	pubkeyPreloadedEventSet?: EventSetJSON | EventSet;
 	now?: string | DateTime;
 }) {
+	const pubkeyPreloadedEventSet = useMemo(() => {
+		if (pubkeyPreloadedEventSetJSON) {
+			return EventSet.fromJSON(pubkeyPreloadedEventSetJSON);
+		}
+	}, [pubkeyPreloadedEventSetJSON]);
+
 	const {
 		isLatestContactsEventLoading,
 		latestContactsEvent,
 	} = usePubkeyContactsLoader({
 		profilePointer: { pubkey },
+		pubkeyPreloadedEventSet,
 		now,
 	});
 
@@ -62,6 +72,7 @@ export function ProfileFollowingList({
 								key={publicKey}
 								componentKey="ProfileListItem"
 								profilePointer={{ pubkey: publicKey }}
+								pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
 								now={now}
 							/>
 						</div>
@@ -70,6 +81,7 @@ export function ProfileFollowingList({
 							key={publicKey}
 							componentKey="ProfileListItem"
 							profilePointer={{ pubkey: publicKey }}
+							pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
 							now={now}
 						/>
 					))}
