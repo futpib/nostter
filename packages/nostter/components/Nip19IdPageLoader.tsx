@@ -6,6 +6,7 @@ import { nip19Decode } from "@/utils/nip19Decode";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { ProfileLoader } from "./ProfileLoader";
 import { DateTime } from "luxon";
+import { useNow } from "@/hooks/useNow";
 
 function Nip19IdNotePageLoader({ eventPointer }: {
 	eventPointer: EventPointer;

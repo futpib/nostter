@@ -12,6 +12,7 @@ const createLocalTRPCContext = (): TRPCContext => ({
 	defaultRelays: defaultRelays,
 	combinedRelays: defaultRelays,
 	relayPool: localRelayPool as any,
+	resolvedAuthors: undefined,
 });
 
 const localTRPCCaller = trpcUniversalRouter.createCaller(createLocalTRPCContext());

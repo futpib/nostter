@@ -55,7 +55,7 @@ function zNotStartsWith(zString: ZodType<string>, prefix: string) {
 }
 
 const eventsInputSchema = z.object({
-	kinds:  zArrayUniqueSorted(z.number()).optional(),
+	kinds: zArrayUniqueSorted(z.number()).optional(),
 	authors: zArrayUniqueSorted(z.string()).optional(),
 
 	referencedEventIds: zArrayUniqueSorted(z.string()).optional(),

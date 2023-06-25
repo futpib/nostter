@@ -13,6 +13,7 @@ const createRelaysTRPCContext = (): TRPCContext => ({
 	defaultRelays,
 	combinedRelays: defaultRelays,
 	relayPool: simplePool,
+	resolvedAuthors: undefined,
 });
 
 const relaysTRPCCaller = trpcUniversalRouter.createCaller(createRelaysTRPCContext());

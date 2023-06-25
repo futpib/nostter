@@ -1,0 +1,19 @@
+
+.profileContacts {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+}
+
+.profileContactsItem {
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.profileContactsItem:hover {
+	text-decoration: underline;
+}
+
+.profileContactsItem > strong {
+	color: rgb(var(--foreground-rgb));
+	font-weight: inherit;
+}

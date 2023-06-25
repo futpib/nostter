@@ -1,19 +1,17 @@
 'use client';
 
-import { useFirstRestParam } from '@/hooks/useFirstRestParam';
-import { getProfileActiveTab, ProfileTab, profileTabs } from '@/utils/getProfileActiveTab';
+import { getProfileContactsActiveTab, ProfileContactsTab, ProfileContactsTabData, profileContactsTabs } from '@/utils/getProfileContactsActiveTab';
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 import { TabData, Tabs } from './Tabs';
 
-export function ProfileTabs() {
+export function ProfileContactsTabs() {
 	const pathname = usePathname();
-	const firstRestParam = useFirstRestParam();
 
-	const activeTab = useMemo(() => getProfileActiveTab(firstRestParam), [ firstRestParam ]);
+	const activeTab = useMemo(() => getProfileContactsActiveTab(pathname ?? undefined), [ pathname ]);
 
 	const pathnameWithoutTab = useMemo(() => {
-		for (const { routeSegment } of Object.values(profileTabs).reverse()) {
+		for (const { routeSegment } of Object.values(profileContactsTabs).reverse()) {
 			if (pathname?.endsWith('/' + routeSegment)) {
 				return pathname.replace('/' + routeSegment, '');
 			}
@@ -22,8 +20,8 @@ export function ProfileTabs() {
 		return pathname;
 	}, [ pathname ]);
 
-	const tabs = useMemo((): Record<ProfileTab, TabData> => {
-		return Object.fromEntries(Object.entries(profileTabs).map(([ key, { label, routeSegment } ]) => {
+	const tabs = useMemo((): Record<ProfileContactsTab, TabData> => {
+		return Object.fromEntries(Object.entries(profileContactsTabs).map(([ key, { label, routeSegment } ]) => {
 			return [
 				key,
 				{
@@ -35,7 +33,7 @@ export function ProfileTabs() {
 	}, [ pathnameWithoutTab ]);
 
 	return (
-		<Tabs<ProfileTab>
+		<Tabs<ProfileContactsTab>
 			activeTab={activeTab}
 			tabs={tabs}
 		/>

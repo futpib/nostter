@@ -1,11 +1,12 @@
-import { PubkeyMetadata } from "@/utils/renderNoteContent";
-import { NextSeo } from "next-seo";
-import { Profile } from "./Profile";
-import { ProfileNotes } from "./ProfileNotes";
 import { getProfileDisplayNameText } from "@/utils/getProfileDisplayNameText";
+import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { DateTime } from "luxon";
+import { NextSeo } from "next-seo";
+import { ProfileContactsTabs } from "./ProfileContactsTabs";
+import { ProfileFollowingList } from "./ProfileFollowingList";
+import { ProfileHeader } from "./ProfileHeader";
 
-export function ProfilePage({
+export function ProfileFollowingPage({
 	pubkey,
 	pubkeyMetadata,
 	now,
@@ -23,16 +24,18 @@ export function ProfilePage({
 		<>
 			<NextSeo
 				useAppDir
-				title={`${pubkeyText} on Nostr`}
+				title={`People followed by ${pubkeyText} on Nostr`}
 				description={pubkeyMetadata?.about}
 			/>
 
-			<Profile
+			<ProfileHeader
 				pubkey={pubkey}
 				pubkeyMetadata={pubkeyMetadata}
 			/>
 
-			<ProfileNotes
+			<ProfileContactsTabs />
+
+			<ProfileFollowingList
 				pubkey={pubkey}
 				now={now}
 			/>

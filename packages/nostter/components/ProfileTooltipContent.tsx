@@ -3,6 +3,7 @@ import styles from "./ProfileTooltipContent.module.css";
 import { ProfileMentionNameText } from "./ProfileMentionNameText";
 import { ProfileAboutText } from "./ProfileAboutText";
 import { Image } from "./Image";
+import { DateTime } from "luxon";
 
 export function ProfileTooltipContent({
 	pubkey,
@@ -10,6 +11,7 @@ export function ProfileTooltipContent({
 }: {
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
+	now?: string | DateTime
 }) {
 	return (
 		<>

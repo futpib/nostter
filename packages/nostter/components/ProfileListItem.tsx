@@ -1,12 +1,12 @@
 import { PubkeyMetadata } from "@/utils/renderNoteContent";
-import { Image } from './Image';
-import styles from "./Profile.module.css";
+import styles from "./ProfileListItem.module.css";
 import { ProfileMentionNameText } from "./ProfileMentionNameText";
 import { ProfileAboutText } from "./ProfileAboutText";
-import { ProfileContacts } from "./ProfileContacts";
 import { DateTime } from "luxon";
+import { ProfileLink } from "./ProfileLink";
+import { SmallAvatarImage } from "./SmallAvatarImage";
 
-export function Profile({
+export function ProfileListItem({
 	pubkey,
 	pubkeyMetadata,
 	now,
@@ -16,22 +16,20 @@ export function Profile({
 	now?: string | DateTime;
 }) {
 	return (
-		<div className={styles.profileMetadata}>
-			{(pubkeyMetadata?.banner || pubkeyMetadata?.picture) && (
-				<Image
-					className={styles.bannerImage}
-					src={pubkeyMetadata?.banner}
-				/>
-			)}
-
-			<div className={styles.profileInfo}>
-				{pubkeyMetadata?.picture && (
-					<Image
+		<article className={styles.profileListItem}>
+			<div className={styles.avatarColumn}>
+				<ProfileLink
+					unstyled
+					pubkey={pubkey}
+				>
+					<SmallAvatarImage
 						className={styles.avatar}
 						src={pubkeyMetadata?.picture}
 					/>
-				)}
+				</ProfileLink>
+			</div>
 
+			<div className={styles.contentColumn}>
 				<div className={styles.names}>
 					{pubkeyMetadata?.display_name && (
 						<div
@@ -55,14 +53,7 @@ export function Profile({
 					className={styles.about}
 					content={pubkeyMetadata?.about ?? ''}
 				/>
-
-				<ProfileContacts
-					pubkey={pubkey}
-					now={now}
-				/>
 			</div>
-
-			{/* <ProfileTabs /> */}
-		</div>
+		</article>
 	);
 }

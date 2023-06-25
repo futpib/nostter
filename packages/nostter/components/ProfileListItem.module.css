@@ -1,0 +1,51 @@
+
+.profileListItem {
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+
+	padding: 12px 16px 0;
+	transition: background 0.2s ease;
+}
+
+.profileListItem:hover {
+	background: rgba(var(--background-hover-rgba));
+}
+
+.avatarColumn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.contentColumn {
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.displayName {
+	font-weight: 700;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.name {
+	color: rgb(var(--foreground-secondary-rgb));
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
