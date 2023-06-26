@@ -16,11 +16,13 @@ export function InfiniteEventsLoader({
 	id,
 	input,
 	enabled = true,
+	pubkeyPreloadedEventSet,
 	now,
 }: {
 	id: string;
 	input: InfiniteEventsLoaderInput;
 	enabled?: boolean;
+	pubkeyPreloadedEventSet?: EventSet;
 	now?: string | DateTime;
 }) {
 	const {
@@ -45,6 +47,7 @@ export function InfiniteEventsLoader({
 		now,
 		input,
 		enabled,
+		pubkeyPreloadedEventSet,
 	});
 
 	const handleShowFutureNotesClick = useCallback(() => {

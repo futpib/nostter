@@ -109,6 +109,7 @@ async function Nip19IdProfilePage({
 
 			<ProfileNotes
 				pubkey={profilePointer.pubkey}
+				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
 				now={now?.toISO() ?? undefined}
 			/>
 		</>

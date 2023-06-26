@@ -14,10 +14,12 @@ export type InfiniteEventsLoaderInput = Omit<EventsInput, 'cursor' | 'cacheKeyNo
 export function useInfiniteEventsLoader({
 	input,
 	enabled = true,
+	pubkeyPreloadedEventSet,
 	now: propsNow,
 }: {
 	input: InfiniteEventsLoaderInput;
 	enabled?: boolean;
+	pubkeyPreloadedEventSet?: EventSet;
 	now?: string | DateTime;
 }) {
 	const initialNow = useNow({ propsNow });
@@ -48,6 +50,26 @@ export function useInfiniteEventsLoader({
 		until: nowRounded.toSeconds(),
 		limit: 16,
 	}), [ nowRounded ]);
+
+	const pubkeyPreloadedFirstPageData = useMemo(() => {
+		if (!pubkeyPreloadedEventSet) {
+			return undefined;
+		}
+
+		const eventSet = pubkeyPreloadedEventSet.filter(input);
+
+		if (eventSet.size === 0) {
+			return undefined;
+		}
+
+		return {
+			pages: [
+				{
+					eventSet,
+				},
+			],
+		};
+	}, [ input, pubkeyPreloadedEventSet ]);
 
 	const {
 		data: localFirstPageData,
@@ -178,10 +200,15 @@ export function useInfiniteEventsLoader({
 			return [ undefined, localFirstPageData.pages ];
 		}
 
+		if (pubkeyPreloadedFirstPageData && pubkeyPreloadedFirstPageData.pages.length > 0) {
+			return [ undefined, pubkeyPreloadedFirstPageData.pages ];
+		}
+
 		return [ undefined, [] ];
 	}, [
 		localFirstPageData?.pages.length,
 		backendFirstPageData?.pages.length,
+		pubkeyPreloadedFirstPageData?.pages.length,
 		data?.pages.length,
 		afterNowRoundedEventsCount,
 		now,
