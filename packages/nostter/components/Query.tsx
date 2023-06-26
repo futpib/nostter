@@ -1,6 +1,6 @@
 "use client";
 
-import { Query, defaultQueryString } from "@/constants/defaultQueryString";
+import { Query as Filters, defaultQueryString } from "@/constants/defaultQueryString";
 import { defaultRelays } from "@/constants/defaultRelays";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLocationHash } from "@/hooks/useLocationHash";
@@ -8,7 +8,7 @@ import { simplePool as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Event, nip19, SimplePool } from "nostr-tools";
+import { Event, Filter, nip19, SimplePool } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/lib/nip19";
 import plur from "plur";
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -22,17 +22,27 @@ function urlEquals(url1: string, url2: string) {
 	return normalizeUrl(url1) === normalizeUrl(url2);
 }
 
-function stringifyQuery(query: Query) {
+function stringifyQuery(query: Filters) {
 	return JSON.stringify(query, null, 2);
 }
 
-function parseQuery(query: string): Query {
+function parseQuery(query: string): Filters {
 	const errors: unknown[] = [];
 
+	let parseResult: undefined | Filters | Filter;
+
 	try {
-		return JSON.parse(query);
+		parseResult = JSON.parse(query);
 	} catch (error) {
 		errors.push(error);
+	}
+
+	if (!Array.isArray(parseResult) && typeof parseResult === 'object' && parseResult !== null) {
+		parseResult = [ parseResult ];
+	}
+
+	if (parseResult) {
+		return parseResult;
 	}
 
 	let decodeResult: undefined | DecodeResult;
@@ -98,7 +108,7 @@ function parseQuery(query: string): Query {
 	throw new Error(errors.map(stringifyError).join('\n'));
 }
 
-function hashQuery(query: Query) {
+function hashQuery(query: Filters) {
 	return JSON.stringify(query);
 }
 
