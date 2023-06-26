@@ -104,12 +104,12 @@ async function Nip19IdProfilePage({
 			<Profile
 				pubkey={profilePointer.pubkey}
 				pubkeyMetadata={pubkeyMetadata}
-				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
+				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet.toJSON()}
 			/>
 
 			<ProfileNotes
 				pubkey={profilePointer.pubkey}
-				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
+				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet.toJSON()}
 				now={now?.toISO() ?? undefined}
 			/>
 		</>
