@@ -314,6 +314,8 @@ for (const testCase of testCases) {
 	test(testCaseMacro, testCase, { skipServerRendering: true });
 }
 
+test.todo('login and like + unlike a note');
+
 test.afterEach.always(async t => {
 	const { releaseTestCaseSemaphore } = t.context;
 
