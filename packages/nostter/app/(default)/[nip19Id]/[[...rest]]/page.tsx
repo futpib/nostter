@@ -50,19 +50,28 @@ async function Nip19IdProfilePage({
 		limit: 1,
 	};
 
-	const pubkeyMetadataEventSet = await trpcCaller.nostr.eventsInfinite({
-		kinds: [
-			EventKind.Metadata,
-		],
+	const [
+		pubkeyMetadataEventSet,
+		pubkeyPreloadedEventSet,
+	] = await Promise.all([
+		trpcCaller.nostr.eventsInfinite({
+			kinds: [
+				EventKind.Metadata,
+			],
 
-		authors: [
-			profilePointer.pubkey,
-		],
+			authors: [
+				profilePointer.pubkey,
+			],
 
-		cursor: initialCursor,
-	});
+			cursor: initialCursor,
+		}),
 
-	const pubkeyMetadatas = parsePubkeyMetadataEvents([ ...pubkeyMetadataEventSet.eventSet ]);
+		trpcCaller.awsBackend.pubkeyPreloadedEvents({
+			pubkey: profilePointer.pubkey,
+		}),
+	]);
+
+	const pubkeyMetadatas = parsePubkeyMetadataEvents([ ...pubkeyMetadataEventSet.eventSet, ...pubkeyPreloadedEventSet ]);
 
 	const pubkeyMetadata = pubkeyMetadatas.get(profilePointer.pubkey);
 
@@ -95,6 +104,7 @@ async function Nip19IdProfilePage({
 			<Profile
 				pubkey={profilePointer.pubkey}
 				pubkeyMetadata={pubkeyMetadata}
+				pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
 			/>
 
 			<ProfileNotes

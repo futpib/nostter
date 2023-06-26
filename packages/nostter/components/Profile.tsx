@@ -1,3 +1,5 @@
+'use client';
+
 import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { Image } from './Image';
 import styles from "./Profile.module.css";
@@ -5,16 +7,26 @@ import { ProfileMentionNameText } from "./ProfileMentionNameText";
 import { ProfileAboutText } from "./ProfileAboutText";
 import { ProfileContacts } from "./ProfileContacts";
 import { DateTime } from "luxon";
+import { EventSet, EventSetJSON } from "@/nostr/EventSet";
+import { useMemo } from "react";
 
 export function Profile({
 	pubkey,
 	pubkeyMetadata,
+	pubkeyPreloadedEventSet: pubkeyPreloadedEventSetJSON,
 	now,
 }: {
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
+	pubkeyPreloadedEventSet?: EventSetJSON | EventSet;
 	now?: string | DateTime;
 }) {
+	const pubkeyPreloadedEventSet = useMemo(() => {
+		if (pubkeyPreloadedEventSetJSON) {
+			return EventSet.fromJSON(pubkeyPreloadedEventSetJSON);
+		}
+	}, [pubkeyPreloadedEventSetJSON]);
+
 	return (
 		<div className={styles.profileMetadata}>
 			{(pubkeyMetadata?.banner || pubkeyMetadata?.picture) && (
@@ -58,6 +70,7 @@ export function Profile({
 
 				<ProfileContacts
 					pubkey={pubkey}
+					pubkeyPreloadedEventSet={pubkeyPreloadedEventSet}
 					now={now}
 				/>
 			</div>

@@ -8,21 +8,24 @@ import { usePubkeyContactsLoader } from '@/hooks/usePubkeyContactsLoader';
 import { DateTime } from 'luxon';
 import { getContactsEventPublicKeys } from '@/utils/getContactsEventPublicKeys';
 import { useMemo } from 'react';
+import { EventSet } from '@/nostr/EventSet';
 
 export function ProfileContacts({
 	className,
 	pubkey,
+	pubkeyPreloadedEventSet,
 	now,
 }: {
 	className?: string;
 	pubkey: string;
+	pubkeyPreloadedEventSet?: EventSet;
 	now?: string | DateTime;
 }) {
 	const {
-		isLatestContactsEventLoading,
 		latestContactsEvent,
 	} = usePubkeyContactsLoader({
 		profilePointer: { pubkey },
+		pubkeyPreloadedEventSet,
 		now,
 	});
 
@@ -34,16 +37,14 @@ export function ProfileContacts({
 		<div
 			className={classNames(styles.profileContacts, className)}
 		>
-			{!isLatestContactsEventLoading && (
-				<Link
-					className={styles.profileContactsItem}
-					href={`/${nip19.npubEncode(pubkey)}/following`}
-				>
-					<strong>{contactPublicKeys.length}</strong>
-					{' '}
-					Following
-				</Link>
-			)}
+			<Link
+				className={styles.profileContactsItem}
+				href={`/${nip19.npubEncode(pubkey)}/following`}
+			>
+				<strong>{contactPublicKeys.length}</strong>
+				{' '}
+				Following
+			</Link>
 
 			{/*
 				<Link
