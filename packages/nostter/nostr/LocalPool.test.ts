@@ -6,6 +6,7 @@ import type { TestFn } from 'ava';
 import { Event, finishEvent, generatePrivateKey, getPublicKey } from 'nostr-tools';
 import { EventSet } from './EventSet';
 import { LocalPool } from './LocalPool'
+import invariant from 'invariant';
 
 type TestContext = {
 	eventSet: EventSet;
@@ -36,7 +37,12 @@ test.before(async t => {
 				const event = finishEvent({
 					kind,
 					created_at,
-					tags: [],
+					tags: (
+						i === 1 ? [
+							[ 'e', eventSet.getEventsLatestFirst()[0].id ],
+						] : [
+						]
+					),
 					content: [
 						i,
 						kind,
@@ -146,5 +152,35 @@ test('list latest event until by kind and author', async t => {
 		}
 
 		t.true(someEventOk);
+	}
+});
+
+test('list latest event until by kind and e tag', async t => {
+	const eventWithETag = t.context.eventsOldestFirst.find(event => event.tags.some(([ key ]) => key === 'e'));
+
+	t.truthy(eventWithETag);
+
+	const eTagEventId = eventWithETag?.tags.find(([ key ]) => key === 'e')?.[1];
+
+	t.truthy(eTagEventId);
+
+	invariant(eTagEventId, 'eTagEventId');
+
+	const result = await localPool.list(relays, [
+		{
+			'#e': [ eTagEventId ],
+			kinds: [ 0 ],
+			until: timestamps.at(-1),
+			limit: 16,
+		},
+	]);
+
+	t.true(result.length > 0);
+	t.true(result.length <= 16);
+
+	for (const event of result) {
+		t.true(event.tags.some(([ key, value ]) => key === 'e' && value === eTagEventId));
+		t.true(event.kind === 0);
+		t.true(event.created_at < MOCK_SCALE_FACTOR);
 	}
 });

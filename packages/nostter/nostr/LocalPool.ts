@@ -31,17 +31,20 @@ function buildFilterFunction({
 	multipleKinds,
 	multipleIds,
 	multipleAuthors,
+	multipleTagValues,
 }: {
 	until?: number;
 	multipleKinds?: Set<number>;
 	multipleIds?: Set<string>;
 	multipleAuthors?: Set<string>;
+	multipleTagValues?: Map<string, Set<string>>;
 }) {
 	if (
 		until === undefined
 			&& multipleKinds === undefined
 			&& multipleIds === undefined
 			&& multipleAuthors === undefined
+			&& multipleTagValues === undefined
 	) {
 		return undefined;
 	}
@@ -63,6 +66,14 @@ function buildFilterFunction({
 
 		if (multipleAuthors !== undefined) {
 			allPass &&= multipleAuthors.has(event.pubkey);
+		}
+
+		if (multipleTagValues !== undefined) {
+			for (const [ tagKey, multipleTagValuesValues ] of multipleTagValues.entries()) {
+				const tagValues = event.tags.filter(([ key ]) => key === tagKey).map(([ , value ]) => value);
+
+				allPass &&= tagValues.some(tagValue => multipleTagValuesValues.has(tagValue));
+			}
 		}
 
 		return allPass;
@@ -224,6 +235,7 @@ function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
 	let multipleIds: undefined | Set<string>;
 	let multipleKinds: undefined | Set<number>;
 	let multipleAuthors: undefined | Set<string>;
+	let multipleTagValues: undefined | Map<string, Set<string>>;
 
 	invariant(filter.limit !== undefined, 'limit must be defined');
 
@@ -258,6 +270,24 @@ function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
 			continue;
 		}
 
+		if (key.startsWith('#') && key.length === 2) {
+			const tag = key.slice(1);
+
+			multipleTagValues = multipleTagValues || new Map();
+
+			if (!multipleTagValues.has(tag)) {
+				multipleTagValues.set(tag, new Set());
+			}
+
+			const tagValues = multipleTagValues.get(tag)!;
+
+			for (const tagValue of arrayValue) {
+				tagValues.add(tagValue as string);
+			}
+
+			continue;
+		}
+
 		if (key === 'limit') {
 			continue;
 		}
@@ -275,6 +305,7 @@ function filterToDexieQueryByCreatedAt(filter: Filter): DexieQueryByCreatedAt {
 			multipleIds,
 			multipleKinds,
 			multipleAuthors,
+			multipleTagValues,
 		}),
 		limit: filter.limit,
 		until: filter.until,
