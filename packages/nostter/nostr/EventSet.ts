@@ -134,6 +134,9 @@ export class EventSet {
 		return eventSet;
 	}
 
+	/**
+	 * @returns `true` if the event was added, `false` if it was already in the set.
+	 */
 	add(event: Event) {
 		if (!this._eventsByCreatedAt.has(event.created_at)) {
 			this._eventsByCreatedAt.set(event.created_at, []);
@@ -143,7 +146,11 @@ export class EventSet {
 			this._events.set(event.id, event);
 			this._eventsByCreatedAt.get(event.created_at)!.push(event);
 			uniqueSortedArrayBinarySearchInsert(this._createdAtOrder, event.created_at);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	has(id: string) {
@@ -196,6 +203,10 @@ export class EventSet {
 		}
 
 		return oldestEvent;
+	}
+
+	getEventIds() {
+		return Array.from(this._events.keys());
 	}
 
 	getEventsLatestFirst() {

@@ -190,7 +190,7 @@ export function Query() {
 		return Array.from(relays.entries()).flatMap(([ url, enabled ]) => enabled ? [ url ] : []).sort();
 	}, [ relays ]);
 
-	const [ queryParsed, queryParseError ] = useMemo((): [ undefined | Query, unknown ] => {
+	const [ queryParsed, queryParseError ] = useMemo((): [ undefined | Filters, unknown ] => {
 		try {
 			return [ parseQuery(query), undefined ];
 		} catch (error) {

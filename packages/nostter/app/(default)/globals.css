@@ -8,6 +8,7 @@
 	--foreground-secondary-rgb: 83, 100, 113;
 	--foreground-tooltip-rgb: 255, 255, 255;
 	--foreground-modal-rgb: 255, 255, 255;
+	--foreground-heart-rgb: 249, 24, 128;
 
 	--background-rgb: 255, 255, 255;
 	--background-secondary-rgb: 247, 249, 249;
@@ -28,6 +29,7 @@
 		--foreground-secondary-rgb: 113, 118, 123;
 		--foreground-tooltip-rgb: 0, 0, 0;
 		--foreground-modal-rgb: 0, 0, 0;
+		--foreground-heart-rgb: 249, 24, 128;
 
 		--background-rgb: 0, 0, 0;
 		--background-secondary-rgb: 22, 24, 28;

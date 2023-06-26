@@ -26,7 +26,18 @@ export function NoteLikeTextCounter({
 		onData(event) {
 			const reactedEventPointer = nip25.getReactedEventPointer(event);
 
-			if (reactedEventPointer?.id !== noteEventPointer.id || !POSITIVE_REACTIONS.has(event.content)) {
+			if (reactedEventPointer?.id !== noteEventPointer.id) {
+				console.warn(
+					'Got reaction for irrelevant event. Actual: %o Expected: %o Reaction event: %o',
+					reactedEventPointer,
+					noteEventPointer,
+					event,
+				);
+
+				return;
+			}
+
+			if (!POSITIVE_REACTIONS.has(event.content)) {
 				return;
 			}
 

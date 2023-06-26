@@ -1,5 +1,5 @@
 import { nip25 } from 'nostr-tools';
-import { FaRegHeart } from 'react-icons/fa';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { NoteCounter } from "./NoteCounter";
 import { EventPointer } from 'nostr-tools/lib/nip19';
 import { trpcReact } from '@/clients/trpc';
@@ -11,6 +11,9 @@ import { EventKind } from '@/nostr/EventKind';
 import { POSITIVE_REACTIONS } from '@/constants/positiveReactions';
 import { useIdleLoop } from '@/hooks/useIdleLoop';
 import { useHeavyQueriesEnabled } from '@/hooks/useHeavyQueriesEnabled';
+import { usePrimaryAccountNoteLike } from '@/hooks/usePrimaryAccountNoteLike';
+
+import styles from './NoteLikeCounter.module.css';
 
 export function NoteLikeCounter({
 	noteEventPointer,
@@ -50,21 +53,46 @@ export function NoteLikeCounter({
 		},
 	});
 
+	const {
+		noteLikeByPrimaryAccountEvent,
+		primaryAccountReactionDeletionEvents,
+	} = usePrimaryAccountNoteLike({
+		reactedEventPointer: noteEventPointer,
+	});
+
 	const positiveReactionsCount = useMemo(() => {
-		let positiveReactionsCount = 0;
+		let positiveReactionsCount = noteLikeByPrimaryAccountEvent ? 1 : 0;
 
 		for (const page of data?.pages ?? []) {
-			for (const event of page.eventSet) {
-				const reactedEventPointer = nip25.getReactedEventPointer(event);
+			for (const reactionEvent of page.eventSet) {
+				if (reactionEvent.id === noteLikeByPrimaryAccountEvent?.id) {
+					continue;
+				}
 
-				if (reactedEventPointer?.id === noteEventPointer.id && POSITIVE_REACTIONS.has(event.content)) {
+				const deletionEvents = primaryAccountReactionDeletionEvents.filter({
+					kinds: [ EventKind.EventDeletion ],
+					'#e': [ reactionEvent.id ],
+				});
+
+				if (deletionEvents.size > 0) {
+					continue;
+				}
+
+				const reactedEventPointer = nip25.getReactedEventPointer(reactionEvent);
+
+				if (reactedEventPointer?.id === noteEventPointer.id && POSITIVE_REACTIONS.has(reactionEvent.content)) {
 					positiveReactionsCount += 1;
 				}
 			}
 		}
 
 		return positiveReactionsCount;
-	}, [ data?.pages.length, noteEventPointer.id ]);
+	}, [
+		data?.pages.length,
+		noteLikeByPrimaryAccountEvent?.id,
+		primaryAccountReactionDeletionEvents.size,
+		noteEventPointer.id,
+	]);
 
 	useIdleLoop(fetchNextPage, {
 		enabled: Boolean(!isFetching && hasNextPage && heavyQueriesEnabled),
@@ -72,7 +100,10 @@ export function NoteLikeCounter({
 
 	return (
 		<NoteCounter
-			iconComponent={FaRegHeart}
+			activeIconClassName={styles.activeIcon}
+			active={noteLikeByPrimaryAccountEvent !== undefined}
+			iconComponent={AiOutlineHeart}
+			activeIconComponent={AiFillHeart}
 			value={positiveReactionsCount}
 		/>
 	);
