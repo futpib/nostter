@@ -51,7 +51,7 @@
 	top: 0;
 }
 
-@media (min-width: 500px) {
+@media (--sm) {
 	.header {
 		display: flex;
 	}
@@ -62,13 +62,13 @@
 	}
 }
 
-@media (min-width: 1000px) {
+@media (--md) {
 	.footer {
 		display: flex;
 	}
 }
 
-@media (min-width: 1280px) {
+@media (--lg) {
 	.header {
 		max-width: 275px;
 	}

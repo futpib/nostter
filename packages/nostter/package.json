@@ -69,6 +69,7 @@
   "packageManager": "yarn@3.5.0",
   "devDependencies": {
     "@bleed-believer/path-alias": "^0.15.2",
+    "@csstools/postcss-global-data": "^1.0.3",
     "@types/debug": "^4.1.7",
     "@types/deepmerge": "^2.2.0",
     "@types/invariant": "^2.2.35",
@@ -78,6 +79,9 @@
     "@types/mime-types": "^2.1.1",
     "ava": "^5.3.0",
     "fake-indexeddb": "^4.0.1",
+    "postcss-custom-media": "^9.1.5",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-preset-env": "^8.5.1",
     "tsx": "^3.12.7"
   },
   "ava": {
@@ -89,6 +93,32 @@
     ],
     "nodeArguments": [
       "--loader=tsx"
+    ]
+  },
+  "postcss": {
+    "plugins": [
+      [
+        "@csstools/postcss-global-data",
+        {
+          "files": [
+            "./app/(default)/custom-media.css"
+          ]
+        }
+      ],
+      "postcss-custom-media",
+      "postcss-flexbugs-fixes",
+      [
+        "postcss-preset-env",
+        {
+          "autoprefixer": {
+            "flexbox": "no-2009"
+          },
+          "stage": 3,
+          "features": {
+            "custom-properties": false
+          }
+        }
+      ]
     ]
   }
 }

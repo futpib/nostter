@@ -42,7 +42,7 @@
 	color: rgb(var(--foreground-rgb));
 }
 
-@media (min-width: 1280px) {
+@media (--lg) {
 	.ellipsis {
 		display: initial;
 	}
