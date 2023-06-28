@@ -10,6 +10,8 @@ import { ScrollKeeperProvider } from '@/components/ScrollKepeerProvider';
 import { PreferencesProvider } from '@/components/PreferencesProvider';
 import { FooterContent } from '@/components/FooterContent';
 import { HeaderContent } from '@/components/HeaderContent';
+import { FooterSmContent } from '@/components/FooterSmContent';
+import { ScrollDirectionClassNameSetter } from '@/components/ScrollDirectionClassNameSetter';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -45,21 +47,27 @@ export default function RootLayout({
 			<PreferencesProvider>
 				<QueryClientProvider>
 					<ScrollKeeperProvider>
-						<body className={styles.body}>
-							<header className={styles.header}>
-								<HeaderContent />
-							</header>
+						<ScrollDirectionClassNameSetter>
+							<body className={styles.body}>
+								<header className={styles.header}>
+									<HeaderContent />
+								</header>
 
-							<main className={styles.main}>
-								<div className={styles.content}>
-									{children}
-								</div>
-							</main>
+								<main className={styles.main}>
+									<div className={styles.content}>
+										{children}
+									</div>
 
-							<footer className={styles.footer}>
-								<FooterContent />
-							</footer>
-						</body>
+									<footer className={styles.footerSm}>
+										<FooterSmContent />
+									</footer>
+								</main>
+
+								<footer className={styles.footer}>
+									<FooterContent />
+								</footer>
+							</body>
+						</ScrollDirectionClassNameSetter>
 					</ScrollKeeperProvider>
 				</QueryClientProvider>
 			</PreferencesProvider>

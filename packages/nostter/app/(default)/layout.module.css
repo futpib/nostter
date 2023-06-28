@@ -40,6 +40,23 @@
 	min-width: 0;
 }
 
+.footerSm {
+	display: flex;
+	flex-direction: column;
+	padding: 16px;
+	background: rgb(var(--background-rgb));
+	border-top: 1px solid rgb(var(--border-rgb));
+
+	position: sticky;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+:global(.scroll-direction-down) .footerSm {
+	display: none;
+}
+
 .footer {
 	flex-grow: 1;
 	flex-shrink: 0;
@@ -68,6 +85,10 @@
 }
 
 @media (--md) {
+	.footerSm.footerSm {
+		display: none;
+	}
+
 	.footer {
 		display: flex;
 	}

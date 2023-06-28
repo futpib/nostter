@@ -66,6 +66,10 @@ a {
 	text-decoration: none;
 }
 
+div:focus {
+	outline: none;
+}
+
 img.emoji {
 	height: 1em;
 	width: 1em;
