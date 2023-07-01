@@ -36,6 +36,7 @@ export function TimelineRepost({
 						unstyled
 						className={styles.timelineRepostHeaderLink}
 						pubkey={pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
 					>
 						<ProfileAnyNameText
 							pubkey={pubkey}

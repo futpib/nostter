@@ -66,6 +66,7 @@ export function ChildNote({
 					<ProfileLink
 						unstyled
 						pubkey={pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
 					>
 						<SmallAvatarImage
 							className={styles.avatar}
@@ -85,6 +86,7 @@ export function ChildNote({
 								<ProfileLink
 									unstyled
 									pubkey={pubkey}
+									pubkeyMetadatas={pubkeyMetadatas}
 								>
 									{pubkeyMetadata?.display_name}
 								</ProfileLink>
@@ -97,6 +99,7 @@ export function ChildNote({
 							<ProfileLink
 								unstyled
 								pubkey={pubkey}
+								pubkeyMetadatas={pubkeyMetadatas}
 							>
 								<ProfileMentionNameText
 									pubkey={pubkey}

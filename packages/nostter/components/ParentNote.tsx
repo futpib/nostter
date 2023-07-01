@@ -70,6 +70,7 @@ export function ParentNote({
 					<ProfileLink
 						unstyled
 						pubkey={pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
 					>
 						<SmallAvatarImage
 							className={styles.avatar}

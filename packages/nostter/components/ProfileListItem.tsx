@@ -21,6 +21,7 @@ export function ProfileListItem({
 				<ProfileLink
 					unstyled
 					pubkey={pubkey}
+					pubkeyMetadatas={pubkeyMetadata ? new Map([[pubkey, pubkeyMetadata]]) : undefined}
 				>
 					<SmallAvatarImage
 						className={styles.avatar}

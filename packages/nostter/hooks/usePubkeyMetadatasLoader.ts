@@ -3,6 +3,7 @@ import { startOf } from "@/luxon";
 import { EventKind } from "@/nostr/EventKind";
 import { EventSet } from "@/nostr/EventSet";
 import { parsePubkeyMetadataEvents } from "@/utils/parsePubkeyMetadataEvents";
+import { PubkeyMetadata } from "@/utils/renderNoteContent";
 import { DateTime } from "luxon";
 import { ProfilePointer } from "nostr-tools/lib/nip19";
 import { useMemo } from "react";
@@ -11,10 +12,12 @@ import { useNow } from "./useNow";
 export function usePubkeyMetadatasLoader({
 	profilePointers,
 	pubkeyPreloadedEventSet,
+	pubkeyMetadatas: initialPubkeyMetadatas,
 	now: propsNow,
 }: {
 	profilePointers: ProfilePointer[];
 	pubkeyPreloadedEventSet?: EventSet;
+	pubkeyMetadatas?: Map<string, PubkeyMetadata>;
 	now?: string | DateTime;
 }) {
 	const now = useNow({ propsNow });
@@ -57,9 +60,19 @@ export function usePubkeyMetadatasLoader({
 
 	const isProfileMetadatasInitialLoading = pubkeyMetadataEventQueries.some(query => query.isInitialLoading);
 
-	const pubkeyMetadatas = parsePubkeyMetadataEvents(
-		pubkeyMetadataEventQueries.flatMap(query => Array.from(query.data?.eventSet ?? []))
-	);
+	const pubkeyMetadatas = useMemo(() => {
+		const pubkeyMetadatas = parsePubkeyMetadataEvents(
+			pubkeyMetadataEventQueries.flatMap(query => Array.from(query.data?.eventSet ?? []))
+		);
+
+		for (const [ pubkey, pubkeyMetadata ] of initialPubkeyMetadatas?.entries() ?? []) {
+			if (!pubkeyMetadatas.has(pubkey)) {
+				pubkeyMetadatas.set(pubkey, pubkeyMetadata);
+			}
+		}
+
+		return pubkeyMetadatas;
+	}, [ initialPubkeyMetadatas, pubkeyMetadataEventQueries ]);
 
 	return {
 		pubkeyMetadatas,

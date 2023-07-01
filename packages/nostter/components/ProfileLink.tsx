@@ -7,16 +7,19 @@ import styles from "./ProfileLink.module.css";
 import { offset, shift, useFloating, useHover, useInteractions } from "@floating-ui/react";
 import { ProfileLoader } from "./ProfileLoader";
 import classNames from "classnames";
+import { PubkeyMetadata } from "@/utils/renderNoteContent";
 
 export function ProfileLink({
 	unstyled = false,
 	className,
 	pubkey,
+	pubkeyMetadatas,
 	children,
 }: {
 	unstyled?: boolean;
 	className?: string;
 	pubkey: string;
+	pubkeyMetadatas?: Map<string, PubkeyMetadata>;
 	children?: ReactNode;
 }) {
 	const handleProfileLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -73,6 +76,7 @@ export function ProfileLink({
 				>
 					<ProfileLoader
 						profilePointer={{ pubkey }}
+						pubkeyMetadatas={pubkeyMetadatas}
 						componentKey="ProfileTooltipContent"
 					/>
 				</div>

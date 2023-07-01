@@ -61,6 +61,7 @@ export function Note({
 					<ProfileLink
 						unstyled
 						pubkey={pubkey}
+						pubkeyMetadatas={pubkeyMetadatas}
 					>
 						<SmallAvatarImage
 							className={styles.avatar}

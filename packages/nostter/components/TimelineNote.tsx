@@ -83,6 +83,7 @@ export function TimelineNote({
 						<ProfileLink
 							unstyled
 							pubkey={pubkey}
+							pubkeyMetadatas={pubkeyMetadatas}
 						>
 							<SmallAvatarImage
 								className={styles.avatar}
@@ -99,6 +100,7 @@ export function TimelineNote({
 								<ProfileLink
 									unstyled
 									pubkey={pubkey}
+									pubkeyMetadatas={pubkeyMetadatas}
 								>
 									<div
 										className={styles.displayName}
@@ -114,6 +116,7 @@ export function TimelineNote({
 								<ProfileLink
 									unstyled
 									pubkey={pubkey}
+									pubkeyMetadatas={pubkeyMetadatas}
 								>
 									<ProfileMentionNameText
 										pubkey={pubkey}

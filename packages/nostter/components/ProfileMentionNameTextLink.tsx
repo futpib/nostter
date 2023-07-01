@@ -10,7 +10,10 @@ export function ProfileMentionNameTextLink({
 	pubkeyMetadatas: Map<string, PubkeyMetadata>;
 }) {
 	return (
-		<ProfileLink pubkey={pubkey}>
+		<ProfileLink
+			pubkey={pubkey}
+			pubkeyMetadatas={pubkeyMetadatas}
+		>
 			<ProfileMentionNameText
 				pubkey={pubkey}
 				pubkeyMetadatas={pubkeyMetadatas}
