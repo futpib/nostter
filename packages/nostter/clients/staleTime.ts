@@ -11,10 +11,6 @@ export function getStaleTime(queryKey: FullQueryKey) {
 			return Infinity;
 		}
 
-		if (subresource === 'descendants') {
-			return oneMinute;
-		}
-
 		if (subresource === 'reposts') {
 			return oneMinute;
 		}

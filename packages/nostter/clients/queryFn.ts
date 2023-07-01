@@ -8,8 +8,6 @@ import invariant from "invariant";
 import { Event, Filter, SimplePool } from "nostr-tools";
 import { PrehashedQueryKey, unprehashQueryKey } from "./prehashQueryKey";
 import { debugExtend } from "@/utils/debugExtend";
-import { findLinks } from "@/utils/findLinks";
-import { EventKind } from "@/nostr/EventKind";
 
 const log = debugExtend('clients', 'queryFn');
 
@@ -89,12 +87,6 @@ function getPoolQueryFilter(
 				return filter;
 			}
 
-			if (subresource === 'descendants') {
-				filter.kinds = [ EVENT_KIND_SHORT_TEXT_NOTE ];
-				filter['#e'] = [ resourceId ];
-				return filter;
-			}
-
 			if (subresource === 'reposts') {
 				filter.kinds = [ EVENT_KIND_REPOST ];
 				filter['#e'] = [ resourceId ];
@@ -157,13 +149,6 @@ async function queryLocalRelayDexie(
 	const localRelayDexie = await getLocalRelayDexie();
 
 	if (resourceType === 'event') {
-		if (subresource === 'descendants') {
-			return localRelayDexie.events.where({
-				eTag1s: [ resourceId ],
-				kind: EventKind.Text,
-			}).toArray();
-		}
-
 		if (subresource === 'reposts') {
 			return localRelayDexie.events.where({
 				eTag1s: [ resourceId ],

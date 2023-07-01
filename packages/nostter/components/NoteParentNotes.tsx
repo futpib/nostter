@@ -7,6 +7,7 @@ import { Event } from 'nostr-tools';
 import { ScrollKeeper } from './ScrollKepeer';
 import { getThread } from '@/utils/getThread';
 import { useDescendantNotesQuery } from '@/hooks/useDescendantNotesQuery';
+import { useIdleLoop } from '@/hooks/useIdleLoop';
 
 export function NoteParentNotes({
 	id,
@@ -79,12 +80,18 @@ export function NoteParentNotes({
 		}));
 	}, []);
 
-	const descendantNotesQuery = useDescendantNotesQuery({ eventPointer: treeRoot }, {
-		onSuccess({ events }) {
-			for (const event of events) {
-				handleEventQuerySuccess({ event });
+	const { isFetching, hasNextPage, fetchNextPage } = useDescendantNotesQuery({ eventPointer: treeRoot }, {
+		onSuccess({ pages }) {
+			for (const page of pages) {
+				for (const event of page.eventSet) {
+					handleEventQuerySuccess({ event });
+				}
 			}
 		},
+	});
+
+	useIdleLoop(fetchNextPage, {
+		enabled: Boolean(hasNextPage) && !isFetching,
 	});
 
 	return (

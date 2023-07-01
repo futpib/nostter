@@ -32,7 +32,7 @@ export type QueryKeyResource =
 			| readonly [
 				id: undefined | string,
 				...rest:
-					| [ subresource: 'descendants' | 'reposts' ]
+					| [ subresource: 'reposts' ]
 				,
 			]
 		,
