@@ -12,6 +12,7 @@ import { FooterContent } from '@/components/FooterContent';
 import { HeaderContent } from '@/components/HeaderContent';
 import { FooterSmContent } from '@/components/FooterSmContent';
 import { ScrollDirectionClassNameSetter } from '@/components/ScrollDirectionClassNameSetter';
+import { HeaderXsContent } from '@/components/HeaderXsContent';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -54,6 +55,10 @@ export default function RootLayout({
 								</header>
 
 								<main className={styles.main}>
+									<header className={styles.headerXs}>
+										<HeaderXsContent />
+									</header>
+
 									<div className={styles.content}>
 										{children}
 									</div>

@@ -1,0 +1,60 @@
+
+.headerXsAccountButton {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+
+	padding: 8px;
+	margin: 0 8px;
+
+	border-radius: 9999px;
+	cursor: pointer;
+	transition: background-color 0.2s ease-in-out;
+}
+
+.headerXsAccountButton:hover {
+	background-color: rgb(var(--background-secondary-rgb));
+}
+
+.headerXsAccountButtonContent {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+}
+
+.ellipsis {
+	display: none;
+	color: rgb(var(--foreground-secondary-rgb));
+}
+
+.headerXsAccountButtonTooltip {
+	display: flex;
+	flex-direction: column;
+	min-width: 300px;
+
+	background-color: rgb(var(--background-rgb));
+	border: 1px solid rgb(var(--background-rgb));
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 0 4px 0px rgba(var(--shadow-rgba));
+	color: rgb(var(--foreground-rgb));
+}
+
+.headerXsAccountButtonAvatar {
+	width: 32px;
+	height: 32px;
+}
+
+.headerXsAccountButtonIcon {
+	font-size: 32px;
+	padding: 8px;
+}
+
+@media (--lg) {
+	.ellipsis {
+		display: initial;
+	}
+}

@@ -21,6 +21,22 @@
 	top: 0;
 }
 
+.headerXs {
+	display: flex;
+	flex-direction: column;
+	background: rgb(var(--background-rgb));
+	border-bottom: 1px solid rgb(var(--border-rgb));
+
+	position: sticky;
+	left: 0;
+	right: 0;
+	top: 0;
+}
+
+:global(.scroll-direction-down) .headerXs {
+	position: static;
+}
+
 .main {
 	flex-grow: 1;
 	flex-shrink: 1;
@@ -53,6 +69,10 @@
 	bottom: 0;
 }
 
+.footerSm:empty {
+	display: none;
+}
+
 :global(.scroll-direction-down) .footerSm {
 	display: none;
 }
@@ -76,6 +96,10 @@
 @media (--sm) {
 	.header {
 		display: flex;
+	}
+
+	.headerXs.headerXs {
+		display: none;
 	}
 
 	.main {
