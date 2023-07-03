@@ -3,11 +3,13 @@
 import { useDrawerXsState } from '@/hooks/useDrawerXsState';
 import { useDismiss, useFloating, useInteractions, useMergeRefs } from '@floating-ui/react';
 import classNames from 'classnames';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { RemoveScroll } from 'react-remove-scroll';
 import styles from './DrawerXs.module.css';
 
 export function DrawerXs() {
 	const { isOpen, setIsOpen } = useDrawerXsState();
+	const [ isTouching, setIsTouching ] = useState(false);
 
 	const drawerRef = useRef<HTMLElement>(null);
 
@@ -52,6 +54,7 @@ export function DrawerXs() {
 				touchState.startPosition.y = touch.pageY;
 				touchState.drawerWidth = drawerRef.current.offsetWidth;
 				touchState.startedSwipe = true;
+				setIsTouching(true);
 			}
 		};
 
@@ -105,6 +108,8 @@ export function DrawerXs() {
 				drawerRef.current.style.transition = '';
 				drawerRef.current.style.transform = '';
 			}
+
+			setIsTouching(false);
 		};
 
 		document.addEventListener('touchstart', handleTouchStart);
@@ -119,15 +124,20 @@ export function DrawerXs() {
 	}, [ isOpen ]);
 
 	return (
-		<aside
-			className={classNames(
-				styles.drawerXs,
-				isOpen && styles.drawerXsOpen
-			)}
+		<RemoveScroll
+			forwardProps
 			ref={drawerMergedRefs}
-			{...getFloatingProps()}
+			enabled={isTouching || isOpen}
 		>
-			TODO
-		</aside>
+			<aside
+				className={classNames(
+					styles.drawerXs,
+					isOpen && styles.drawerXsOpen
+				)}
+				{...getFloatingProps()}
+			>
+				TODO
+			</aside>
+		</RemoveScroll>
 	);
 }
