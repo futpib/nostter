@@ -1,0 +1,15 @@
+
+.drawerXs {
+	position: fixed;
+	width: 280px;
+	top: 0;
+	left: -280px;
+	bottom: 0;
+	background: rgb(var(--background-rgb));
+	border-right: 1px solid rgb(var(--border-rgb));
+	transition: transform .3s 0s cubic-bezier(.55,0,.1,1);
+}
+
+.drawerXsOpen {
+	transform: translate(280px, 0);
+}

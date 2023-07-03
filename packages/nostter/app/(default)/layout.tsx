@@ -13,6 +13,8 @@ import { HeaderContent } from '@/components/HeaderContent';
 import { FooterSmContent } from '@/components/FooterSmContent';
 import { ScrollDirectionClassNameSetter } from '@/components/ScrollDirectionClassNameSetter';
 import { HeaderXsContent } from '@/components/HeaderXsContent';
+import { DrawerXs } from '@/components/DrawerXs';
+import { DrawerXsStateProvider } from '@/components/DrawerXsStateProvider';
 
 const notoSans = NotoSans({
 	variable: '--font-noto-sans',
@@ -49,29 +51,33 @@ export default function RootLayout({
 				<QueryClientProvider>
 					<ScrollKeeperProvider>
 						<ScrollDirectionClassNameSetter>
-							<body className={styles.body}>
-								<header className={styles.header}>
-									<HeaderContent />
-								</header>
-
-								<main className={styles.main}>
-									<header className={styles.headerXs}>
-										<HeaderXsContent />
+							<DrawerXsStateProvider>
+								<body className={styles.body}>
+									<header className={styles.header}>
+										<HeaderContent />
 									</header>
 
-									<div className={styles.content}>
-										{children}
-									</div>
+									<main className={styles.main}>
+										<header className={styles.headerXs}>
+											<HeaderXsContent />
+										</header>
 
-									<footer className={styles.footerSm}>
-										<FooterSmContent />
+										<div className={styles.content}>
+											{children}
+										</div>
+
+										<footer className={styles.footerSm}>
+											<FooterSmContent />
+										</footer>
+									</main>
+
+									<footer className={styles.footer}>
+										<FooterContent />
 									</footer>
-								</main>
 
-								<footer className={styles.footer}>
-									<FooterContent />
-								</footer>
-							</body>
+									<DrawerXs />
+								</body>
+							</DrawerXsStateProvider>
 						</ScrollDirectionClassNameSetter>
 					</ScrollKeeperProvider>
 				</QueryClientProvider>
