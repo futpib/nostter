@@ -34,6 +34,7 @@ export function HeaderXsAccountButton() {
 		<div
 			className={styles.headerXsAccountButton}
 			onClick={handleClick}
+			data-test-name="HeaderXsAccountButton"
 		>
 			<div
 				className={styles.headerXsAccountButtonContent}

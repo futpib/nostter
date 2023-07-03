@@ -7,12 +7,14 @@ import Semaphore from 'semaphore-promise';
 // @ts-expect-error
 import regCli from 'reg-cli';
 
-const sizes = {
+const viewportSizes = {
 	xs: { width: 320, height: 568 },
 	sm: { width: 768, height: 1024 },
 	md: { width: 1024, height: 768 },
 	lg: { width: 1280, height: 800 },
 };
+
+type ViewportSizeName = keyof typeof viewportSizes;
 
 function pathEscape(path: string) {
 	return path.replaceAll(/[\/:?]/g, '_');
@@ -44,6 +46,7 @@ type TestContext = {
 	browserScreenshotSemaphore: Semaphore;
 
 	withPage: (f: (page: Page) => Promise<void>) => Promise<void>;
+	page: Page;
 
 	actualScreenshotDirectory: string;
 	expectedScreenshotDirectory: string;
@@ -53,19 +56,28 @@ type TestContext = {
 const test = anyTest as TestFn<TestContext>;
 
 const defaultNow = '2023-01-01T00:00:00.000Z';
+const defaultViewportSizes = {
+	xs: true,
+	sm: true,
+	md: true,
+	lg: true,
+};
 
-type TestCase = {
+type TestCase = Readonly<{
 	title?: string;
 	url: string;
 	now?: string;
-	fullPage?: false;
-};
+	screenshotFullPage?: false;
+	testViewportSize?: ViewportSizeName;
+	screenshotViewportSizes?: Partial<Record<ViewportSizeName, boolean>>;
+	exec?: (t: ExecutionContext<TestContext>) => Promise<void>;
+}>;
 
 function compareByUrl(a: TestCase, b: TestCase) {
 	return a.url.localeCompare(b.url);
 }
 
-const testCases = ([
+const testCases_: TestCase[] = [
 	{
 		url: 'note1phg7k8mf8rq4e57uazxz26g0gus3qwpuxwhzguf0w787kxy6vnvqay3lna',
 	},
@@ -93,7 +105,7 @@ const testCases = ([
 	{
 		title: 'scroll keeping',
 		url: 'note1x7g0je3c8szapk39yef0c86w7hxngdfhfauhce389sl6pjnwuwps4s8f6u',
-		fullPage: false,
+		screenshotFullPage: false,
 	},
 	{
 		title: 'all notes',
@@ -107,7 +119,27 @@ const testCases = ([
 		title: 'jack\'s following',
 		url: 'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m/following',
 	},
-] as const).slice().sort(compareByUrl);
+	{
+		title: 'jack\'s drawer',
+		url: 'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m',
+		testViewportSize: 'xs',
+		screenshotViewportSizes: {
+			xs: true,
+		},
+		screenshotFullPage: false,
+		exec: async t => {
+			const { page } = t.context;
+
+			await page.waitForSelector('[data-test-name="HeaderXsAccountButton"]', { visible: true });
+
+			await page.click('[data-test-name="HeaderXsAccountButton"]');
+
+			await page.waitForSelector('[data-test-name="DrawerXs"]', { visible: true });
+		},
+	},
+];
+
+const testCases = testCases_.slice().sort(compareByUrl);
 
 test.before(async t => {
 	const testCaseSemaphore = new Semaphore(4, {
@@ -177,12 +209,14 @@ test.beforeEach(async t => {
 	async function withPage(f: (page: Page) => Promise<void>) {
 		const releaseBrowserSemaphore = await browserSemaphore.acquire();
 		const page = await browser.newPage();
-		await page.setViewport(sizes.lg);
+
+		t.context.page = page;
 
 		try {
 			await f(page);
 		} finally {
 			releaseBrowserSemaphore();
+			t.context.page = undefined as any;
 			await page.close();
 		}
 	};
@@ -196,7 +230,14 @@ test.beforeEach(async t => {
 
 const runTestCase = async (
 	t: ExecutionContext<TestContext>,
-	{ url, now = defaultNow, fullPage }: TestCase,
+	{
+		url,
+		now = defaultNow,
+		screenshotFullPage,
+		testViewportSize,
+		screenshotViewportSizes = defaultViewportSizes,
+		exec,
+	}: TestCase,
 	{
 		screenshotDirectory,
 		baseUrl,
@@ -210,6 +251,8 @@ const runTestCase = async (
 	const { withPage, browserScreenshotSemaphore } = t.context;
 
 	await withPage(async page => {
+		await page.setViewport(viewportSizes[testViewportSize ?? 'lg']);
+
 		const url_ = new URL(url, baseUrl);
 		url_.searchParams.set('now', now);
 		url_.searchParams.set('skipServerRendering', String(skipServerRendering));
@@ -225,6 +268,8 @@ const runTestCase = async (
 
 			return skeletons.length === 0;
 		});
+
+		await exec?.(t);
 
 		await page.evaluate(async () => {
 			for (const image of window.document.querySelectorAll('img[src$=".gif"]')) {
@@ -261,7 +306,11 @@ const runTestCase = async (
 			}
 		});
 
-		for (const [ sizeName, { width, height } ] of Object.entries(sizes)) {
+		for (const [ sizeName, { width, height } ] of Object.entries(viewportSizes)) {
+			if (!screenshotViewportSizes[sizeName as ViewportSizeName]) {
+				continue;
+			}
+
 			const screenshotPath = path.join(screenshotDirectory, pathEscape([
 				url || 'index',
 				now,
@@ -276,7 +325,7 @@ const runTestCase = async (
 				await page.setViewport({ width, height });
 				await page.screenshot({
 					path: screenshotPath,
-					fullPage: fullPage === false ? false : true,
+					fullPage: screenshotFullPage === false ? false : true,
 				});
 			} finally {
 				releaseBrowserScreenshotSemaphore();

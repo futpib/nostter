@@ -135,6 +135,7 @@ export function DrawerXs() {
 					styles.drawerXs,
 					isOpen && styles.drawerXsOpen
 				)}
+				data-test-name="DrawerXs"
 				{...getFloatingProps()}
 			>
 				<DrawerXsContent />
