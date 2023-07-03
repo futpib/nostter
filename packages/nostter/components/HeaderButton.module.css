@@ -11,6 +11,8 @@
 	transition: background-color 0.2s ease-in-out;
 
 	font-size: 1.33em;
+
+	--header-button-text-display-xs: none;
 }
 
 .headerButton:hover {
@@ -18,7 +20,7 @@
 }
 
 .headerButtonText {
-	display: none;
+	display: var(--header-button-text-display-xs);
 }
 
 @media (--lg) {

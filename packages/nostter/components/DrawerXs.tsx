@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
 import styles from './DrawerXs.module.css';
+import { DrawerXsContent } from './DrawerXsContent';
 
 export function DrawerXs() {
 	const { isOpen, setIsOpen } = useDrawerXsState();
@@ -136,7 +137,7 @@ export function DrawerXs() {
 				)}
 				{...getFloatingProps()}
 			>
-				TODO
+				<DrawerXsContent />
 			</aside>
 		</RemoveScroll>
 	);

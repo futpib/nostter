@@ -1,0 +1,6 @@
+
+.drawerHeaderButton {
+	border-radius: 0;
+
+	--header-button-text-display-xs: initial;
+}
