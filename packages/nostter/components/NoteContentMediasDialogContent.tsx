@@ -6,15 +6,25 @@ import { RemoveScroll } from 'react-remove-scroll';
 
 export function NoteContentMediasDialogContent({
 	contentMediaLinks,
+	initialIndex,
 	onClick,
 }: {
 	contentMediaLinks: ContentMediaLink[];
+	initialIndex: number;
 	onClick?: () => void;
 }) {
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation();
 
 		onClick?.();
+	};
+
+	const handleCarouselRef = (element: HTMLElement | null) => {
+		if (!element) {
+			return;
+		}
+
+		element.scrollLeft = initialIndex * element.clientWidth;
 	};
 
 	return (
@@ -25,6 +35,7 @@ export function NoteContentMediasDialogContent({
 			<RemoveScroll
 				forwardProps
 				removeScrollBar
+				ref={handleCarouselRef}
 			>
 				<div
 					className={styles.noteContentMediasDialogContentCarousel}

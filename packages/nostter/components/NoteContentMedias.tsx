@@ -131,6 +131,7 @@ export function NoteContentMedias({
 	}, [contentImageLinks, contentVideoLinks]);
 
 	const [ isDialogOpen, setIsDialogOpen ] = useState(false);
+	const [ dialogInitialIndex, setDialogInitialIndex ] = useState(0);
 
 	const { refs, context } = useFloating({
 		open: isDialogOpen,
@@ -150,7 +151,7 @@ export function NoteContentMedias({
 	};
 
 	const createHandleMediaClick = (index: number) => () => {
-		console.log('TODO createHandleMediaClick', index);
+		setDialogInitialIndex(index);
 		setIsDialogOpen(true);
 	};
 
@@ -197,6 +198,7 @@ export function NoteContentMedias({
 
 								<NoteContentMediasDialogContent
 									contentMediaLinks={contentMediaLinks}
+									initialIndex={dialogInitialIndex}
 									onClick={handleDialogCloseClick}
 								/>
 							</div>
