@@ -7,6 +7,13 @@ import Semaphore from 'semaphore-promise';
 // @ts-expect-error
 import regCli from 'reg-cli';
 
+const sizes = {
+	xs: { width: 320, height: 568 },
+	sm: { width: 768, height: 1024 },
+	md: { width: 1024, height: 768 },
+	lg: { width: 1280, height: 800 },
+};
+
 function pathEscape(path: string) {
 	return path.replaceAll(/[\/:?]/g, '_');
 }
@@ -170,6 +177,7 @@ test.beforeEach(async t => {
 	async function withPage(f: (page: Page) => Promise<void>) {
 		const releaseBrowserSemaphore = await browserSemaphore.acquire();
 		const page = await browser.newPage();
+		await page.setViewport(sizes.lg);
 
 		try {
 			await f(page);
@@ -253,22 +261,26 @@ const runTestCase = async (
 			}
 		});
 
-		const screenshotPath = path.join(screenshotDirectory, pathEscape([
-			url,
-			now,
-			skipServerRendering ? 'client' : 'server',
-		].join('.') + '.png'));
+		for (const [ sizeName, { width, height } ] of Object.entries(sizes)) {
+			const screenshotPath = path.join(screenshotDirectory, pathEscape([
+				url || 'index',
+				now,
+				skipServerRendering ? 'client' : 'server',
+				sizeName,
+			].join('.') + '.png'));
 
-		const releaseBrowserScreenshotSemaphore = await browserScreenshotSemaphore.acquire();
+			const releaseBrowserScreenshotSemaphore = await browserScreenshotSemaphore.acquire();
 
-		try {
-			await page.bringToFront();
-			await page.screenshot({
-				path: screenshotPath,
-				fullPage: fullPage === false ? false : true,
-			});
-		} finally {
-			releaseBrowserScreenshotSemaphore();
+			try {
+				await page.bringToFront();
+				await page.setViewport({ width, height });
+				await page.screenshot({
+					path: screenshotPath,
+					fullPage: fullPage === false ? false : true,
+				});
+			} finally {
+				releaseBrowserScreenshotSemaphore();
+			}
 		}
 	});
 }
