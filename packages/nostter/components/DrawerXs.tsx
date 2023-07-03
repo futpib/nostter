@@ -37,6 +37,8 @@ export function DrawerXs() {
 	}), []);
 
 	useEffect(() => {
+		let animationFrame: number;
+
 		const handleTouchStart = (event: TouchEvent) => {
 			const touch = event.targetTouches[0];
 
@@ -66,22 +68,32 @@ export function DrawerXs() {
 				return;
 			}
 
+			const drawer = drawerRef.current;
+
 			if (
 				touchState.startedSwipe
 				&& isOpen
 				&& touch.pageX < touchState.startPosition.x
 			) {
 				let position = Math.min(touch.pageX - (touchState.startPosition.x - touchState.drawerWidth), touchState.drawerWidth);
-				drawerRef.current.style.transition = 'none';
-				drawerRef.current.style.transform = `translate(${position}px, 0)`;
+
+				window.cancelAnimationFrame(animationFrame);
+				animationFrame = window.requestAnimationFrame(() => {
+					drawer.style.transition = 'none';
+					drawer.style.transform = `translate(${position}px, 0)`;
+				});
 			} else if (
 				touchState.startedSwipe
 				&& !isOpen
 				&& touch.pageX > touchState.startPosition.x
 			) {
 				let position = Math.min(touch.pageX - touchState.startPosition.x, touchState.drawerWidth)
-				drawerRef.current.style.transition = 'none';
-				drawerRef.current.style.transform = `translate(${position}px, 0)`;
+
+				window.cancelAnimationFrame(animationFrame);
+				animationFrame = window.requestAnimationFrame(() => {
+					drawer.style.transition = 'none';
+					drawer.style.transform = `translate(${position}px, 0)`;
+				});
 			}
 		};
 
@@ -92,22 +104,17 @@ export function DrawerXs() {
 				return;
 			}
 
-			if (
-				touchState.startedSwipe
-				&& touch.pageX <= touchState.drawerWidth / 2
-			) {
-				setIsOpen(false);
+			const drawer = drawerRef.current;
+
+			if (touchState.startedSwipe) {
 				touchState.startedSwipe = false;
-				drawerRef.current.style.transition = '';
-				drawerRef.current.style.transform = '';
-			} else if (
-				touchState.startedSwipe
-				&& touch.pageX > touchState.drawerWidth / 2
-			) {
-				setIsOpen(true);
-				touchState.startedSwipe = false;
-				drawerRef.current.style.transition = '';
-				drawerRef.current.style.transform = '';
+
+				setIsOpen(touch.pageX > touchState.drawerWidth / 2);
+
+				window.requestAnimationFrame(() => {
+					drawer.style.transition = '';
+					drawer.style.transform = '';
+				});
 			}
 
 			setIsTouching(false);
@@ -118,6 +125,8 @@ export function DrawerXs() {
 		document.addEventListener('touchend', handleTouchEnd);
 
 		return () => {
+			window.cancelAnimationFrame(animationFrame);
+
 			document.removeEventListener('touchstart', handleTouchStart);
 			document.removeEventListener('touchmove', handleTouchMove);
 			document.removeEventListener('touchend', handleTouchEnd);

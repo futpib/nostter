@@ -2,10 +2,10 @@
 
 import { useAccounts } from '@/hooks/useAccounts';
 import classNames from 'classnames';
-import { nip19 } from 'nostr-tools';
 import { FaUser } from 'react-icons/fa';
 import { HeaderButton } from './HeaderButton';
 import styles from './HeaderProfileButton.module.css';
+import { npubEncode } from '../utils/npubEncode';
 
 export function HeaderProfileButton({
 	className,
@@ -18,7 +18,7 @@ export function HeaderProfileButton({
 		<HeaderButton
 			componentKey="Link"
 			className={classNames(styles.headerProfileButton, className)}
-			href={`/${nip19.npubEncode(primaryAccount?.pubkey)}`}
+			href={`/${npubEncode(primaryAccount.pubkey)}`}
 			iconChildren={(
 				<FaUser />
 			)}

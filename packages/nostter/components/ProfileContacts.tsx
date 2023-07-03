@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import styles from './ProfileContacts.module.css';
 import classNames from 'classnames';
-import { nip19 } from 'nostr-tools';
 import { usePubkeyContactsLoader } from '@/hooks/usePubkeyContactsLoader';
 import { DateTime } from 'luxon';
 import { getContactsEventPublicKeys } from '@/utils/getContactsEventPublicKeys';
 import { useMemo } from 'react';
 import { EventSet } from '@/nostr/EventSet';
+import { npubEncode } from '../utils/npubEncode';
 
 export function ProfileContacts({
 	className,
@@ -39,7 +39,7 @@ export function ProfileContacts({
 		>
 			<Link
 				className={styles.profileContactsItem}
-				href={`/${nip19.npubEncode(pubkey)}/following`}
+				href={`/${npubEncode(pubkey)}/following`}
 			>
 				<strong>{contactPublicKeys.length}</strong>
 				{' '}

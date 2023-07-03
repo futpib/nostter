@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { forwardRef } from 'react';
 import Link from 'next/link';
 import { usePreferencesLocalStorage } from '@/hooks/usePreferencesLocalStorage';
-import { nip19 } from 'nostr-tools';
+import { npubEncode } from '@/utils/npubEncode';
 
 export const HeaderAccountButtonTooltipContent = forwardRef<HTMLDivElement>(function HeaderAccountButtonTooltipContent(_: {}, ref) {
 	const { accounts, primaryAccount } = useAccounts();
@@ -59,7 +59,7 @@ export const HeaderAccountButtonTooltipContent = forwardRef<HTMLDivElement>(func
 			{primaryAccount && (
 				<Link
 					className={styles.listItem}
-					href={`/sign-out/${nip19.npubEncode(primaryAccount.pubkey)}`}
+					href={`/sign-out/${npubEncode(primaryAccount.pubkey)}`}
 				>
 					Sign out
 					{' '}

@@ -7,36 +7,68 @@ const log = debugExtend('hooks', 'useCookieStorage');
 type Stringify<T> = (value: undefined | T) => string;
 type Parse<T> = (raw: string) => undefined | T;
 
-function cookieStorageRead<T>(key: string, parse: Parse<T>): T | undefined {
-	if (typeof window === 'undefined') {
-		return undefined;
+const cookies = new class CookiesCached {
+	private readonly cache = new Map<string, string | undefined>();
+
+	get(key: string) {
+		if (!this.cache.has(key)) {
+			this.cache.set(key, Cookies.get(key));
+		}
+
+		return this.cache.get(key);
 	}
 
-	const raw = Cookies.get(key);
+	set(key: string, value: string, options?: Cookies.CookieAttributes) {
+		this.cache.set(key, value);
+
+		Cookies.set(key, value, options);
+	}
+}
+
+function cookieStorageRead<T>(key: string, parse: Parse<T>): {
+	raw: string | undefined;
+	parsed: T | undefined;
+} {
+	if (typeof window === 'undefined') {
+		return {
+			raw: undefined,
+			parsed: undefined,
+		};
+	}
+
+	const raw = cookies.get(key);
 
 	if (!raw) {
-		return undefined;
+		return {
+			raw: undefined,
+			parsed: undefined,
+		};
 	}
 
 	const parsed = parse(raw);
 
 	log('cookieStorageRead', key, parsed);
 
-	return parsed;
+	return { raw, parsed };
 }
 
 function cookieStorageWrite<T>(key: string, stringify: Stringify<T>, value: T | undefined) {
 	if (typeof window === 'undefined') {
-		return;
+		return {
+			raw: undefined,
+			parsed: undefined,
+		};
 	}
 
 	const raw = stringify(value) ?? '';
 
 	log('cookieStorageWrite', key, value);
 
-	Cookies.set(key, raw, {
+	cookies.set(key, raw, {
 		secure: window.location.protocol !== 'http:',
 	});
+
+	return { raw, parsed: value };
 }
 
 type LightStorageEvent = {
@@ -62,6 +94,8 @@ export function useCookieStorage<T>({
 	const id = useId();
 	const shouldWriteNextUpdateToStorageRef = useRef(false);
 	const [ isInitialLoading, setIsInitialLoading ] = useState(true);
+
+	const lastValueRawRef = useRef<string | undefined>(undefined);
 	const [ value, setValue_ ] = useState<T | undefined>(undefined);
 
 	useEffect(() => {
@@ -74,7 +108,13 @@ export function useCookieStorage<T>({
 				return;
 			}
 
-			setValue_(cookieStorageRead(key, parse));
+			const { raw, parsed } = cookieStorageRead(key, parse);
+
+			if (raw !== lastValueRawRef.current) {
+				lastValueRawRef.current = raw;
+				setValue_(parsed);
+			}
+
 			setIsInitialLoading(false);
 		};
 
@@ -94,8 +134,9 @@ export function useCookieStorage<T>({
 			return;
 		}
 
-		cookieStorageWrite(key, stringify, value);
+		const { raw } = cookieStorageWrite(key, stringify, value);
 		shouldWriteNextUpdateToStorageRef.current = false;
+		lastValueRawRef.current = raw;
 
 		for (const handler of tabStorageHandlers) {
 			handler({
@@ -107,6 +148,7 @@ export function useCookieStorage<T>({
 
 	const setValue = useCallback((value: ((oldValue: T | undefined) => T) | T | undefined) => {
 		shouldWriteNextUpdateToStorageRef.current = true;
+		lastValueRawRef.current = undefined;
 		setValue_(value);
 	}, []);
 

@@ -1,10 +1,10 @@
 
 import { PubkeyMetadata } from '@/utils/renderNoteContent';
 import Link from 'next/link';
-import { nip19 } from 'nostr-tools';
 import { FaArrowLeft } from 'react-icons/fa';
 import styles from './ProfileHeader.module.css';
 import { ProfileMentionNameText } from './ProfileMentionNameText';
+import { npubEncode } from '../utils/npubEncode';
 
 export function ProfileHeader({
 	pubkey,
@@ -14,7 +14,6 @@ export function ProfileHeader({
 	pubkeyMetadata: undefined | PubkeyMetadata;
 }) {
 
-
 	return (
 		<div
 			className={styles.profileHeader}
@@ -23,7 +22,7 @@ export function ProfileHeader({
 
 			<Link
 				className={styles.profileHeaderBackLink}
-				href={`/${nip19.npubEncode(pubkey)}`}
+				href={`/${npubEncode(pubkey)}`}
 			>
 				<FaArrowLeft />
 			</Link>

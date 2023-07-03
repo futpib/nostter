@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { ReactNode, useCallback, useState } from "react";
-import { nip19 } from "nostr-tools";
 import styles from "./ProfileLink.module.css";
 import { offset, shift, useFloating, useHover, useInteractions } from "@floating-ui/react";
 import { ProfileLoader } from "./ProfileLoader";
 import classNames from "classnames";
 import { PubkeyMetadata } from "@/utils/renderNoteContent";
+import { npubEncode } from '../utils/npubEncode';
 
 export function ProfileLink({
 	unstyled = false,
@@ -54,7 +54,7 @@ export function ProfileLink({
 					unstyled ? undefined : styles.profileLink,
 					className,
 				)}
-				href={`/${nip19.npubEncode(pubkey)}`}
+				href={`/${npubEncode(pubkey)}`}
 				onClick={handleProfileLinkClick}
 				onAuxClick={handleProfileLinkClick}
 				{...getReferenceProps()}

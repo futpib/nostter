@@ -8,6 +8,7 @@
 	background: rgb(var(--background-rgb));
 	border-right: 1px solid rgb(var(--border-rgb));
 	transition: transform .3s 0s cubic-bezier(.55,0,.1,1);
+	transform: translate(0, 0);
 }
 
 .drawerXsOpen {

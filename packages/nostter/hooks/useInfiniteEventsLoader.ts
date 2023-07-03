@@ -107,6 +107,10 @@ export function useInfiniteEventsLoader({
 		initialCursor,
 	});
 
+	if (Array.isArray(backendFirstPageData?.pages.at(0)?.eventSet)) {
+		debugger;
+	}
+
 	const {
 		isInitialLoading,
 		isFetchingNextPage,

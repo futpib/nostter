@@ -1,4 +1,4 @@
-import { nip19 } from "nostr-tools";
+import { npubEncode } from "./npubEncode";
 import { PubkeyMetadata } from "./renderNoteContent";
 
 export function getProfileMentionNameText({
@@ -18,7 +18,7 @@ export function getProfileMentionNameText({
 			: (
 				notePubkeyDisplayName
 					? `@${notePubkeyDisplayName}`
-					: nip19.npubEncode(pubkey).slice(0, 12)
+					: npubEncode(pubkey).slice(0, 12)
 			)
 	);
 
