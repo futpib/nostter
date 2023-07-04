@@ -1,0 +1,8 @@
+
+.externalLink {
+	color: rgb(var(--foreground-link-rgb));
+}
+
+.externalLink:hover {
+	text-decoration: underline;
+}

@@ -1,0 +1,8 @@
+
+.hashtagLink {
+	color: rgb(var(--foreground-link-rgb));
+}
+
+.hashtagLink:hover {
+	text-decoration: underline;
+}

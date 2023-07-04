@@ -1,5 +1,4 @@
 import { ReactNode, useMemo } from 'react';
-import Link from 'next/link';
 import { PubkeyMetadata, renderNoteContent } from '@/utils/renderNoteContent';
 import styles from './NoteContentText.module.css';
 import { ImageLink } from '@/utils/getContentImageLinks';
@@ -7,6 +6,8 @@ import { ProfileMentionNameTextLink } from './ProfileMentionNameTextLink';
 import { Reference } from '@/utils/getNoteContentTokens';
 import { PageLink } from '@/utils/getContentPageLinks';
 import { PageLinkMetadata } from './NoteContentPage';
+import { ExternalLink } from './ExternalLink';
+import { HashtagLink } from './HashtagLink';
 
 function isAllNewlines(contentChild: ReactNode) {
 	return (
@@ -52,25 +53,21 @@ export function NoteContentText({
 				|| contentVideoLinks.some(videoLink => videoLink.url === link.href)
 				|| contentPageLinks.some(pageLink => pageLink.url === link.href && pageLinkMetadatas.has(pageLink.url))
 			) ? null : (
-				<Link
+				<ExternalLink
 					key={key}
-					className={styles.link}
 					href={link.href}
-					target="_blank"
-					rel="noopener noreferrer"
 				>
 					{link.value}
-				</Link>
+				</ExternalLink>
 			),
 
 			renderHashtag: ({ key, token: { link } }) => (
-				<Link
+				<HashtagLink
 					key={key}
-					className={styles.link}
-					href={`/search?q=${encodeURIComponent(link.href)}`}
+					href={link.href}
 				>
 					{link.value}
-				</Link>
+				</HashtagLink>
 			),
 		});
 
