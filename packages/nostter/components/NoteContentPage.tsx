@@ -1,7 +1,7 @@
 'use client';
 
 import { tryParseUrl } from '@/utils/tryParseUrl';
-import { MouseEvent } from 'react';
+import { ExternalLink } from './ExternalLink';
 import { Image } from './Image';
 import styles from './NoteContentPage.module.css';
 
@@ -18,46 +18,42 @@ export function NoteContentPage({
 }: {
 	pageLinkMetadata: PageLinkMetadata;
 }) {
-	const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-		event.stopPropagation();
-		window.open(pageLinkMetadata.url, '_blank');
-	};
-
 	const urlParsed = tryParseUrl(pageLinkMetadata.url);
 
 	return (
-		<div
-			className={styles.noteContentPage}
-			onClick={handleClick}
-			onAuxClick={handleClick}
+		<ExternalLink
+			unstyled
+			href={pageLinkMetadata.url}
 		>
-			<Image
-				className={styles.noteContentPageImage}
-				src={pageLinkMetadata.image}
-				onClick={handleClick}
-			/>
-
 			<div
-				className={styles.noteContentPageText}
+				className={styles.noteContentPage}
 			>
-				<div
-					className={styles.noteContentPageSiteName}
-				>
-					{pageLinkMetadata.siteName ?? urlParsed?.hostname ?? pageLinkMetadata.url}
-				</div>
+				<Image
+					className={styles.noteContentPageImage}
+				/>
 
 				<div
-					className={styles.noteContentPageTitle}
+					className={styles.noteContentPageText}
 				>
-					{pageLinkMetadata.title}
-				</div>
+					<div
+						className={styles.noteContentPageSiteName}
+					>
+						{pageLinkMetadata.siteName ?? urlParsed?.hostname ?? pageLinkMetadata.url}
+					</div>
 
-				<div
-					className={styles.noteContentPageDescription}
-				>
-					{pageLinkMetadata.description}
+					<div
+						className={styles.noteContentPageTitle}
+					>
+						{pageLinkMetadata.title}
+					</div>
+
+					<div
+						className={styles.noteContentPageDescription}
+					>
+						{pageLinkMetadata.description}
+					</div>
 				</div>
 			</div>
-		</div>
+		</ExternalLink>
 	);
 }

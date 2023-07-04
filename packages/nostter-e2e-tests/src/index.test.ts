@@ -137,6 +137,10 @@ const testCases_: TestCase[] = [
 			await page.waitForSelector('[data-test-name="DrawerXs"]', { visible: true });
 		},
 	},
+	{
+		title: 'long web page description',
+		url: 'note10ymnz7td87kyunm528wkvdr9vxh87cq0mtknc9uw20gs9p97t4tshq0643',
+	},
 ];
 
 const testCases = testCases_.slice().sort(compareByUrl);
