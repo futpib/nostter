@@ -2,10 +2,9 @@
 
 import { handleTRPCSuccess } from "@/clients/handleTRPCSuccess";
 import { queryKeyHashFn } from "@/clients/prehashQueryKey";
-import { queryFn } from "@/clients/queryFn";
 import { trpcClient, trpcReact } from "@/clients/trpc";
 import { debugExtend } from "@/utils/debugExtend";
-import { QueryClient, QueryClientProvider as QueryClientProviderBase, QueryFunction, QueryKey, QueryKeyHashFunction } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider as QueryClientProviderBase, QueryKey, QueryKeyHashFunction } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ReactNode, useEffect, useMemo, useRef } from "react"
 
@@ -24,7 +23,6 @@ export function QueryClientProvider({
 		const queryClient = new QueryClient({
 			defaultOptions: {
 				queries: {
-					queryFn: queryFn as QueryFunction,
 					queryKeyHashFn: queryKeyHashFn as QueryKeyHashFunction<QueryKey>,
 					refetchOnWindowFocus: false,
 					refetchOnMount: false,

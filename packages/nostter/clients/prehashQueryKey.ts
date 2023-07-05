@@ -1,55 +1,6 @@
-import { FullQueryKey, QueryKeyParameters, QueryKeyPreferences, QueryKeyResource } from "@/hooks/useAppQuery";
-import { Cursor } from "@/trpc/router/nostr";
 import invariant from "invariant";
 import { PartialDeep } from "type-fest";
-
-export type PrehashedQueryKey = readonly [ json: string ];
-
-export type PrehashedQueryKeyInner = readonly [
-	preferencesHash: string,
-	mode: 'finite' | 'infinite',
-	backend: 'auto' | 'api' | 'pool' | 'local',
-	network: 'nostr',
-	parametersHash: string,
-	...resource: QueryKeyResource,
-];
-
-const unprehashPreferencesMap = new Map<string, QueryKeyPreferences>();
-const unprehashParametersMap = new Map<string, QueryKeyParameters>();
-
-export function prehashQueryKey(queryKey: FullQueryKey): PrehashedQueryKey {
-	const [preferences, mode, backend, network, parameters, ...resource] = queryKey;
-
-	// TODO
-	const preferencesHash = preferences.relays.length.toString();
-	unprehashPreferencesMap.set(preferencesHash, preferences);
-
-	// TODO
-	const parametersHash = parameters.relays.length.toString();
-	unprehashParametersMap.set(parametersHash, parameters);
-
-	const json = JSON.stringify([preferencesHash, mode, backend, network, parametersHash, ...resource]);
-
-	return [ json ];
-}
-
-export function unprehashQueryKey(prehashedQueryKey: PrehashedQueryKey): FullQueryKey {
-	const [ json ] = prehashedQueryKey;
-
-	const prehashedQueryKeyInner = JSON.parse(json) as PrehashedQueryKeyInner;
-
-	const [preferencesHash, mode, backend, network, parametersHash, ...resource] = prehashedQueryKeyInner;
-
-	const preferences = unprehashPreferencesMap.get(preferencesHash);
-
-	invariant(preferences, 'Preferences hash %s not found', preferencesHash);
-
-	const parameters = unprehashParametersMap.get(parametersHash);
-
-	invariant(parameters, 'Parameters hash %s not found', parametersHash);
-
-	return [preferences, mode, backend, network, parameters, ...resource];
-}
+import { Cursor } from "@/trpc/router/nostr";
 
 const knownOptions = new Set([
 	'cacheKeyNonce',
@@ -121,12 +72,6 @@ export function trpcQueryKeyHashFn(
 	].join('\n');
 }
 
-export function queryKeyHashFn(prehashedQueryKey: PrehashedQueryKey): string {
-	if (prehashedQueryKey.length === 1) {
-		const [ json ] = prehashedQueryKey;
-
-		return json;
-	}
-
-	return trpcQueryKeyHashFn(prehashedQueryKey as any);
+export function queryKeyHashFn(prehashedQueryKey: TRPCQueryKey): string {
+	return trpcQueryKeyHashFn(prehashedQueryKey);
 }

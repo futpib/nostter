@@ -107,10 +107,6 @@ export function useInfiniteEventsLoader({
 		initialCursor,
 	});
 
-	if (Array.isArray(backendFirstPageData?.pages.at(0)?.eventSet)) {
-		debugger;
-	}
-
 	const {
 		isInitialLoading,
 		isFetchingNextPage,
@@ -197,7 +193,12 @@ export function useInfiniteEventsLoader({
 		}
 
 		if (backendFirstPageData && backendFirstPageData.pages.length > 0) {
-			return [ undefined, backendFirstPageData.pages ];
+			if (Array.isArray(backendFirstPageData.pages[0].eventSet)) {
+				debugger;
+				console.warn('backendFirstPageData.pages[0].eventSet is an array, WTF?');
+			} else {
+				return [ undefined, backendFirstPageData.pages ];
+			}
 		}
 
 		if (localFirstPageData && localFirstPageData.pages.length > 0) {
@@ -245,10 +246,6 @@ export function useInfiniteEventsLoader({
 	const eventsLatestFirst = useMemo(() => {
 		return pages.flatMap((page, index) => {
 			const nextPage = pages.at(index + 1);
-
-			if (!page.eventSet.getEventsLatestFirst) {
-				debugger;
-			}
 
 			return page.eventSet.getEventsLatestFirst().filter((event) => {
 				if (nextPage?.eventSet.has(event.id)) {
