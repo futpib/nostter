@@ -4,7 +4,7 @@ import { Query as Filters, defaultQueryString } from "@/constants/defaultQuerySt
 import { defaultRelays } from "@/constants/defaultRelays";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLocationHash } from "@/hooks/useLocationHash";
-import { simplePool as simplePoolBase } from "@/utils/simplePool";
+import { simplePoolWithSeenOn as simplePoolBase } from "@/utils/simplePool";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
