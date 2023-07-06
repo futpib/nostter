@@ -12,7 +12,3 @@
 	background: rgb(var(--background-secondary-rgb));
 	color: rgb(var(--foreground-secondary-rgb));
 }
-
-.noteNotFoundLink {
-	color: rgb(var(--foreground-link-rgb));
-}

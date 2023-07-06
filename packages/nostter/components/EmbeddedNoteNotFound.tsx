@@ -1,6 +1,6 @@
 
-import Link from 'next/link';
 import styles from './EmbeddedNoteNotFound.module.css';
+import { ExternalLink } from './ExternalLink';
 
 export function EmbeddedNoteNotFound({
 	id,
@@ -11,13 +11,11 @@ export function EmbeddedNoteNotFound({
 		<div className={styles.embeddedNoteNotFound}>
 			Note not found.
 			{' '}
-			<Link
-				className={styles.embeddedNoteNotFoundLink}
+			<ExternalLink
 				href={`https://www.nostr.guru/e/${id}`}
-				target="_blank"
 			>
 				Open in Nostr Guru
-			</Link>
+			</ExternalLink>
 		</div>
 	);
 }

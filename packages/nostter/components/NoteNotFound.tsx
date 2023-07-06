@@ -1,5 +1,5 @@
 
-import Link from 'next/link';
+import { ExternalLink } from './ExternalLink';
 import styles from './NoteNotFound.module.css';
 
 export function NoteNotFound({
@@ -12,13 +12,11 @@ export function NoteNotFound({
 			<div className={styles.noteNotFoundInner}>
 				Note not found.
 				{' '}
-				<Link
-					className={styles.noteNotFoundLink}
+				<ExternalLink
 					href={`https://www.nostr.guru/e/${id}`}
-					target="_blank"
 				>
 					Open in Nostr Guru
-				</Link>
+				</ExternalLink>
 			</div>
 		</div>
 	);
