@@ -135,6 +135,8 @@ const testCases_: TestCase[] = [
 			await page.click('[data-test-name="HeaderXsAccountButton"]');
 
 			await page.waitForSelector('[data-test-name="DrawerXs"]', { visible: true });
+
+			await new Promise(resolve => setTimeout(resolve, 1000));
 		},
 	},
 	{
