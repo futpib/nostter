@@ -1,7 +1,9 @@
 import { useAccounts } from "@/hooks/useAccounts";
+import Link from "next/link";
 import { useMemo } from "react";
 import styles from "./DrawerXsAccountSwitcher.module.css";
 import { DrawerXsPrimaryAccountButton } from "./DrawerXsPrimaryAccountButton";
+import { DrawerXsSecondaryAccountButton } from "./DrawerXsSecondaryAccountButton";
 
 export function DrawerXsAccountSwitcher() {
 	const { accounts, primaryAccount, isAccountsInitialLoading } = useAccounts();
@@ -9,16 +11,6 @@ export function DrawerXsAccountSwitcher() {
 	const secondaryAccount = useMemo(() => {
 		return accounts.find((account) => account.pubkey !== primaryAccount?.pubkey);
 	}, [accounts, primaryAccount?.pubkey]);
-
-	const otherAccounts = useMemo(() => {
-		return (
-			accounts
-				.filter((account) => (
-					account.pubkey !== primaryAccount?.pubkey
-					&& account.pubkey !== secondaryAccount?.pubkey
-				))
-		);
-	}, [accounts, primaryAccount?.pubkey, secondaryAccount?.pubkey]);
 
 	return isAccountsInitialLoading ? null : (
 		<div
@@ -29,6 +21,16 @@ export function DrawerXsAccountSwitcher() {
 					pubkey={primaryAccount.pubkey}
 				/>
 			)}
+
+			<div
+				className={styles.drawerXsAccountSwitcherButtons}
+			>
+				{secondaryAccount && (
+					<DrawerXsSecondaryAccountButton
+						pubkey={secondaryAccount.pubkey}
+					/>
+				)}
+			</div>
 		</div>
 	)
 }

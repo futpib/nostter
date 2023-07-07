@@ -1,4 +1,13 @@
 
 .drawerXsAccountSwitcher {
 	padding: 12px;
+
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.drawerXsAccountSwitcherButtons {
+
 }
