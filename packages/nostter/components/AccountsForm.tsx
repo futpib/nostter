@@ -1,18 +1,33 @@
+'use client';
 
-import { useAccounts } from '@/hooks/useAccounts';
-import { usePubkeyMetadatasLoader } from '@/hooks/usePubkeyMetadatasLoader';
-import { AccountButtonContent } from './AccountButtonContent';
-import { ProfileAnyNameText } from './ProfileAnyNameText';
-import styles from './HeaderAccountButtonTooltipContent.module.css';
-import classNames from 'classnames';
-import { forwardRef } from 'react';
-import Link from 'next/link';
-import { usePreferencesLocalStorage } from '@/hooks/usePreferencesLocalStorage';
-import { npubEncode } from '@/utils/npubEncode';
+import { useAccounts } from "@/hooks/useAccounts";
+import { usePreferencesLocalStorage } from "@/hooks/usePreferencesLocalStorage";
+import { usePubkeyMetadatasLoader } from "@/hooks/usePubkeyMetadatasLoader";
+import { npubEncode } from "@/utils/npubEncode";
+import classNames from "classnames";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { FaCheck } from "react-icons/fa";
+import { AccountButtonContent } from "./AccountButtonContent";
+import styles from './AccountsForm.module.css';
+import { ProfileAnyNameText } from "./ProfileAnyNameText";
 
-export const HeaderAccountButtonTooltipContent = forwardRef<HTMLDivElement>(function HeaderAccountButtonTooltipContent(_: {}, ref) {
-	const { accounts, primaryAccount } = useAccounts();
+export function AccountsForm() {
+	const { accounts, primaryAccount, isAccountsInitialLoading } = useAccounts();
 	const { setPrimaryAccountPubkey } = usePreferencesLocalStorage();
+
+	useEffect(() => {
+		if (isAccountsInitialLoading) {
+			return;
+		}
+
+		if (accounts.length !== 0) {
+			return;
+		}
+
+		redirect('/sign-in');
+	}, [accounts, isAccountsInitialLoading]);
 
 	const {
 		pubkeyMetadatas,
@@ -38,10 +53,17 @@ export const HeaderAccountButtonTooltipContent = forwardRef<HTMLDivElement>(func
 						className={styles.listItemContent}
 					>
 						<AccountButtonContent
+							displayNameClassName={styles.listItemDisplayName}
 							pubkey={account.pubkey}
 							pubkeyMetadata={pubkeyMetadatas.get(account.pubkey)}
 						/>
 					</div>
+
+					{primaryAccount?.pubkey === account.pubkey && (
+						<FaCheck
+							className={styles.listItemCheck}
+						/>
+					)}
 				</div>
 			))}
 
@@ -69,11 +91,6 @@ export const HeaderAccountButtonTooltipContent = forwardRef<HTMLDivElement>(func
 					/>
 				</Link>
 			)}
-
-			<div
-				key={[accounts.length, pubkeyMetadatas.size].join()}
-				ref={ref}
-			/>
 		</>
 	);
-});
+}

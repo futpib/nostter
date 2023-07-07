@@ -8,11 +8,15 @@ import { SmallAvatarImage } from './SmallAvatarImage';
 export function AccountButtonContent({
 	avatarClassName,
 	namesClassName,
+	displayNameClassName,
+	nameClassName,
 	pubkey,
 	pubkeyMetadata,
 }: {
 	avatarClassName?: string;
 	namesClassName?: string;
+	displayNameClassName?: string;
+	nameClassName?: string;
 	pubkey: string;
 	pubkeyMetadata: undefined | PubkeyMetadata;
 }) {
@@ -25,13 +29,13 @@ export function AccountButtonContent({
 
 			<div className={classNames(styles.names, namesClassName)}>
 				<div
-					className={styles.displayName}
+					className={classNames(styles.displayName, displayNameClassName)}
 				>
 					{pubkeyMetadata?.display_name}
 				</div>
 
 				<div
-					className={styles.name}
+					className={classNames(styles.name, nameClassName)}
 				>
 					<ProfileMentionNameText
 						pubkey={pubkey}

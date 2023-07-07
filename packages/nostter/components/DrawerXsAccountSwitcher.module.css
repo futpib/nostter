@@ -9,5 +9,20 @@
 }
 
 .drawerXsAccountSwitcherButtons {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 4px;
+}
 
+.drawerXsAccountSwitcherMore {
+	width: 32px;
+	height: 32px;
+	border-radius: 9999px;
+	border: 1px solid rgb(var(--border-rgb));
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 }

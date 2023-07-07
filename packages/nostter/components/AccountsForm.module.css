@@ -1,0 +1,38 @@
+
+.listItem {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+
+	padding: 12px 16px;
+
+	cursor: pointer;
+	transition: background-color 0.2s ease-in-out;
+	user-select: none;
+}
+
+.listItem:hover {
+	background-color: rgb(var(--background-secondary-rgb));
+}
+
+.listItemAccount {
+	min-height: 64px;
+}
+
+.listItemContent {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+}
+
+.listItemDisplayName {
+	font-size: 1em;
+}
+
+.divider {
+	height: 1px;
+	background-color: rgb(var(--border-rgb));
+}

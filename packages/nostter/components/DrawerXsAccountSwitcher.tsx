@@ -1,5 +1,6 @@
 import { useAccounts } from "@/hooks/useAccounts";
 import Link from "next/link";
+import { FaEllipsisH } from 'react-icons/fa';
 import { useMemo } from "react";
 import styles from "./DrawerXsAccountSwitcher.module.css";
 import { DrawerXsPrimaryAccountButton } from "./DrawerXsPrimaryAccountButton";
@@ -30,6 +31,13 @@ export function DrawerXsAccountSwitcher() {
 						pubkey={secondaryAccount.pubkey}
 					/>
 				)}
+
+				<Link
+					className={styles.drawerXsAccountSwitcherMore}
+					href="/accounts"
+				>
+					<FaEllipsisH />
+				</Link>
 			</div>
 		</div>
 	)
