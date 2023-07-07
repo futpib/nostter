@@ -12,7 +12,7 @@ export function Image({
 }: {
 	style?: CSSProperties;
 	className?: string;
-	src?: string;
+	src: undefined | string;
 	fallbackSrc?: string;
 	onClick?: (event: MouseEvent<HTMLImageElement>) => void;
 }) {

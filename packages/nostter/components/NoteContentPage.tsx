@@ -30,6 +30,7 @@ export function NoteContentPage({
 			>
 				<Image
 					className={styles.noteContentPageImage}
+					src={pageLinkMetadata.image}
 				/>
 
 				<div
