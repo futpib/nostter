@@ -1,0 +1,25 @@
+
+.drawerXsPrimaryAccountButton {
+
+}
+
+.avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px;
+}
+
+.names {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.displayName {
+	font-size: 1.33em;
+	font-weight: 600;
+}
+
+.name {
+	color: rgb(var(--foreground-secondary-rgb));
+}
