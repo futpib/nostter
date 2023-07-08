@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { NextSeo } from 'next-seo';
 import { parsePubkeyMetadataEvents } from '@/utils/parsePubkeyMetadataEvents';
@@ -16,6 +16,7 @@ import { Nip19IdProfileFollowingPageLoader } from '@/components/Nip19IdProfileFo
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ProfileContactsTabs } from '@/components/ProfileContactsTabs';
 import { ProfileFollowingList } from '@/components/ProfileFollowingList';
+import { redirectSearchParams } from '@/next/redirectSearchParams';
 
 async function Nip19IdProfileFollowingPage({
 	profilePointer,
@@ -126,11 +127,11 @@ export default async function Nip19IdFollowingPage({
 	const { normalizedNip19Id, decoded } = nip19DecodeResult;
 
 	if (decoded.type !== 'profilePointer') {
-		redirect(`/${normalizedNip19Id}`);
+		redirectSearchParams(`/${normalizedNip19Id}`, searchParams);
 	}
 
 	if (normalizedNip19Id !== nip19IdParam) {
-		redirect(`/${normalizedNip19Id}/following`);
+		redirectSearchParams(`/${normalizedNip19Id}/following`, searchParams);
 	}
 
 	const now = getNow({ searchParams });

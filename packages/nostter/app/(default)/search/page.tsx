@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { NextSeo } from 'next-seo';
 import { SearchPageLoader } from '@/components/SearchPageLoader';
@@ -6,6 +6,7 @@ import { SearchNotes } from '@/components/SearchNotes';
 import { shouldSkipServerRendering } from '@/utils/shouldSkipServerRendering';
 import { getNow } from '@/utils/getNow';
 import { DateTime } from 'luxon';
+import { redirectSearchParams } from '@/next/redirectSearchParams';
 
 async function SearchPageServer({
 	query,
@@ -43,7 +44,7 @@ export default async function SearchPage({
 	const query = q.trim();
 
 	if (!query) {
-		return redirect('/');
+		return redirectSearchParams('/', searchParams);
 	}
 
 	if (shouldSkipServerRendering(headers(), searchParams)) {

@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { parseReferences } from 'nostr-tools';
 import { NextSeo } from 'next-seo';
@@ -33,6 +33,7 @@ import { getTagsImageLinks } from '@/utils/getTagsImageLinks';
 import { getTagsVideoLinks } from '@/utils/getTagsVideoLinks';
 import { EventKind } from '@/nostr/EventKind';
 import { startOf } from '@/luxon';
+import { redirectSearchParams } from '@/next/redirectSearchParams';
 
 async function Nip19IdProfilePage({
 	profilePointer,
@@ -300,7 +301,7 @@ export default async function Nip19IdPage({
 	const { normalizedNip19Id, decoded } = nip19DecodeResult;
 
 	if (normalizedNip19Id !== nip19IdParam) {
-		redirect(`/${normalizedNip19Id}`);
+		redirectSearchParams(`/${normalizedNip19Id}`, searchParams);
 	}
 
 	const now = getNow({ searchParams });
