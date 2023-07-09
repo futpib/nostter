@@ -3,6 +3,7 @@ import { HeaderProfileButton } from "./HeaderProfileButton";
 import styles from "./HeaderContent.module.css";
 import { HeaderExploreButton } from "./HeaderExploreButton";
 import { HeaderHomeButton } from "./HeaderHomeButton";
+import { HeaderPreferencesButton } from "./HeaderPreferencesButton";
 
 export function HeaderContent() {
 	return (
@@ -13,6 +14,7 @@ export function HeaderContent() {
 				<HeaderHomeButton />
 				<HeaderExploreButton />
 				<HeaderProfileButton />
+				<HeaderPreferencesButton />
 			</div>
 
 			<div>
