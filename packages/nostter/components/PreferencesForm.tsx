@@ -18,16 +18,16 @@ export function PreferencesForm() {
 				<FaChevronRight />
 			</Link>
 
-			<Link
+			{/* <Link
 				className={styles.listItem}
 				href="/relays"
-			>
+				>
 				<div className={styles.listItemContent}>
-					Relays
+				Relays
 				</div>
 
 				<FaChevronRight />
-			</Link>
+				</Link> */}
 		</>
 	);
 }
